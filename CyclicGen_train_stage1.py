@@ -1,4 +1,4 @@
-"""Train a voxel flow model on ucf101 dataset."""
+"""Train a voxel flow model."""
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -53,7 +53,9 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3):
     with tf.Graph().as_default():
         # Create input.
         data_list_frame1 = dataset_frame1.read_data_list_file()
+        #print('data_list_frame1: ', data_list_frame1)
         data_list_frame1 = data_list_frame1[::FLAGS.training_data_step]
+        #print('data_list_frame1: ', data_list_frame1)
         dataset_frame1 = tf.data.Dataset.from_tensor_slices(tf.constant(data_list_frame1))
         dataset_frame1 = dataset_frame1.apply(
             tf.contrib.data.shuffle_and_repeat(buffer_size=1000000, count=None, seed=1)).map(_read_image).map(
@@ -165,7 +167,9 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3):
 
         data_size = len(data_list_frame1)
         epoch_num = int(data_size / FLAGS.batch_size)
-
+		
+        print('epoch_num:', epoch_num) ##
+		
         for step in range(0, FLAGS.max_steps):
             batch_idx = step % epoch_num
 
@@ -294,25 +298,25 @@ if __name__ == '__main__':
 
     if FLAGS.subset == 'train':
         os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-        data_list_path_frame1 = "data_list/ucf101_train_files_frame1.txt"
-        data_list_path_frame2 = "data_list/ucf101_train_files_frame2.txt"
-        data_list_path_frame3 = "data_list/ucf101_train_files_frame3.txt"
+        data_list_path_frame1 = "data_list/middlebury_train_files_frame1.txt"
+        data_list_path_frame2 = "data_list/middlebury_train_files_frame2.txt"
+        data_list_path_frame3 = "data_list/middlebury_train_files_frame3.txt"
 
-        ucf101_dataset_frame1 = dataset.Dataset(data_list_path_frame1)
-        ucf101_dataset_frame2 = dataset.Dataset(data_list_path_frame2)
-        ucf101_dataset_frame3 = dataset.Dataset(data_list_path_frame3)
+        dataset_frame1 = dataset.Dataset(data_list_path_frame1)
+        dataset_frame2 = dataset.Dataset(data_list_path_frame2)
+        dataset_frame3 = dataset.Dataset(data_list_path_frame3)
 
-        train(ucf101_dataset_frame1, ucf101_dataset_frame2, ucf101_dataset_frame3)
+        train(dataset_frame1, dataset_frame2, dataset_frame3)
 
     elif FLAGS.subset == 'test':
         os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
-        data_list_path_frame1 = "data_list/ucf101_test_files_frame1.txt"
-        data_list_path_frame2 = "data_list/ucf101_test_files_frame2.txt"
-        data_list_path_frame3 = "data_list/ucf101_test_files_frame3.txt"
+        data_list_path_frame1 = "data_list/middlebury_test_files_frame1.txt"
+        data_list_path_frame2 = "data_list/middlebury_test_files_frame2.txt"
+        data_list_path_frame3 = "data_list/middlebury_test_files_frame3.txt"
 
-        ucf101_dataset_frame1 = dataset.Dataset(data_list_path_frame1)
-        ucf101_dataset_frame2 = dataset.Dataset(data_list_path_frame2)
-        ucf101_dataset_frame3 = dataset.Dataset(data_list_path_frame3)
+        dataset_frame1 = dataset.Dataset(data_list_path_frame1)
+        dataset_frame2 = dataset.Dataset(data_list_path_frame2)
+        dataset_frame3 = dataset.Dataset(data_list_path_frame3)
 
-        test(ucf101_dataset_frame1, ucf101_dataset_frame2, ucf101_dataset_frame3)
+        test(dataset_frame1, dataset_frame2, dataset_frame3)

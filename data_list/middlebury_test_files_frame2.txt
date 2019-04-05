@@ -1,0 +1,2 @@
+/home/venus/shared/data/Middlebury/eval-color-allframes/eval-data/Backyard/frame08.png
+/home/venus/shared/data/Middlebury/eval-color-allframes/eval-data/Basketball/frame08.png

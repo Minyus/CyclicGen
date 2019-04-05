@@ -1,4 +1,4 @@
-"""Train a voxel flow model on ucf101 dataset."""
+"""Train a voxel flow model on middlebury dataset."""
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -282,17 +282,17 @@ def test(dataset_frame1, dataset_frame2, dataset_frame3):
         SSIM = 0
 
         for id_img in range(0, data_size):
-            UCF_index = data_list_frame1[id_img][:-12]
+            MID_index = data_list_frame1[id_img][:-12]
             # Load single data.
 
-            batch_data_frame1 = [dataset_frame1.process_func(os.path.join('ucf101_interp_ours', ll)[:-5] + '00.png') for
+            batch_data_frame1 = [dataset_frame1.process_func(os.path.join('middlebury_interp_ours', ll)[:-5] + '00.png') for
                                  ll in data_list_frame1[id_img:id_img + 1]]
-            batch_data_frame2 = [dataset_frame2.process_func(os.path.join('ucf101_interp_ours', ll)[:-5] + '01_gt.png')
+            batch_data_frame2 = [dataset_frame2.process_func(os.path.join('middlebury_interp_ours', ll)[:-5] + '01_gt.png')
                                  for ll in data_list_frame2[id_img:id_img + 1]]
-            batch_data_frame3 = [dataset_frame3.process_func(os.path.join('ucf101_interp_ours', ll)[:-5] + '02.png') for
+            batch_data_frame3 = [dataset_frame3.process_func(os.path.join('middlebury_interp_ours', ll)[:-5] + '02.png') for
                                  ll in data_list_frame3[id_img:id_img + 1]]
             batch_data_mask = [
-                dataset_frame3.process_func(os.path.join('motion_masks_ucf101_interp', ll)[:-11] + 'motion_mask.png')
+                dataset_frame3.process_func(os.path.join('motion_masks_middlebury_interp', ll)[:-11] + 'motion_mask.png')
                 for ll in data_list_frame3[id_img:id_img + 1]]
 
             batch_data_frame1 = np.array(batch_data_frame1)
@@ -308,7 +308,7 @@ def test(dataset_frame1, dataset_frame2, dataset_frame3):
                                                                                        model.warped_img2],
                                                                                       feed_dict=feed_dict)
 
-            imwrite('ucf101_interp_ours/' + str(UCF_index) + '/frame_01_CyclicGen.png', prediction_np[0][-1, :, :, :])
+            imwrite('middlebury_interp_ours/' + str(MID_index) + '/frame_01_CyclicGen.png', prediction_np[0][-1, :, :, :])
 
             print(np.sum(batch_data_mask))
             if np.sum(batch_data_mask) > 0:
@@ -333,25 +333,25 @@ if __name__ == '__main__':
 
     if FLAGS.subset == 'train':
         os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-        data_list_path_frame1 = "data_list/ucf101_train_files_frame1.txt"
-        data_list_path_frame2 = "data_list/ucf101_train_files_frame2.txt"
-        data_list_path_frame3 = "data_list/ucf101_train_files_frame3.txt"
+        data_list_path_frame1 = "data_list/middlebury_train_files_frame1.txt"
+        data_list_path_frame2 = "data_list/middlebury_train_files_frame2.txt"
+        data_list_path_frame3 = "data_list/middlebury_train_files_frame3.txt"
 
-        ucf101_dataset_frame1 = dataset.Dataset(data_list_path_frame1)
-        ucf101_dataset_frame2 = dataset.Dataset(data_list_path_frame2)
-        ucf101_dataset_frame3 = dataset.Dataset(data_list_path_frame3)
+        middlebury_dataset_frame1 = dataset.Dataset(data_list_path_frame1)
+        middlebury_dataset_frame2 = dataset.Dataset(data_list_path_frame2)
+        middlebury_dataset_frame3 = dataset.Dataset(data_list_path_frame3)
 
-        train(ucf101_dataset_frame1, ucf101_dataset_frame2, ucf101_dataset_frame3)
+        train(middlebury_dataset_frame1, middlebury_dataset_frame2, middlebury_dataset_frame3)
 
     elif FLAGS.subset == 'test':
         os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
-        data_list_path_frame1 = "data_list/ucf101_test_files_frame1.txt"
-        data_list_path_frame2 = "data_list/ucf101_test_files_frame2.txt"
-        data_list_path_frame3 = "data_list/ucf101_test_files_frame3.txt"
+        data_list_path_frame1 = "data_list/middlebury_test_files_frame1.txt"
+        data_list_path_frame2 = "data_list/middlebury_test_files_frame2.txt"
+        data_list_path_frame3 = "data_list/middlebury_test_files_frame3.txt"
 
-        ucf101_dataset_frame1 = dataset.Dataset(data_list_path_frame1)
-        ucf101_dataset_frame2 = dataset.Dataset(data_list_path_frame2)
-        ucf101_dataset_frame3 = dataset.Dataset(data_list_path_frame3)
+        middlebury_dataset_frame1 = dataset.Dataset(data_list_path_frame1)
+        middlebury_dataset_frame2 = dataset.Dataset(data_list_path_frame2)
+        middlebury_dataset_frame3 = dataset.Dataset(data_list_path_frame3)
 
-        test(ucf101_dataset_frame1, ucf101_dataset_frame2, ucf101_dataset_frame3)
+        test(middlebury_dataset_frame1, middlebury_dataset_frame2, middlebury_dataset_frame3)

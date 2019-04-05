@@ -1,2 +1,8 @@
 /home/venus/shared/data/Middlebury/eval-color-allframes/eval-data/Backyard/frame08.png
 /home/venus/shared/data/Middlebury/eval-color-allframes/eval-data/Basketball/frame08.png
+/home/venus/shared/data/Middlebury/eval-color-allframes/eval-data/Dumptruck/frame08.png
+/home/venus/shared/data/Middlebury/eval-color-allframes/eval-data/Evergreen/frame08.png
+/home/venus/shared/data/Middlebury/eval-color-allframes/eval-data/Grove/frame08.png
+/home/venus/shared/data/Middlebury/eval-color-allframes/eval-data/Mequon/frame08.png
+/home/venus/shared/data/Middlebury/eval-color-allframes/eval-data/Schefflera/frame08.png
+/home/venus/shared/data/Middlebury/eval-color-allframes/eval-data/Urban/frame08.png

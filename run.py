@@ -7,7 +7,7 @@ import numpy as np
 import os
 import tensorflow as tf
 from datetime import datetime
-from CyclicGen_model_large import Voxel_flow_model
+from CyclicGen_model import Voxel_flow_model # from CyclicGen_model_large import Voxel_flow_model
 import scipy as sp
 from PIL import Image #import cv2
 from vgg16 import Vgg16
@@ -95,7 +95,7 @@ def test(first, second, out):
         output = prediction_np[-1, pad_up:adatptive_H - pad_bot, pad_left:adatptive_W - pad_right, :]
         output = np.round(((output + 1.0) * 255.0 / 2.0)).astype(np.uint8)
         output = np.dstack((output[:, :, 2], output[:, :, 1], output[:, :, 0]))
-        Image.fromarray(output).save(out) #cv2.imwrite(out, output)
+        Image.fromarray(output[:,:,::-1]).save(out) #cv2.imwrite(out, output)
 
 if __name__ == '__main__':
     os.environ["CUDA_VISIBLE_DEVICES"] = ""

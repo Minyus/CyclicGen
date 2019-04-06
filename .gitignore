@@ -108,3 +108,12 @@ venv.bak/
 
 # npy
 *.npy
+
+Middlebury/
+CyclicGen_checkpoints_stage1/
+CyclicGen_checkpoints_stage1_large/
+CyclicGen_checkpoints_stage2/
+CyclicGen_checkpoints_stage2_large/
+
+ckpt/
+hed_model/

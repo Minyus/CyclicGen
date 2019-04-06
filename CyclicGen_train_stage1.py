@@ -21,10 +21,10 @@ tf.app.flags.DEFINE_string('train_dir', './CyclicGen_checkpoints_stage1/',
                            """and checkpoint.""")
 tf.app.flags.DEFINE_string('train_image_dir', './voxel_flow_train_image/',
                            """Directory where to output images.""")
-tf.app.flags.DEFINE_string('test_image_dir', './voxel_flow_test_image_baseline/',
+tf.app.flags.DEFINE_string('test_image_dir', './voxel_flow_test_image/',
                            """Directory where to output images.""")
 tf.app.flags.DEFINE_string('subset', 'train',
-                           """Either 'train' or 'validation'.""")
+                           """Either 'train' or 'test'.""")
 tf.app.flags.DEFINE_string('pretrained_model_checkpoint_path', None,
                            """If specified, restore this pretrained model """
                            """before beginning any training.""")

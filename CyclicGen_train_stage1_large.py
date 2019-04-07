@@ -16,7 +16,7 @@ from vgg16 import Vgg16
 FLAGS = tf.app.flags.FLAGS
 
 # Define necessary FLAGS
-tf.app.flags.DEFINE_string('train_dir', './CyclicGen_checkpoints_stage1_large/',
+tf.app.flags.DEFINE_string('train_dir', './CyclicGen_checkpoints_stage1/',
                            """Directory where to write event logs """
                            """and checkpoint.""")
 tf.app.flags.DEFINE_string('train_image_dir', './voxel_flow_train_image/',

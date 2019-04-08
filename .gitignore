@@ -15,6 +15,7 @@ downloads/
 eggs/
 .eggs/
 lib/
+UCF-101_frames/
 lib64/
 parts/
 sdist/
@@ -118,3 +119,4 @@ CyclicGen_checkpoints_stage2_large/
 ckpt/
 hed_model/
 UCF-101/
+*.zip

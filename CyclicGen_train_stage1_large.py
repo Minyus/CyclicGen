@@ -8,7 +8,7 @@ import numpy as np
 import os
 import tensorflow as tf
 from datetime import datetime
-from CyclicGen_model_large import Voxel_flow_model # from CyclicGen_model import Voxel_flow_model
+from CyclicGen_model_large import Voxel_flow_model #from CyclicGen_model import Voxel_flow_model
 from utils.image_utils import imwrite
 from skimage.measure import compare_ssim as ssim
 from vgg16 import Vgg16
@@ -21,10 +21,10 @@ tf.app.flags.DEFINE_string('train_dir', './CyclicGen_checkpoints_stage1/',
                            """and checkpoint.""")
 tf.app.flags.DEFINE_string('train_image_dir', './voxel_flow_train_image/',
                            """Directory where to output images.""")
-tf.app.flags.DEFINE_string('test_image_dir', './voxel_flow_test_image/',
+tf.app.flags.DEFINE_string('test_image_dir', './voxel_flow_test_image_baseline/',
                            """Directory where to output images.""")
 tf.app.flags.DEFINE_string('subset', 'train',
-                           """Either 'train' or 'test'.""")
+                           """Either 'train' or 'validation'.""")
 tf.app.flags.DEFINE_string('pretrained_model_checkpoint_path', None,
                            """If specified, restore this pretrained model """
                            """before beginning any training.""")
@@ -247,17 +247,17 @@ def test(dataset_frame1, dataset_frame2, dataset_frame3):
         SSIM = 0
 
         for id_img in range(0, data_size):
-            MID_index = data_list_frame1[id_img][:-12]
+            UCF_index = data_list_frame1[id_img][:-12]
             # Load single data.
 
-            batch_data_frame1 = [dataset_frame1.process_func(os.path.join('middlebury_interp_ours', ll)[:-5] + '00.png') for
+            batch_data_frame1 = [dataset_frame1.process_func(os.path.join('ucf101_interp_ours', ll)[:-5] + '00.png') for
                                  ll in data_list_frame1[id_img:id_img + 1]]
-            batch_data_frame2 = [dataset_frame2.process_func(os.path.join('middlebury_interp_ours', ll)[:-5] + '01_gt.png')
+            batch_data_frame2 = [dataset_frame2.process_func(os.path.join('ucf101_interp_ours', ll)[:-5] + '01_gt.png')
                                  for ll in data_list_frame2[id_img:id_img + 1]]
-            batch_data_frame3 = [dataset_frame3.process_func(os.path.join('middlebury_interp_ours', ll)[:-5] + '02.png') for
+            batch_data_frame3 = [dataset_frame3.process_func(os.path.join('ucf101_interp_ours', ll)[:-5] + '02.png') for
                                  ll in data_list_frame3[id_img:id_img + 1]]
             batch_data_mask = [
-                dataset_frame3.process_func(os.path.join('motion_masks_middlebury_interp', ll)[:-11] + 'motion_mask.png')
+                dataset_frame3.process_func(os.path.join('motion_masks_ucf101_interp', ll)[:-11] + 'motion_mask.png')
                 for ll in data_list_frame3[id_img:id_img + 1]]
 
             batch_data_frame1 = np.array(batch_data_frame1)
@@ -273,7 +273,7 @@ def test(dataset_frame1, dataset_frame2, dataset_frame3):
                                                                                        model.warped_img2],
                                                                                       feed_dict=feed_dict)
 
-            imwrite('middlebury_interp_ours/' + str(MID_index) + '/frame_01_CyclicGen.png', prediction_np[0][-1, :, :, :])
+            imwrite('ucf101_interp_ours/' + str(UCF_index) + '/frame_01_CyclicGen.png', prediction_np[0][-1, :, :, :])
 
             print(np.sum(batch_data_mask))
             if np.sum(batch_data_mask) > 0:

@@ -1,4 +1,4 @@
-"""Train a voxel flow model on ucf101 dataset."""
+"""CyclicGen_train_stage2.py"""
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -13,7 +13,7 @@ from datetime import datetime
 import random
 from random import shuffle
 # from voxel_flow_model import Voxel_flow_model
-from CyclicGen_model import Voxel_flow_model
+##
 # from voxel_flow_model_non_sparse import Voxel_flow_model
 from utils.image_utils import imwrite
 from functools import partial
@@ -43,7 +43,7 @@ tf.app.flags.DEFINE_integer(
 tf.app.flags.DEFINE_float('initial_learning_rate', 0.00001,
                           """Initial learning rate.""")
 tf.app.flags.DEFINE_integer('training_data_step', 1, """The step used to reduce training data size""")
-
+tf.app.flags.DEFINE_string('model_size', 'large', """The size of model""") ##
 
 def _read_image(filename):
     image_string = tf.read_file(filename)
@@ -199,7 +199,7 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3):
 
         # Summary Writter
         summary_writer = tf.summary.FileWriter(
-            FLAGS.train_dir,
+            FLAGS.train_dir + FLAGS.model_size,
             graph=sess.graph)
 
         data_size = len(data_list_frame1)
@@ -224,7 +224,7 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3):
 
             # Save checkpoint
             if step % 2000 == 0 or (step + 1) == FLAGS.max_steps:
-                checkpoint_path = os.path.join(FLAGS.train_dir, 'model.ckpt')
+                checkpoint_path = os.path.join(FLAGS.train_dir + FLAGS.model_size, 'model.ckpt')
                 saver.save(sess, checkpoint_path, global_step=step)
 
 
@@ -331,11 +331,21 @@ def test(dataset_frame1, dataset_frame2, dataset_frame3):
 
 if __name__ == '__main__':
 
+    if FLAGS.model_size == 'large':
+        from CyclicGen_model_large import Voxel_flow_model
+    else:
+        from CyclicGen_model import Voxel_flow_model
+
     if FLAGS.subset == 'train':
         os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-        data_list_path_frame1 = "data_list/ucf101_train_files_frame1.txt"
-        data_list_path_frame2 = "data_list/ucf101_train_files_frame2.txt"
-        data_list_path_frame3 = "data_list/ucf101_train_files_frame3.txt"
+        if FLAGS.dataset == 'ucf101':
+            data_list_path_frame1 = "data_list/ucf101_train_files_frame1.txt"
+            data_list_path_frame2 = "data_list/ucf101_train_files_frame2.txt"
+            data_list_path_frame3 = "data_list/ucf101_train_files_frame3.txt"
+        if FLAGS.dataset == 'middlebury':
+            data_list_path_frame1 = "data_list/middlebury_train_files_frame1.txt"
+            data_list_path_frame2 = "data_list/middlebury_train_files_frame2.txt"
+            data_list_path_frame3 = "data_list/middlebury_train_files_frame3.txt"
 
         ucf101_dataset_frame1 = dataset.Dataset(data_list_path_frame1)
         ucf101_dataset_frame2 = dataset.Dataset(data_list_path_frame2)
@@ -346,9 +356,14 @@ if __name__ == '__main__':
     elif FLAGS.subset == 'test':
         os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
-        data_list_path_frame1 = "data_list/ucf101_test_files_frame1.txt"
-        data_list_path_frame2 = "data_list/ucf101_test_files_frame2.txt"
-        data_list_path_frame3 = "data_list/ucf101_test_files_frame3.txt"
+        if FLAGS.dataset == 'ucf101':
+            data_list_path_frame1 = "data_list/ucf101_test_files_frame1.txt"
+            data_list_path_frame2 = "data_list/ucf101_test_files_frame2.txt"
+            data_list_path_frame3 = "data_list/ucf101_test_files_frame3.txt"
+        if FLAGS.dataset == 'middlebury':
+            data_list_path_frame1 = "data_list/middlebury_test_files_frame1.txt"
+            data_list_path_frame2 = "data_list/middlebury_test_files_frame2.txt"
+            data_list_path_frame3 = "data_list/middlebury_test_files_frame3.txt"
 
         ucf101_dataset_frame1 = dataset.Dataset(data_list_path_frame1)
         ucf101_dataset_frame2 = dataset.Dataset(data_list_path_frame2)

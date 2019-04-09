@@ -1,4 +1,4 @@
-"""Train a voxel flow model on ucf101 dataset."""
+"""run"""
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -7,7 +7,7 @@ import numpy as np
 import os
 import tensorflow as tf
 from datetime import datetime
-from CyclicGen_model import Voxel_flow_model #from CyclicGen_model_large import Voxel_flow_model
+##
 import scipy as sp
 import cv2
 from vgg16 import Vgg16
@@ -25,7 +25,7 @@ tf.app.flags.DEFINE_string('second', '',
                            """second image """)
 tf.app.flags.DEFINE_string('out', '',
                            """output image """)
-
+tf.app.flags.DEFINE_string('model_size', 'large', """The size of model""") ##
 
 def imread(filename):
     """Read image from file.
@@ -98,6 +98,12 @@ def test(first, second, out):
         cv2.imwrite(out, output)
 
 if __name__ == '__main__':
+
+    if FLAGS.model_size == 'large':
+        from CyclicGen_model_large import Voxel_flow_model
+    else:
+        from CyclicGen_model import Voxel_flow_model
+
     os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
     first = FLAGS.first

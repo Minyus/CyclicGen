@@ -1,4 +1,4 @@
-"""Train a voxel flow model."""
+"""CyclicGen_train_stage1.py"""
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -8,7 +8,7 @@ import numpy as np
 import os
 import tensorflow as tf
 from datetime import datetime
-from CyclicGen_model import Voxel_flow_model
+##
 from utils.image_utils import imwrite
 from skimage.measure import compare_ssim as ssim
 from vgg16 import Vgg16
@@ -35,6 +35,8 @@ tf.app.flags.DEFINE_integer(
 tf.app.flags.DEFINE_float('initial_learning_rate', 0.0001,
                           """Initial learning rate.""")
 tf.app.flags.DEFINE_integer('training_data_step', 1, """The step used to reduce training data size""")
+tf.app.flags.DEFINE_string('model_size', 'large', """The size of model""") ##
+tf.app.flags.DEFINE_string('dataset', 'ucf101', """The size of model""") ##
 
 
 def _read_image(filename):
@@ -53,9 +55,7 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3):
     with tf.Graph().as_default():
         # Create input.
         data_list_frame1 = dataset_frame1.read_data_list_file()
-        #print('data_list_frame1: ', data_list_frame1)
         data_list_frame1 = data_list_frame1[::FLAGS.training_data_step]
-        #print('data_list_frame1: ', data_list_frame1)
         dataset_frame1 = tf.data.Dataset.from_tensor_slices(tf.constant(data_list_frame1))
         dataset_frame1 = dataset_frame1.apply(
             tf.contrib.data.shuffle_and_repeat(buffer_size=1000000, count=None, seed=1)).map(_read_image).map(
@@ -162,14 +162,12 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3):
 
         # Summary Writter
         summary_writer = tf.summary.FileWriter(
-            FLAGS.train_dir,
+            FLAGS.train_dir + FLAGS.model_size,
             graph=sess.graph)
 
         data_size = len(data_list_frame1)
         epoch_num = int(data_size / FLAGS.batch_size)
-		
-        print('epoch_num:', epoch_num) ##
-		
+
         for step in range(0, FLAGS.max_steps):
             batch_idx = step % epoch_num
 
@@ -189,7 +187,7 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3):
 
             # Save checkpoint
             if step % 2000 == 0 or (step + 1) == FLAGS.max_steps:
-                checkpoint_path = os.path.join(FLAGS.train_dir, 'model.ckpt')
+                checkpoint_path = os.path.join(FLAGS.train_dir + FLAGS.model_size, 'model.ckpt')
                 saver.save(sess, checkpoint_path, global_step=step)
 
 
@@ -296,27 +294,43 @@ def test(dataset_frame1, dataset_frame2, dataset_frame3):
 
 if __name__ == '__main__':
 
+    if FLAGS.model_size == 'large':
+        from CyclicGen_model_large import Voxel_flow_model
+    else:
+        from CyclicGen_model import Voxel_flow_model
+
     if FLAGS.subset == 'train':
         os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-        data_list_path_frame1 = "data_list/middlebury_train_files_frame1.txt"
-        data_list_path_frame2 = "data_list/middlebury_train_files_frame2.txt"
-        data_list_path_frame3 = "data_list/middlebury_train_files_frame3.txt"
 
-        dataset_frame1 = dataset.Dataset(data_list_path_frame1)
-        dataset_frame2 = dataset.Dataset(data_list_path_frame2)
-        dataset_frame3 = dataset.Dataset(data_list_path_frame3)
+        if FLAGS.dataset == 'ucf101':
+            data_list_path_frame1 = "data_list/ucf101_train_files_frame1.txt"
+            data_list_path_frame2 = "data_list/ucf101_train_files_frame2.txt"
+            data_list_path_frame3 = "data_list/ucf101_train_files_frame3.txt"
+        if FLAGS.dataset == 'middlebury':
+            data_list_path_frame1 = "data_list/middlebury_train_files_frame1.txt"
+            data_list_path_frame2 = "data_list/middlebury_train_files_frame2.txt"
+            data_list_path_frame3 = "data_list/middlebury_train_files_frame3.txt"
 
-        train(dataset_frame1, dataset_frame2, dataset_frame3)
+        ucf101_dataset_frame1 = dataset.Dataset(data_list_path_frame1)
+        ucf101_dataset_frame2 = dataset.Dataset(data_list_path_frame2)
+        ucf101_dataset_frame3 = dataset.Dataset(data_list_path_frame3)
+
+        train(ucf101_dataset_frame1, ucf101_dataset_frame2, ucf101_dataset_frame3)
 
     elif FLAGS.subset == 'test':
         os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
-        data_list_path_frame1 = "data_list/middlebury_test_files_frame1.txt"
-        data_list_path_frame2 = "data_list/middlebury_test_files_frame2.txt"
-        data_list_path_frame3 = "data_list/middlebury_test_files_frame3.txt"
+        if FLAGS.dataset == 'ucf101':
+            data_list_path_frame1 = "data_list/ucf101_test_files_frame1.txt"
+            data_list_path_frame2 = "data_list/ucf101_test_files_frame2.txt"
+            data_list_path_frame3 = "data_list/ucf101_test_files_frame3.txt"
+        if FLAGS.dataset == 'middlebury':
+            data_list_path_frame1 = "data_list/middlebury_test_files_frame1.txt"
+            data_list_path_frame2 = "data_list/middlebury_test_files_frame2.txt"
+            data_list_path_frame3 = "data_list/middlebury_test_files_frame3.txt"
 
-        dataset_frame1 = dataset.Dataset(data_list_path_frame1)
-        dataset_frame2 = dataset.Dataset(data_list_path_frame2)
-        dataset_frame3 = dataset.Dataset(data_list_path_frame3)
+        ucf101_dataset_frame1 = dataset.Dataset(data_list_path_frame1)
+        ucf101_dataset_frame2 = dataset.Dataset(data_list_path_frame2)
+        ucf101_dataset_frame3 = dataset.Dataset(data_list_path_frame3)
 
-        test(dataset_frame1, dataset_frame2, dataset_frame3)
+        test(ucf101_dataset_frame1, ucf101_dataset_frame2, ucf101_dataset_frame3)

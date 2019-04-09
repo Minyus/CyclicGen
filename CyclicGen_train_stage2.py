@@ -338,10 +338,15 @@ if __name__ == '__main__':
 
     if FLAGS.subset == 'train':
         os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+
         if FLAGS.dataset == 'ucf101':
             data_list_path_frame1 = "data_list/ucf101_train_files_frame1.txt"
             data_list_path_frame2 = "data_list/ucf101_train_files_frame2.txt"
             data_list_path_frame3 = "data_list/ucf101_train_files_frame3.txt"
+        if FLAGS.dataset == 'ucf101_256':
+            data_list_path_frame1 = "data_list/ucf101_256_train_files_frame1.txt"
+            data_list_path_frame2 = "data_list/ucf101_256_train_files_frame2.txt"
+            data_list_path_frame3 = "data_list/ucf101_256_train_files_frame3.txt"
         if FLAGS.dataset == 'middlebury':
             data_list_path_frame1 = "data_list/middlebury_train_files_frame1.txt"
             data_list_path_frame2 = "data_list/middlebury_train_files_frame2.txt"
@@ -360,6 +365,10 @@ if __name__ == '__main__':
             data_list_path_frame1 = "data_list/ucf101_test_files_frame1.txt"
             data_list_path_frame2 = "data_list/ucf101_test_files_frame2.txt"
             data_list_path_frame3 = "data_list/ucf101_test_files_frame3.txt"
+        if FLAGS.dataset == 'ucf101_256':
+            data_list_path_frame1 = "data_list/ucf101_256_train_files_frame1.txt"
+            data_list_path_frame2 = "data_list/ucf101_256_train_files_frame2.txt"
+            data_list_path_frame3 = "data_list/ucf101_256_train_files_frame3.txt"
         if FLAGS.dataset == 'middlebury':
             data_list_path_frame1 = "data_list/middlebury_test_files_frame1.txt"
             data_list_path_frame2 = "data_list/middlebury_test_files_frame2.txt"

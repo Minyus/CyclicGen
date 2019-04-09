@@ -21,12 +21,12 @@ f_interval = 5
 top_dir = r'./UCF-101'
 top_dir_path = Path(top_dir)
 
-w_top_dir = top_dir + '_frames'
+w_top_dir = top_dir + '_frames256'
 w_top_dir_path = Path(w_top_dir)
 
-f1_list_path = Path(r'data_list/ucf101_train_files_frame1.txt')
-f2_list_path = Path(r'data_list/ucf101_train_files_frame2.txt')
-f3_list_path = Path(r'data_list/ucf101_train_files_frame3.txt')
+f1_list_path = Path(r'data_list/ucf101_256_train_files_frame1.txt')
+f2_list_path = Path(r'data_list/ucf101_256_train_files_frame2.txt')
+f3_list_path = Path(r'data_list/ucf101_256_train_files_frame3.txt')
 t_list_path = [f1_list_path, f2_list_path, f3_list_path]
 f1_list_path.parent.mkdir(exist_ok=True)
 for f_list_path in t_list_path:

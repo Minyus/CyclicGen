@@ -5,11 +5,17 @@ import traceback
 
 top_dir = r'./UCF-101'
 f_interval = 5  # 25
+resize256 = True
 
 top_dir_path = Path(top_dir)
 
-w_top_dir = top_dir + '_frames'
+if resize256:
+    w_top_dir = top_dir + '_frames' + '256'
+else:
+    w_top_dir = top_dir + '_frames'
+
 w_top_dir_path = Path(w_top_dir)
+print('Top directory to write:', w_top_dir_path)
 
 label_dir_paths = list(top_dir_path.glob('*'))
 # label_dir = label_dirs[0]
@@ -40,6 +46,8 @@ for label_index, label_dir_path in enumerate(label_dir_paths):
                 if not frame_valid:
                     print('Invalid frame from: {}'.format(video_file_path))
                     break
+                if resize256:
+                    frame = cv2.resize(frame, (256, 256))
 
                 # triplet_id = 3 * f_interval * ((i // f_interval) // 3)
                 # triplet_index = (i // f_interval) % 3

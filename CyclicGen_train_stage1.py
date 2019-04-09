@@ -13,6 +13,8 @@ from utils.image_utils import imwrite
 from skimage.measure import compare_ssim as ssim
 from vgg16 import Vgg16
 
+from PIL import Image
+
 FLAGS = tf.app.flags.FLAGS
 
 # Define necessary FLAGS
@@ -38,12 +40,23 @@ tf.app.flags.DEFINE_integer('training_data_step', 1, """The step used to reduce 
 tf.app.flags.DEFINE_string('model_size', 'large', """The size of model""") ##
 tf.app.flags.DEFINE_string('dataset', 'ucf101', """The size of model""") ##
 
-
+#"""
 def _read_image(filename):
     image_string = tf.read_file(filename)
     image_decoded = tf.image.decode_image(image_string, channels=3)
     # image_decoded.set_shape([256, 256, 3])
     return tf.cast(image_decoded, dtype=tf.float32) / 127.5 - 1.0
+#"""
+"""
+def _read_image(filename):
+    filename = tf.as_string(filename)
+    with open(filename, 'rb') as f:
+        img = Image.open(f)
+        img = img.convert('RGB')
+        img = img.resize(size=(640, 480), resample=Image.LANCZOS)
+        img_tensor = tf.convert_to_tensor(img, dtype=tf.float32)
+    return img_tensor / 127.5 - 1.0
+"""
 
 def random_scaling(image, seed=1):
     scaling = tf.random_uniform([], 0.4, 0.6, seed=seed)

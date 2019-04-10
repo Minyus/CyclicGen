@@ -158,8 +158,8 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, csv_logger):
         for var in dof_vars: print(var.name)
 
         if FLAGS.stage == 's1':
-            cycle_consistency_loss = np.NaN
-            motion_linearity_loss = np.NaN
+            cycle_consistency_loss = tf.convert_to_tensor(0.0, dtype=tf.float32)
+            motion_linearity_loss =  tf.convert_to_tensor(0.0, dtype=tf.float32)
             total_loss = reconstruction_loss
 
         if FLAGS.stage == 's2':
@@ -237,20 +237,20 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, csv_logger):
             batch_idx = step % num_batches_per_epoch
 
             # Run single step update.
-            _, learning_rate, total_loss, \
-                reconstruction_loss, cycle_consistency_loss, motion_linearity_loss = \
-                sess.run([update_op, learning_rate, total_loss,
+            _, total_loss_, \
+                reconstruction_loss_, cycle_consistency_loss_, motion_linearity_loss_ = \
+                sess.run([update_op, total_loss,
                           reconstruction_loss, cycle_consistency_loss, motion_linearity_loss])
 
             if batch_idx == 0:
                 print('Epoch Number: %d' % int(step // num_batches_per_epoch))
 
             if step % 10 == 0:
-                csv_logger(step, learning_rate, total_loss,
-                           reconstruction_loss, cycle_consistency_loss, motion_linearity_loss)
+                csv_logger(step, total_loss_,
+                           reconstruction_loss_, cycle_consistency_loss_, motion_linearity_loss_)
             if step % 100 == 0:
                 # Output Summary
-                print("Loss at step %d: %f" % (step, total_loss))
+                print("Loss at step %d: %f" % (step, total_loss_))
                 summary_str = sess.run(summary_op)
                 summary_writer.add_summary(summary_str, step)
 
@@ -364,7 +364,7 @@ def test(dataset_frame1, dataset_frame2, dataset_frame3):
 try:
     from table_logger import TableLogger
     LOGGING = True
-except ModuleNotFoundError:
+except:
     print('Continue running without logging to a CSV file as table-logger is not installed.'
           ' To enable logging, "pip install table-logger" and rerun this code.')
     LOGGING = False
@@ -377,7 +377,7 @@ if __name__ == '__main__':
     csv_logger = None
     if LOGGING:
         csv_logger = TableLogger(csv=True, file='Model_{}_{}_log.csv'.format(FLAGS.model_size,FLAGS.dataset),
-                         columns='Step,Learning_Rate,Loss,Reconstruction_Loss,Cycle_Consistency_Loss,Motion_Linearity_Loss',
+                         columns='Step,Loss,Reconstruction_Loss,Cycle_Consistency_Loss,Motion_Linearity_Loss',
                          rownum=True, time_delta=True, timestamp=True,
                          float_format='{:f}'.format)
 

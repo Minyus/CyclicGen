@@ -36,7 +36,8 @@ tf.app.flags.DEFINE_float('initial_learning_rate', 0.00001,
 tf.app.flags.DEFINE_integer('training_data_step', 1, """The step used to reduce training data size""")
 tf.app.flags.DEFINE_string('model_size', 'large', """The size of model""") ##
 tf.app.flags.DEFINE_string('dataset', None, """The size of model ucf101_256 or middlebury """) ##
-tf.app.flags.DEFINE_string('stage', None, """stage (s1 or s2)""") ##
+tf.app.flags.DEFINE_string('stage', 's1s2', """stage (s1 or s2)""") ##
+tf.app.flags.DEFINE_integer('s1_steps', 20000, """ number of steps for stage1 if 's1s2' is specified as stage. """) ##
 
 def _read_image(filename):
     image_string = tf.read_file(filename)
@@ -49,7 +50,7 @@ def random_scaling(image, seed=1):
     return tf.image.resize_images(image, [tf.cast(tf.round(256*scaling), tf.int32), tf.cast(tf.round(256*scaling), tf.int32)])
 
 
-def train(dataset_frame1, dataset_frame2, dataset_frame3):
+def train(dataset_frame1, dataset_frame2, dataset_frame3, csv_logger):
     """Trains a model."""
     with tf.Graph().as_default():
         # Create input.
@@ -201,12 +202,18 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3):
         summary_op = tf.summary.merge_all()
 
         # Restore checkpoint from file.
+        last_step = -1
         if FLAGS.pretrained_model_checkpoint_path:
             sess = tf.Session()
             restorer = tf.train.Saver()
             restorer.restore(sess, FLAGS.pretrained_model_checkpoint_path)
             print('%s: Pre-trained model restored from %s' %
                   (datetime.now(), FLAGS.pretrained_model_checkpoint_path))
+            try:
+                last_step = int(str(FLAGS.pretrained_model_checkpoint_path).split(sep='-')[-1])
+            except ValueError:
+                print('The step number could not retrieved from the checkpoint path.'
+                      'Continue running.')
             sess.run([batch_frame1.initializer, batch_frame2.initializer, batch_frame3.initializer])
         else:
             # Build an initialization operation to run below.
@@ -224,10 +231,10 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3):
             graph=sess.graph)
 
         data_size = len(data_list_frame1)
-        epoch_num = int(data_size / FLAGS.batch_size)
+        num_batches_per_epoch = int(data_size / FLAGS.batch_size)
 
-        for step in range(0, FLAGS.max_steps):
-            batch_idx = step % epoch_num
+        for step in range(last_step+1, FLAGS.max_steps):
+            batch_idx = step % num_batches_per_epoch
 
             # Run single step update.
             _, learning_rate, total_loss, \
@@ -235,17 +242,15 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3):
                 sess.run([update_op, learning_rate, total_loss,
                           reconstruction_loss, cycle_consistency_loss, motion_linearity_loss])
 
-            csv_logger(step, learning_rate, total_loss,
-                       reconstruction_loss, cycle_consistency_loss, motion_linearity_loss)
-
             if batch_idx == 0:
-                print('Epoch Number: %d' % int(step / epoch_num))
+                print('Epoch Number: %d' % int(step // num_batches_per_epoch))
 
             if step % 10 == 0:
-                print("Loss at step %d: %f" % (step, total_loss))
-
+                csv_logger(step, learning_rate, total_loss,
+                           reconstruction_loss, cycle_consistency_loss, motion_linearity_loss)
             if step % 100 == 0:
                 # Output Summary
+                print("Loss at step %d: %f" % (step, total_loss))
                 summary_str = sess.run(summary_op)
                 summary_writer.add_summary(summary_str, step)
 
@@ -372,7 +377,7 @@ if __name__ == '__main__':
     csv_logger = None
     if LOGGING:
         csv_logger = TableLogger(csv=True, file='Model_{}_{}_log.csv'.format(FLAGS.model_size,FLAGS.dataset),
-                         columns='Epoch,Learning_Rate,Loss,Reconstruction_Loss,Cycle_Consistency_Loss,Motion_Linearity_Loss',
+                         columns='Step,Learning_Rate,Loss,Reconstruction_Loss,Cycle_Consistency_Loss,Motion_Linearity_Loss',
                          rownum=True, time_delta=True, timestamp=True,
                          float_format='{:f}'.format)
 

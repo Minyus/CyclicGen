@@ -92,9 +92,7 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3):
         input1 = batch_frame1.get_next()
         input2 = batch_frame2.get_next()
         input3 = batch_frame3.get_next()
-        if FLAGS.stage == 's2':
-            input_placeholder1 = tf.concat([input1, input2], 3)
-            input_placeholder2 = tf.concat([input2, input3], 3)
+
 
         edge_vgg_1 = Vgg16(input1,reuse=None)
         if FLAGS.stage == 's2':
@@ -113,21 +111,24 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3):
 
         if FLAGS.stage == 's1':
             with tf.variable_scope("Cycle_DVF"):
-                model1 = Voxel_flow_model()
-                prediction1, flow1 = model1.inference(tf.concat([input1, input3, edge_1, edge_3], 3))
-                reproduction_loss1 = model1.l1loss(prediction1, input2)
+                model1_s1_i00_i20 = Voxel_flow_model()
+                prediction1, flow1 = model1_s1_i00_i20.inference(tf.concat([input1, input3, edge_1, edge_3], 3))
+                reproduction_loss1_s1_Lr = model1_s1_i00_i20.l1loss(prediction1, input2)
 
         if FLAGS.stage == 's2':
+            input_placeholder1 = tf.concat([input1, input2], 3)
+            input_placeholder2 = tf.concat([input2, input3], 3)
+
             input_placeholder1 = tf.concat([input_placeholder1, edge_1, edge_2], 3)
             input_placeholder2 = tf.concat([input_placeholder2, edge_2, edge_3], 3)
 
             with tf.variable_scope("Cycle_DVF"):
-                model1 = Voxel_flow_model()
-                prediction1, flow1 = model1.inference(input_placeholder1)
+                model1_s2_i00_i10 = Voxel_flow_model()
+                prediction1, flow1 = model1_s2_i00_i10.inference(input_placeholder1)
 
             with tf.variable_scope("Cycle_DVF", reuse=True):
-                model2 = Voxel_flow_model()
-                prediction2, flow2 = model2.inference(input_placeholder2)
+                model2_s2_i10_i20 = Voxel_flow_model()
+                prediction2, flow2 = model2_s2_i10_i20.inference(input_placeholder2)
 
             edge_vgg_prediction1 = Vgg16(prediction1,reuse=True)
             edge_vgg_prediction2 = Vgg16(prediction2,reuse=True)
@@ -139,14 +140,14 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3):
             edge_prediction2 = tf.reshape(edge_prediction2,[-1,input1.get_shape().as_list()[1],input1.get_shape().as_list()[2],1])
 
             with tf.variable_scope("Cycle_DVF", reuse=True):
-                model3 = Voxel_flow_model()
-                prediction3, flow3 = model3.inference(tf.concat([prediction1, prediction2, edge_prediction1, edge_prediction2], 3))
-                reproduction_loss3 = model3.l1loss(prediction3, input2)
+                model3_s2_i05_i15 = Voxel_flow_model()
+                prediction3, flow3 = model3_s2_i05_i15.inference(tf.concat([prediction1, prediction2, edge_prediction1, edge_prediction2], 3))
+                reproduction_loss3_s2_Lc = model3_s2_i05_i15.l1loss(prediction3, input2)
 
             with tf.variable_scope("Cycle_DVF", reuse=True):
-                model4 = Voxel_flow_model()
-                prediction4, flow4 = model4.inference(tf.concat([input1, input3,edge_1,edge_3], 3))
-                reproduction_loss4 = model4.l1loss(prediction4, input2)
+                model4_s2_i00_i20 = Voxel_flow_model()
+                prediction4, flow4 = model4_s2_i00_i20.inference(tf.concat([input1, input3,edge_1,edge_3], 3))
+                reproduction_loss4_s2_Lr = model4_s2_i00_i20.l1loss(prediction4, input2)
 
         t_vars = tf.trainable_variables()
         print('all layers:')
@@ -156,10 +157,11 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3):
         for var in dof_vars: print(var.name)
 
         if FLAGS.stage == 's1':
-            total_loss = reproduction_loss1
+            total_loss = reproduction_loss1_s1_Lr
 
         if FLAGS.stage == 's2':
-            total_loss = reproduction_loss4 + reproduction_loss3 + 0.1*tf.reduce_mean(tf.square(model4.flow - model3.flow * 2.0))
+            _s2_Lm = tf.reduce_mean(tf.square(model4_s2_i00_i20.flow - model3_s2_i05_i15.flow * 2.0))
+            total_loss = reproduction_loss4_s2_Lr + reproduction_loss3_s2_Lc + 0.1*_s2_Lm
 
         # Perform learning rate scheduling.
         learning_rate = FLAGS.initial_learning_rate

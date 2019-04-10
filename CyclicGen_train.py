@@ -11,16 +11,17 @@ from datetime import datetime
 from utils.image_utils import imwrite
 from skimage.measure import compare_ssim as ssim
 from vgg16 import Vgg16
+from pathlib import Path
 
 FLAGS = tf.app.flags.FLAGS
 
 # Define necessary FLAGS
-tf.app.flags.DEFINE_string('train_dir', './CyclicGen_checkpoints/',
+tf.app.flags.DEFINE_string('train_dir', './train_dir',
                            """Directory where to write event logs """
                            """and checkpoint.""")
-tf.app.flags.DEFINE_string('train_image_dir', './voxel_flow_train_image/',
+tf.app.flags.DEFINE_string('train_image_dir', './voxel_flow_train_image',
                            """Directory where to output images.""")
-tf.app.flags.DEFINE_string('test_image_dir', './voxel_flow_test_image_baseline/',
+tf.app.flags.DEFINE_string('test_image_dir', './voxel_flow_test_image_baseline',
                            """Directory where to output images.""")
 tf.app.flags.DEFINE_string('subset', 'train',
                            """Either 'train' or 'validation'.""")
@@ -50,7 +51,7 @@ def random_scaling(image, seed=1):
     return tf.image.resize_images(image, [tf.cast(tf.round(256*scaling), tf.int32), tf.cast(tf.round(256*scaling), tf.int32)])
 
 
-def train(dataset_frame1, dataset_frame2, dataset_frame3, csv_logger):
+def train(dataset_frame1, dataset_frame2, dataset_frame3, csv_logger, out_dir):
     """Trains a model."""
     with tf.Graph().as_default():
         # Create input.
@@ -227,7 +228,7 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, csv_logger):
 
         # Summary Writter
         summary_writer = tf.summary.FileWriter(
-            FLAGS.train_dir + FLAGS.stage + FLAGS.model_size,
+            out_dir,
             graph=sess.graph)
 
         data_size = len(data_list_frame1)
@@ -246,17 +247,24 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, csv_logger):
                 print('Epoch Number: %d' % int(step // num_batches_per_epoch))
 
             if step % 10 == 0:
-                csv_logger(step, total_loss_,
-                           reconstruction_loss_, cycle_consistency_loss_, motion_linearity_loss_)
-            if step % 100 == 0:
-                # Output Summary
-                print("Loss at step %d: %f" % (step, total_loss_))
-                summary_str = sess.run(summary_op)
-                summary_writer.add_summary(summary_str, step)
+                print('Step: {} | Loss: {} = {} + {} + {}'.format((step,
+                                                                   total_loss_,
+                                                                   reconstruction_loss_,
+                                                                   cycle_consistency_loss_,
+                                                                   motion_linearity_loss_)))
+                csv_logger(step,
+                           total_loss_,
+                           reconstruction_loss_,
+                           cycle_consistency_loss_,
+                           motion_linearity_loss_)
 
             # Save checkpoint
             if step % 2000 == 0 or (step + 1) == FLAGS.max_steps:
-                checkpoint_path = os.path.join(FLAGS.train_dir + FLAGS.stage + FLAGS.model_size, 'model.ckpt')
+                # Output Summary
+                summary_str = sess.run(summary_op)
+                summary_writer.add_summary(summary_str, step)
+                #
+                checkpoint_path = os.path.join(out_dir, 'model.ckpt')
                 saver.save(sess, checkpoint_path, global_step=step)
 
 
@@ -369,18 +377,29 @@ except:
           ' To enable logging, "pip install table-logger" and rerun this code.')
     LOGGING = False
 
+
+def timestamp():
+    return datetime.now().strftime('%Y-%m-%dT%H%M%S')
+
+
 if __name__ == '__main__':
     assert FLAGS.stage in ['s1', 's2']
     assert FLAGS.subset in ['train', 'test']
     assert FLAGS.dataset in ['ucf101', 'ucf101_256', 'middlebury']
+    start_time = timestamp()
+    config_str = '_'.join([FLAGS.model_size, FLAGS.dataset, FLAGS.stage, start_time])
+    out_dir = FLAGS.train_dir + '/' + config_str
+    Path(out_dir).mkdir(parents=True)
+    print('Output_directory: ', out_dir)
 
     csv_logger = None
     if LOGGING:
-        csv_logger = TableLogger(csv=True, file='Model_{}_{}_log.csv'.format(FLAGS.model_size,FLAGS.dataset),
+        file_name = out_dir + '/log_{}.csv'.format(config_str)
+        csv_logger = TableLogger(csv=True, file=file_name,
                          columns='Step,Loss,Reconstruction_Loss,Cycle_Consistency_Loss,Motion_Linearity_Loss',
                          rownum=True, time_delta=True, timestamp=True,
                          float_format='{:f}'.format)
-
+        print('The loss values will be logged to: {}'.format(file_name))
     if FLAGS.model_size == 'large':
         from CyclicGen_model_large import Voxel_flow_model
     else:
@@ -406,7 +425,7 @@ if __name__ == '__main__':
         ucf101_dataset_frame2 = dataset.Dataset(data_list_path_frame2)
         ucf101_dataset_frame3 = dataset.Dataset(data_list_path_frame3)
 
-        train(ucf101_dataset_frame1, ucf101_dataset_frame2, ucf101_dataset_frame3, csv_logger)
+        train(ucf101_dataset_frame1, ucf101_dataset_frame2, ucf101_dataset_frame3, csv_logger, out_dir)
 
     elif FLAGS.subset == 'test':
         os.environ["CUDA_VISIBLE_DEVICES"] = ""

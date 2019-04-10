@@ -4,20 +4,11 @@ from __future__ import division
 from __future__ import print_function
 
 import dataset
-from utils.prefetch_queue_shuffle import PrefetchQueue
 import numpy as np
 import os
 import tensorflow as tf
-import tensorflow.contrib.slim as slim
 from datetime import datetime
-import random
-from random import shuffle
-# from voxel_flow_model import Voxel_flow_model
-##
-# from voxel_flow_model_non_sparse import Voxel_flow_model
 from utils.image_utils import imwrite
-from functools import partial
-import pdb
 from skimage.measure import compare_ssim as ssim
 from vgg16 import Vgg16
 

@@ -44,6 +44,7 @@ tf.app.flags.DEFINE_float('initial_learning_rate', 0.00001,
                           """Initial learning rate.""")
 tf.app.flags.DEFINE_integer('training_data_step', 1, """The step used to reduce training data size""")
 tf.app.flags.DEFINE_string('model_size', 'large', """The size of model""") ##
+tf.app.flags.DEFINE_string('dataset', 'ucf101', """The size of model""") ##
 
 def _read_image(filename):
     image_string = tf.read_file(filename)

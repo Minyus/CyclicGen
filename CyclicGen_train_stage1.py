@@ -119,8 +119,6 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3):
         learning_rate = FLAGS.initial_learning_rate
 
         # Create an optimizer that performs gradient descent.
-        opt = tf.train.AdamOptimizer(learning_rate)
-        grads = opt.compute_gradients(total_loss)
         with tf.variable_scope(tf.get_variable_scope(), reuse=None):
             update_op = tf.train.AdamOptimizer(learning_rate).minimize(total_loss, var_list=dof_vars)
 

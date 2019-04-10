@@ -247,11 +247,11 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, csv_logger, out_dir):
                 print('Epoch Number: %d' % int(step // num_batches_per_epoch))
 
             if step % 10 == 0:
-                print('Step: {} | Loss: {} = {} + {} + {}'.format((step,
+                print('Step: {} | Loss: {} = {} + {} + {}'.format(step,
                                                                    total_loss_,
                                                                    reconstruction_loss_,
                                                                    cycle_consistency_loss_,
-                                                                   motion_linearity_loss_)))
+                                                                   motion_linearity_loss_))
                 csv_logger(step,
                            total_loss_,
                            reconstruction_loss_,

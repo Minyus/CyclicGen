@@ -113,7 +113,7 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3):
             with tf.variable_scope("Cycle_DVF"):
                 model1_s1_i00_i20 = Voxel_flow_model()
                 prediction1, flow1 = model1_s1_i00_i20.inference(tf.concat([input1, input3, edge_1, edge_3], 3))
-                reproduction_loss1_s1_Lr = model1_s1_i00_i20.l1loss(prediction1, input2)
+                reconstruction_loss = model1_s1_i00_i20.l1loss(prediction1, input2)
 
         if FLAGS.stage == 's2':
             input_placeholder1 = tf.concat([input1, input2], 3)
@@ -142,12 +142,12 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3):
             with tf.variable_scope("Cycle_DVF", reuse=True):
                 model3_s2_i05_i15 = Voxel_flow_model()
                 prediction3, flow3 = model3_s2_i05_i15.inference(tf.concat([prediction1, prediction2, edge_prediction1, edge_prediction2], 3))
-                reproduction_loss3_s2_Lc = model3_s2_i05_i15.l1loss(prediction3, input2)
+                cycle_consistency_loss = model3_s2_i05_i15.l1loss(prediction3, input2)
 
             with tf.variable_scope("Cycle_DVF", reuse=True):
                 model4_s2_i00_i20 = Voxel_flow_model()
                 prediction4, flow4 = model4_s2_i00_i20.inference(tf.concat([input1, input3,edge_1,edge_3], 3))
-                reproduction_loss4_s2_Lr = model4_s2_i00_i20.l1loss(prediction4, input2)
+                reconstruction_loss = model4_s2_i00_i20.l1loss(prediction4, input2)
 
         t_vars = tf.trainable_variables()
         print('all layers:')
@@ -157,11 +157,13 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3):
         for var in dof_vars: print(var.name)
 
         if FLAGS.stage == 's1':
-            total_loss = reproduction_loss1_s1_Lr
+            cycle_consistency_loss = np.NaN
+            motion_linearity_loss = np.NaN
+            total_loss = reconstruction_loss
 
         if FLAGS.stage == 's2':
-            _s2_Lm = tf.reduce_mean(tf.square(model4_s2_i00_i20.flow - model3_s2_i05_i15.flow * 2.0))
-            total_loss = reproduction_loss4_s2_Lr + reproduction_loss3_s2_Lc + 0.1*_s2_Lm
+            motion_linearity_loss = tf.reduce_mean(tf.square(model4_s2_i00_i20.flow - model3_s2_i05_i15.flow * 2.0))
+            total_loss = reconstruction_loss + cycle_consistency_loss + 0.1*motion_linearity_loss
 
         # Perform learning rate scheduling.
         learning_rate = FLAGS.initial_learning_rate
@@ -228,13 +230,19 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3):
             batch_idx = step % epoch_num
 
             # Run single step update.
-            _, loss_value = sess.run([update_op, total_loss])
+            _, learning_rate, total_loss, \
+                reconstruction_loss, cycle_consistency_loss, motion_linearity_loss = \
+                sess.run([update_op, learning_rate, total_loss,
+                          reconstruction_loss, cycle_consistency_loss, motion_linearity_loss])
+
+            csv_logger(step, learning_rate, total_loss,
+                       reconstruction_loss, cycle_consistency_loss, motion_linearity_loss)
 
             if batch_idx == 0:
                 print('Epoch Number: %d' % int(step / epoch_num))
 
             if step % 10 == 0:
-                print("Loss at step %d: %f" % (step, loss_value))
+                print("Loss at step %d: %f" % (step, total_loss))
 
             if step % 100 == 0:
                 # Output Summary
@@ -348,10 +356,25 @@ def test(dataset_frame1, dataset_frame2, dataset_frame3):
         print("Overall SSIM: %f db" % (SSIM / i))
 
 
+try:
+    from table_logger import TableLogger
+    LOGGING = True
+except ModuleNotFoundError:
+    print('Continue running without logging to a CSV file as table-logger is not installed.'
+          ' To enable logging, "pip install table-logger" and rerun this code.')
+    LOGGING = False
+
 if __name__ == '__main__':
     assert FLAGS.stage in ['s1', 's2']
     assert FLAGS.subset in ['train', 'test']
     assert FLAGS.dataset in ['ucf101', 'ucf101_256', 'middlebury']
+
+    csv_logger = None
+    if LOGGING:
+        csv_logger = TableLogger(csv=True, file='Model_{}_{}_log.csv'.format(FLAGS.model_size,FLAGS.dataset),
+                         columns='Epoch,Learning_Rate,Loss,Reconstruction_Loss,Cycle_Consistency_Loss,Motion_Linearity_Loss',
+                         rownum=True, time_delta=True, timestamp=True,
+                         float_format='{:f}'.format)
 
     if FLAGS.model_size == 'large':
         from CyclicGen_model_large import Voxel_flow_model
@@ -378,7 +401,7 @@ if __name__ == '__main__':
         ucf101_dataset_frame2 = dataset.Dataset(data_list_path_frame2)
         ucf101_dataset_frame3 = dataset.Dataset(data_list_path_frame3)
 
-        train(ucf101_dataset_frame1, ucf101_dataset_frame2, ucf101_dataset_frame3)
+        train(ucf101_dataset_frame1, ucf101_dataset_frame2, ucf101_dataset_frame3, csv_logger)
 
     elif FLAGS.subset == 'test':
         os.environ["CUDA_VISIBLE_DEVICES"] = ""

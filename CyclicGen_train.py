@@ -39,6 +39,8 @@ tf.app.flags.DEFINE_string('model_size', 'large', """The size of model""") ##
 tf.app.flags.DEFINE_string('dataset', None, """The size of model ucf101_256 or middlebury """) ##
 tf.app.flags.DEFINE_string('stage', 's1s2', """stage (s1 or s2)""") ##
 tf.app.flags.DEFINE_integer('s1_steps', 20000, """ number of steps for stage1 if 's1s2' is specified as stage. """) ##
+tf.app.flags.DEFINE_integer('logging_interval', 100, """ number of steps of interval to log. """) ##
+tf.app.flags.DEFINE_integer('checkpoint_interval', 2000, """ number of steps of interval to save checkpoints. """) ##
 
 def _read_image(filename):
     image_string = tf.read_file(filename)
@@ -246,12 +248,12 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, csv_logger, out_dir):
             if batch_idx == 0:
                 print('Epoch Number: %d' % int(step // num_batches_per_epoch))
 
-            if step % 10 == 0:
+            if step % FLAGS.logging_interval == 0:
                 print('Step: {} | Loss: {} = {} + {} + {}'.format(step,
-                                                                   total_loss_,
-                                                                   reconstruction_loss_,
-                                                                   cycle_consistency_loss_,
-                                                                   motion_linearity_loss_))
+                                                                  total_loss_,
+                                                                  reconstruction_loss_,
+                                                                  cycle_consistency_loss_,
+                                                                  motion_linearity_loss_))
                 csv_logger(step,
                            total_loss_,
                            reconstruction_loss_,
@@ -259,7 +261,7 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, csv_logger, out_dir):
                            motion_linearity_loss_)
 
             # Save checkpoint
-            if step % 2000 == 0 or (step + 1) == FLAGS.max_steps:
+            if step % FLAGS.checkpoint_interval == 0 or (step + 1) == FLAGS.max_steps:
                 # Output Summary
                 summary_str = sess.run(summary_op)
                 summary_writer.add_summary(summary_str, step)

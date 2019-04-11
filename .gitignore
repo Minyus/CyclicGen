@@ -120,3 +120,4 @@ ckpt/
 hed_model/
 UCF-101/
 *.zip
+CyclicGen_checkpoints/

@@ -274,11 +274,13 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
                 if step_i % FLAGS.logging_interval == 0:
                     total_loss_, reconstruction_loss_, cycle_consistency_loss_, motion_linearity_loss_ = \
                         sess.run([total_loss, reconstruction_loss, cycle_consistency_loss, motion_linearity_loss], feed_dict={s2_flag_tensor: s2_flag})
-                    logger.info(log_sep.join('{}','{}','{}','{}','{}').format(step_i,
-                                                                      total_loss_,
-                                                                      reconstruction_loss_,
-                                                                      cycle_consistency_loss_,
-                                                                      motion_linearity_loss_))
+                    logger.info(log_sep.join(['Hist','{:06d}','{:.9e}','{:.9e}','{:.9e}','{:.9e}']).format(\
+                        step_i,
+                        total_loss_,
+                        reconstruction_loss_,
+                        cycle_consistency_loss_,
+                        motion_linearity_loss_))
+                    
                     if csv_logger is not None:
                         csv_logger(step_i,
                                    total_loss_,

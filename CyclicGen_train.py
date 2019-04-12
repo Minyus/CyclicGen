@@ -43,7 +43,7 @@ tf.app.flags.DEFINE_string('model_size', 'large', """The size of model""") ##
 tf.app.flags.DEFINE_string('dataset', 'ucf101_256', """dataset (ucf101_256 or middlebury) """) ##
 tf.app.flags.DEFINE_string('stage', 's1s2', """stage (s1 or s2)""") ##
 tf.app.flags.DEFINE_integer('s1_steps', 10000, """ number of steps for stage1 if 's1s2' is specified as stage. """) ##
-tf.app.flags.DEFINE_integer('logging_interval', 100, """ number of steps of interval to log. """) ##
+tf.app.flags.DEFINE_integer('logging_interval', 10, """ number of steps of interval to log. """) ##
 tf.app.flags.DEFINE_integer('checkpoint_interval', 5000, """ number of steps of interval to save checkpoints. """) ##
 tf.app.flags.DEFINE_integer('save_summary', 0, """ save summary if 1.  """) ##
 
@@ -164,11 +164,13 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
                 reconstruction_loss = model4_s2_i00_i20.l1loss(prediction4, input2)
 
         t_vars = tf.trainable_variables()
-        logger.debug('all layers:')
-        for var in t_vars: logger.debug(var.name)
+        #logger.debug('all layers:')
+        #for var in t_vars: logger.debug(var.name)
+        logger.debug('all_layers:' + ' | '.join([var.name for var in t_vars]))
         dof_vars = [var for var in t_vars if not 'hed' in var.name]
-        logger.debug('optimize layers:')
-        for var in dof_vars: logger.debug(var.name)
+        #logger.debug('optimize layers:')
+        #for var in dof_vars: logger.debug(var.name)
+        logger.debug('optimize layers:' + ' | '.join([var.name for var in dof_vars]))
 
         if False: #if stage == 's1':
             cycle_consistency_loss = tf.convert_to_tensor(0.0, dtype=tf.float32)
@@ -183,32 +185,37 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
         # Create an optimizer that performs gradient descent.
         learning_rate = 0.0001
         with tf.variable_scope(tf.get_variable_scope(), reuse=None):
-            update_op = tf.train.AdamOptimizer(learning_rate).minimize(total_loss, var_list=dof_vars)
+            #update_op = tf.train.AdamOptimizer(learning_rate).minimize(total_loss, var_list=dof_vars)
+            opt = tf.train.AdamOptimizer(learning_rate)
+            update_op = opt.minimize(total_loss, var_list=dof_vars)
 
-        # Create summaries
-        summaries = tf.get_collection(tf.GraphKeys.SUMMARIES)
-        summaries.append(tf.summary.scalar('total_loss', total_loss))
-        summaries.append(tf.summary.image('input1', input1, 3))
-        summaries.append(tf.summary.image('input2', input2, 3))
-        summaries.append(tf.summary.image('input3', input3, 3))
-        summaries.append(tf.summary.image('edge_1', edge_1, 3))
-        if True: #if stage == 's2':
-            summaries.append(tf.summary.image('edge_2', edge_1, 3))
-        summaries.append(tf.summary.image('edge_3', edge_1, 3))
-
-        if False: #if stage == 's1':
-            summaries.append(tf.summary.image('prediction1', prediction1, 3))
-        if True: #if stage == 's2':
-            summaries.append(tf.summary.image('prediction3', prediction3, 3))
-            summaries.append(tf.summary.image('prediction4', prediction4, 3))
+        init = tf.global_variables_initializer()  # init = tf.initialize_all_variables()
 
         # Create a saver.
         saver = tf.train.Saver(tf.global_variables(), max_to_keep=50) # saver = tf.train.Saver(tf.all_variables(), max_to_keep=50)
 
-        # Build the summary operation from the last tower summaries.
-        summary_op = tf.summary.merge_all()
+        if FLAGS.save_summary:
+            # Create summaries
+            summaries = tf.get_collection(tf.GraphKeys.SUMMARIES)
+            summaries.append(tf.summary.scalar('total_loss', total_loss))
+            summaries.append(tf.summary.image('input1', input1, 3))
+            summaries.append(tf.summary.image('input2', input2, 3))
+            summaries.append(tf.summary.image('input3', input3, 3))
+            summaries.append(tf.summary.image('edge_1', edge_1, 3))
+            if True: #if stage == 's2':
+                summaries.append(tf.summary.image('edge_2', edge_1, 3))
+            summaries.append(tf.summary.image('edge_3', edge_1, 3))
 
-        init = tf.global_variables_initializer()  # init = tf.initialize_all_variables()
+            if False: #if stage == 's1':
+                summaries.append(tf.summary.image('prediction1', prediction1, 3))
+            if True: #if stage == 's2':
+                summaries.append(tf.summary.image('prediction3', prediction3, 3))
+                summaries.append(tf.summary.image('prediction4', prediction4, 3))
+
+            # Build the summary operation from the last tower summaries.
+            summary_op = tf.summary.merge_all()
+
+
 
         with tf.Session(graph=graph) as sess:
             s2_flag = np.float32(0.0)
@@ -238,10 +245,11 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
             #saver2 = tf.train.Saver(var_list=[v for v in tf.all_variables() if "hed" in v.name])
             saver2.restore(sess, meta_model_file)
 
-            # Summary Writter
-            summary_writer = tf.summary.FileWriter(
-                out_dir,
-                graph=sess.graph)
+            if FLAGS.save_summary:
+                # Summary Writter
+                summary_writer = tf.summary.FileWriter(
+                    out_dir,
+                    graph=sess.graph)
 
             data_size = len(data_list_frame1)
             num_batches_per_epoch = int(data_size / FLAGS.batch_size)
@@ -254,6 +262,11 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
                 s1_steps = FLAGS.max_steps
 
             initial_step = last_step + 1
+
+            total_loss_ssum = 0
+            reconstruction_loss_ssum = 0
+            cycle_consistency_loss_ssum = 0
+            motion_linearity_loss_ssum = 0
 
             for step_i in range(initial_step, FLAGS.max_steps):
                 batch_idx = step_i % num_batches_per_epoch
@@ -271,25 +284,44 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
                 if batch_idx == 0:
                     logger.info('Epoch Number: %d' % int(step_i // num_batches_per_epoch))
 
-                if step_i % FLAGS.logging_interval == 0:
-                    total_loss_, reconstruction_loss_, cycle_consistency_loss_, motion_linearity_loss_ = \
-                        sess.run([total_loss, reconstruction_loss, cycle_consistency_loss, motion_linearity_loss], feed_dict={s2_flag_tensor: s2_flag})
+                if True: # if step_i % FLAGS.logging_interval == 0:
+                    total_loss_bsum, reconstruction_loss_bsum, cycle_consistency_loss_bsum, motion_linearity_loss_bsum = \
+                        sess.run([total_loss,
+                                  reconstruction_loss, cycle_consistency_loss, motion_linearity_loss],
+                                 feed_dict={s2_flag_tensor: s2_flag})
+
+                    total_loss_ssum += total_loss_bsum
+                    reconstruction_loss_ssum += reconstruction_loss_bsum
+                    cycle_consistency_loss_ssum += cycle_consistency_loss_bsum
+                    motion_linearity_loss_ssum += motion_linearity_loss_bsum
+
+                if step_i % FLAGS.logging_interval == (FLAGS.logging_interval-1):
+                    total_loss_mean = total_loss_ssum / (FLAGS.logging_interval * FLAGS.batch_size)
+                    reconstruction_loss_mean = reconstruction_loss_ssum / (FLAGS.logging_interval * FLAGS.batch_size)
+                    cycle_consistency_loss_mean = cycle_consistency_loss_ssum / (FLAGS.logging_interval * FLAGS.batch_size)
+                    motion_linearity_loss_mean = motion_linearity_loss_ssum / (FLAGS.logging_interval * FLAGS.batch_size)
+
                     logger.info(log_sep.join(['Hist','{:06d}','{:.9e}','{:.9e}','{:.9e}','{:.9e}']).format(\
                         step_i,
-                        total_loss_,
-                        reconstruction_loss_,
-                        cycle_consistency_loss_,
-                        motion_linearity_loss_))
-                    
+                        total_loss_mean,
+                        reconstruction_loss_mean,
+                        cycle_consistency_loss_mean,
+                        motion_linearity_loss_mean))
+
                     if csv_logger is not None:
                         csv_logger(step_i,
-                                   total_loss_,
-                                   reconstruction_loss_,
-                                   cycle_consistency_loss_,
-                                   motion_linearity_loss_)
+                                   total_loss_mean,
+                                   reconstruction_loss_mean,
+                                   cycle_consistency_loss_mean,
+                                   motion_linearity_loss_mean)
+
+                    total_loss_ssum = 0
+                    reconstruction_loss_ssum = 0
+                    cycle_consistency_loss_ssum = 0
+                    motion_linearity_loss_ssum = 0
 
                 # Save checkpoint
-                if step_i % FLAGS.checkpoint_interval == 0 or (step_i + 1) == FLAGS.max_steps:
+                if step_i % FLAGS.checkpoint_interval == (FLAGS.checkpoint_interval-1) or ((step_i) == (FLAGS.max_steps-1)):
                     # Output Summary
                     if FLAGS.save_summary:
                         summary_str = sess.run(summary_op)

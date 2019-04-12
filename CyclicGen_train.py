@@ -183,11 +183,14 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
 
         # Perform learning rate scheduling.
         # Create an optimizer that performs gradient descent.
-        learning_rate = 0.0001
+
+        learning_rate_s1 = 0.0001
+        learning_rate_s2 = 0.00001
         with tf.variable_scope(tf.get_variable_scope(), reuse=None):
-            #update_op = tf.train.AdamOptimizer(learning_rate).minimize(total_loss, var_list=dof_vars)
-            opt = tf.train.AdamOptimizer(learning_rate)
-            update_op = opt.minimize(total_loss, var_list=dof_vars)
+            update_op_s1 = tf.train.AdamOptimizer(learning_rate_s1).minimize(total_loss, var_list=dof_vars)
+            #opt = tf.train.AdamOptimizer(learning_rate_s1)
+            #update_op = opt.minimize(total_loss, var_list=dof_vars)
+            update_op_s2 = tf.train.AdamOptimizer(learning_rate_s2).minimize(total_loss, var_list=dof_vars)
 
         init = tf.global_variables_initializer()  # init = tf.initialize_all_variables()
 
@@ -215,10 +218,11 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
             # Build the summary operation from the last tower summaries.
             summary_op = tf.summary.merge_all()
 
-
-
         with tf.Session(graph=graph) as sess:
             s2_flag = np.float32(0.0)
+            update_op = update_op_s1
+            learning_rate = learning_rate_s1
+
             last_step = -1
 
             # Restore checkpoint from file.
@@ -272,11 +276,13 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
                 batch_idx = step_i % num_batches_per_epoch
 
                 # Run single step update.
-                if step_i >= s1_steps:
+                if step_i == s1_steps:
                     s2_flag = np.float32(1.0)
+                    update_op = update_op_s2
+                    learning_rate = learning_rate_s2
                 #if step_i == s1_steps:
                     #s2_flag = np.float32(1.0)
-                    #learning_rate = 0.00001
+                    #learning_rate_s1 = 0.00001
                 #if step_i in [initial_step, s1_steps]:
 
                 sess.run(update_op, feed_dict={s2_flag_tensor: s2_flag})
@@ -301,8 +307,9 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
                     cycle_consistency_loss_mean = cycle_consistency_loss_ssum / (FLAGS.logging_interval * FLAGS.batch_size)
                     motion_linearity_loss_mean = motion_linearity_loss_ssum / (FLAGS.logging_interval * FLAGS.batch_size)
 
-                    logger.info(log_sep.join(['Hist','{:06d}','{:.9e}','{:.9e}','{:.9e}','{:.9e}']).format(\
+                    logger.info(log_sep.join(['Hist','{:06d}','{:.9e}','{:.9e}','{:.9e}','{:.9e}','{:.9e}']).format(\
                         step_i,
+                        learning_rate,
                         total_loss_mean,
                         reconstruction_loss_mean,
                         cycle_consistency_loss_mean,
@@ -310,6 +317,7 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
 
                     if csv_logger is not None:
                         csv_logger(step_i,
+                                   learning_rate,
                                    total_loss_mean,
                                    reconstruction_loss_mean,
                                    cycle_consistency_loss_mean,
@@ -459,7 +467,8 @@ if __name__ == '__main__':
     log_file_path = out_dir + '/log_{}.csv'.format(config_str) #log_file_path = FLAGS.train_dir + '/' + 'train.log'
 
     log_sep = ' ,'
-    format_str = log_sep.join(['%(asctime)s.%(msecs)03d','%(module)s','%(funcName)s','%(levelname)s','%(message)s'])
+    #format_str = log_sep.join(['%(asctime)s.%(msecs)03d','%(module)s','%(funcName)s','%(levelname)s','%(message)s'])
+    format_str = log_sep.join(['%(asctime)s.%(msecs)03d', '%(levelname)s', '%(message)s'])
     logging.basicConfig(level=logging.DEBUG,
                         format=format_str, datefmt='%Y-%m-%dT%H:%M:%S',
                         handlers=[
@@ -468,7 +477,7 @@ if __name__ == '__main__':
                         ]
                         )
 
-    history_cols = ['Step','Loss','Reconstruction_Loss','Cycle_Consistency_Loss','Motion_Linearity_Loss']
+    history_cols = ['Step','Learning','Loss','Reconstruction_Loss','Cycle_Consistency_Loss','Motion_Linearity_Loss']
     logger.info(log_sep.join(['Hist'] + history_cols))
 
     try:

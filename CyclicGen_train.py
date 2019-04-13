@@ -15,6 +15,7 @@ from pathlib import Path
 from logging import getLogger
 import logging
 
+
 logger = getLogger(__name__)
 
 FLAGS = tf.app.flags.FLAGS
@@ -23,10 +24,7 @@ FLAGS = tf.app.flags.FLAGS
 tf.app.flags.DEFINE_string('train_dir', './train_dir',
                            """Directory where to write event logs """
                            """and checkpoint.""")
-tf.app.flags.DEFINE_string('train_image_dir', './voxel_flow_train_image',
-                           """Directory where to output images.""")
-tf.app.flags.DEFINE_string('test_image_dir', './voxel_flow_test_image_baseline',
-                           """Directory where to output images.""")
+
 tf.app.flags.DEFINE_string('subset', 'train',
                            """Either 'train' or 'test'.""")
 tf.app.flags.DEFINE_string('pretrained_model_checkpoint_path', None,
@@ -34,10 +32,8 @@ tf.app.flags.DEFINE_string('pretrained_model_checkpoint_path', None,
                            """before beginning any training.""")
 tf.app.flags.DEFINE_integer('max_steps', 10000000,
                             """Number of batches to run.""")
-tf.app.flags.DEFINE_integer(
-    'batch_size', 8, 'The number of samples in each batch.')
-tf.app.flags.DEFINE_float('initial_learning_rate', 0.00001,
-                          """Initial learning rate.""")
+tf.app.flags.DEFINE_integer('batch_size', 8, 'The number of samples in each batch.')
+
 tf.app.flags.DEFINE_integer('training_data_step', 1, """The step used to reduce training data size""")
 tf.app.flags.DEFINE_string('model_size', 'large', """The size of model""") ##
 tf.app.flags.DEFINE_string('dataset', 'ucf101_256', """dataset (ucf101_256 or middlebury) """) ##
@@ -54,10 +50,11 @@ def _read_image(filename):
     # image_decoded.set_shape([256, 256, 3])
     return tf.cast(image_decoded, dtype=tf.float32) / 127.5 - 1.0
 
+"""
 def random_scaling(image, seed=1):
     scaling = tf.random_uniform([], 0.4, 0.6, seed=seed)
     return tf.image.resize_images(image, [tf.cast(tf.round(256*scaling), tf.int32), tf.cast(tf.round(256*scaling), tf.int32)])
-
+"""
 
 def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',hist_logger=None):
     """Trains a model."""
@@ -307,14 +304,16 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
                     cycle_consistency_loss_mean = cycle_consistency_loss_ssum / (FLAGS.logging_interval * FLAGS.batch_size)
                     motion_linearity_loss_mean = motion_linearity_loss_ssum / (FLAGS.logging_interval * FLAGS.batch_size)
 
+                    hist_latest_str = log_sep.join(['Hist', '{:06d}', '{:.9e}', '{:.9e}', '{:.9e}', '{:.9e}', '{:.9e}']).format( \
+                        step_i,
+                        learning_rate,
+                        total_loss_mean,
+                        reconstruction_loss_mean,
+                        cycle_consistency_loss_mean,
+                        motion_linearity_loss_mean)
+
                     if hist_logger is None:
-                        logger.info(log_sep.join(['Hist','{:06d}','{:.9e}','{:.9e}','{:.9e}','{:.9e}','{:.9e}']).format(\
-                            step_i,
-                            learning_rate,
-                            total_loss_mean,
-                            reconstruction_loss_mean,
-                            cycle_consistency_loss_mean,
-                            motion_linearity_loss_mean))
+                        logger.info(hist_latest_str)
 
                     if hist_logger is not None:
                         hist_logger(step_i,
@@ -323,6 +322,7 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
                                    reconstruction_loss_mean,
                                    cycle_consistency_loss_mean,
                                    motion_linearity_loss_mean)
+                        print(hist_latest_str)
 
                     total_loss_ssum = 0
                     reconstruction_loss_ssum = 0
@@ -505,6 +505,20 @@ if __name__ == '__main__':
     #logger.info(log_sep.join(['Hist'] + history_cols))
 
     try:
+        logger.info('train_dir: {}'.format(FLAGS.train_dir))
+        logger.info('subset: {}'.format(FLAGS.subset))
+        logger.info('pretrained_model_checkpoint_path: {}'.format(FLAGS.pretrained_model_checkpoint_path))
+        logger.info('max_steps: {}'.format(FLAGS.max_steps))
+        logger.info('batch_size: {}'.format(FLAGS.batch_size))
+        logger.info('training_data_step: {}'.format(FLAGS.training_data_step))
+        logger.info('model_size: {}'.format(FLAGS.model_size))
+        logger.info('dataset: {}'.format(FLAGS.dataset))
+        logger.info('stage: {}'.format(FLAGS.stage))
+        logger.info('s1_steps: {}'.format(FLAGS.s1_steps))
+        logger.info('logging_interval: {}'.format(FLAGS.logging_interval))
+        logger.info('checkpoint_interval: {}'.format(FLAGS.checkpoint_interval))
+        logger.info('save_summary: {}'.format(FLAGS.save_summary))
+
         assert FLAGS.stage in ['s1', 's2', 's1s2'], '{} is not valid.'.format(FLAGS.stage)
         assert FLAGS.subset in ['train', 'test'], '{} is not valid.'.format(FLAGS.subset)
         assert FLAGS.dataset in ['ucf101', 'ucf101_256', 'middlebury'], '{} is not valid.'.format(FLAGS.dataset)

@@ -42,6 +42,7 @@ tf.app.flags.DEFINE_integer('s1_steps', 10000, """ number of steps for stage1 if
 tf.app.flags.DEFINE_integer('logging_interval', 10, """ number of steps of interval to log. """) ##
 tf.app.flags.DEFINE_integer('checkpoint_interval', 5000, """ number of steps of interval to save checkpoints. """) ##
 tf.app.flags.DEFINE_integer('save_summary', 0, """ save summary if 1.  """) ##
+tf.app.flags.DEFINE_integer('graph_level_seed', 0, """ TensorFlow's Graph-level random seed. """) ##
 
 
 def _read_image(filename):
@@ -56,32 +57,34 @@ def random_scaling(image, seed=1):
     return tf.image.resize_images(image, [tf.cast(tf.round(256*scaling), tf.int32), tf.cast(tf.round(256*scaling), tf.int32)])
 """
 
-def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',hist_logger=None):
+def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',hist_logger=None, seed=1):
     """Trains a model."""
+
+    tf.set_random_seed(FLAGS.graph_level_seed)
+
     graph = tf.Graph()
     with graph.as_default():
         s2_flag_tensor = tf.placeholder(dtype="float", shape=None)
-        stage = FLAGS.stage
 
         # Create input.
         data_list_frame1 = dataset_frame1.read_data_list_file()
         data_list_frame1 = data_list_frame1[::FLAGS.training_data_step]
         dataset_frame1 = tf.data.Dataset.from_tensor_slices(tf.constant(data_list_frame1))
         dataset_frame1 = dataset_frame1.apply(
-            tf.contrib.data.shuffle_and_repeat(buffer_size=1000000, count=None, seed=1)).map(_read_image).map(
-            lambda image: tf.image.random_flip_left_right(image, seed=1)).map(
-            lambda image: tf.image.random_flip_up_down(image, seed=1)).map(
-            lambda image: tf.random_crop(image, [256, 256, 3], seed=1))
+            tf.contrib.data.shuffle_and_repeat(buffer_size=1000000, count=None, seed=seed)).map(_read_image).map(
+            lambda image: tf.image.random_flip_left_right(image, seed=seed)).map(
+            lambda image: tf.image.random_flip_up_down(image, seed=seed)).map(
+            lambda image: tf.random_crop(image, [256, 256, 3], seed=seed))
         dataset_frame1 = dataset_frame1.prefetch(8)
 
         data_list_frame2 = dataset_frame2.read_data_list_file()
         data_list_frame2 = data_list_frame2[::FLAGS.training_data_step]
         dataset_frame2 = tf.data.Dataset.from_tensor_slices(tf.constant(data_list_frame2))
         dataset_frame2 = dataset_frame2.apply(
-            tf.contrib.data.shuffle_and_repeat(buffer_size=1000000, count=None, seed=1)).map(_read_image).map(
-            lambda image: tf.image.random_flip_left_right(image, seed=1)).map(
-            lambda image: tf.image.random_flip_up_down(image, seed=1)).map(
-            lambda image: tf.random_crop(image, [256, 256, 3], seed=1))
+            tf.contrib.data.shuffle_and_repeat(buffer_size=1000000, count=None, seed=seed)).map(_read_image).map(
+            lambda image: tf.image.random_flip_left_right(image, seed=seed)).map(
+            lambda image: tf.image.random_flip_up_down(image, seed=seed)).map(
+            lambda image: tf.random_crop(image, [256, 256, 3], seed=seed))
         dataset_frame2 = dataset_frame2.prefetch(8)
 
 
@@ -89,10 +92,10 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
         data_list_frame3 = data_list_frame3[::FLAGS.training_data_step]
         dataset_frame3 = tf.data.Dataset.from_tensor_slices(tf.constant(data_list_frame3))
         dataset_frame3 = dataset_frame3.apply(
-            tf.contrib.data.shuffle_and_repeat(buffer_size=1000000, count=None, seed=1)).map(_read_image).map(
-            lambda image: tf.image.random_flip_left_right(image, seed=1)).map(
-            lambda image: tf.image.random_flip_up_down(image, seed=1)).map(
-            lambda image: tf.random_crop(image, [256, 256, 3], seed=1))
+            tf.contrib.data.shuffle_and_repeat(buffer_size=1000000, count=None, seed=seed)).map(_read_image).map(
+            lambda image: tf.image.random_flip_left_right(image, seed=seed)).map(
+            lambda image: tf.image.random_flip_up_down(image, seed=seed)).map(
+            lambda image: tf.random_crop(image, [256, 256, 3], seed=seed))
         dataset_frame3 = dataset_frame3.prefetch(8)
 
         batch_frame1 = dataset_frame1.batch(FLAGS.batch_size).make_initializable_iterator()
@@ -518,6 +521,7 @@ if __name__ == '__main__':
         logger.info('logging_interval: {}'.format(FLAGS.logging_interval))
         logger.info('checkpoint_interval: {}'.format(FLAGS.checkpoint_interval))
         logger.info('save_summary: {}'.format(FLAGS.save_summary))
+        logger.info('graph_level_seed: {}'.format(FLAGS.graph_level_seed))
 
         assert FLAGS.stage in ['s1', 's2', 's1s2'], '{} is not valid.'.format(FLAGS.stage)
         assert FLAGS.subset in ['train', 'test'], '{} is not valid.'.format(FLAGS.subset)

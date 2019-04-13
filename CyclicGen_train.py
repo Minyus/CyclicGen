@@ -30,8 +30,8 @@ tf.app.flags.DEFINE_string('subset', 'train',
 tf.app.flags.DEFINE_string('pretrained_model_checkpoint_path', None,
                            """If specified, restore this pretrained model """
                            """before beginning any training.""")
-tf.app.flags.DEFINE_integer('max_steps', 10000000,
-                            """Number of batches to run.""")
+tf.app.flags.DEFINE_integer('max_steps', None,
+                            """Number of batches to run. if None, steps equivalent to 1 epoch. """)
 tf.app.flags.DEFINE_integer('batch_size', 8, 'The number of samples in each batch.')
 
 tf.app.flags.DEFINE_integer('training_data_step', 1, """The step used to reduce training data size""")
@@ -256,14 +256,21 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
                     graph=sess.graph)
 
             data_size = len(data_list_frame1)
-            num_batches_per_epoch = int(data_size / FLAGS.batch_size)
+            logger.info('data_size: {}'.format(data_size))
+            num_batches_per_epoch = int(data_size // FLAGS.batch_size)
+            logger.info('num_batches_per_epoch: {}'.format(num_batches_per_epoch))
+
+            max_steps = FLAGS.max_steps
+            if max_steps is None:
+                max_steps = num_batches_per_epoch * FLAGS.batch_size
+            logger.info('max_steps: {}'.format(max_steps))
 
             if FLAGS.stage == 's1s2':
                 s1_steps = FLAGS.s1_steps
             if FLAGS.stage == 's2':
                 s1_steps = 0
             if FLAGS.stage == 's1':
-                s1_steps = FLAGS.max_steps
+                s1_steps = max_steps
 
             initial_step = last_step + 1
 
@@ -272,7 +279,7 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
             cycle_consistency_loss_ssum = 0
             motion_linearity_loss_ssum = 0
 
-            for step_i in range(initial_step, FLAGS.max_steps):
+            for step_i in range(initial_step, max_steps):
                 batch_idx = step_i % num_batches_per_epoch
 
                 # Run single step update.
@@ -333,7 +340,7 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
                     motion_linearity_loss_ssum = 0
 
                 # Save checkpoint
-                if step_i % FLAGS.checkpoint_interval == (FLAGS.checkpoint_interval-1) or ((step_i) == (FLAGS.max_steps-1)):
+                if step_i % FLAGS.checkpoint_interval == (FLAGS.checkpoint_interval-1) or ((step_i) == (max_steps-1)):
                     # Output Summary
                     if FLAGS.save_summary:
                         summary_str = sess.run(summary_op)

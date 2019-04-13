@@ -59,7 +59,7 @@ def random_scaling(image, seed=1):
     return tf.image.resize_images(image, [tf.cast(tf.round(256*scaling), tf.int32), tf.cast(tf.round(256*scaling), tf.int32)])
 
 
-def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',csv_logger=None):
+def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',hist_logger=None):
     """Trains a model."""
     graph = tf.Graph()
     with graph.as_default():
@@ -307,16 +307,17 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
                     cycle_consistency_loss_mean = cycle_consistency_loss_ssum / (FLAGS.logging_interval * FLAGS.batch_size)
                     motion_linearity_loss_mean = motion_linearity_loss_ssum / (FLAGS.logging_interval * FLAGS.batch_size)
 
-                    logger.info(log_sep.join(['Hist','{:06d}','{:.9e}','{:.9e}','{:.9e}','{:.9e}','{:.9e}']).format(\
-                        step_i,
-                        learning_rate,
-                        total_loss_mean,
-                        reconstruction_loss_mean,
-                        cycle_consistency_loss_mean,
-                        motion_linearity_loss_mean))
+                    if hist_logger is None:
+                        logger.info(log_sep.join(['Hist','{:06d}','{:.9e}','{:.9e}','{:.9e}','{:.9e}','{:.9e}']).format(\
+                            step_i,
+                            learning_rate,
+                            total_loss_mean,
+                            reconstruction_loss_mean,
+                            cycle_consistency_loss_mean,
+                            motion_linearity_loss_mean))
 
-                    if csv_logger is not None:
-                        csv_logger(step_i,
+                    if hist_logger is not None:
+                        hist_logger(step_i,
                                    learning_rate,
                                    total_loss_mean,
                                    reconstruction_loss_mean,
@@ -440,16 +441,14 @@ def test(dataset_frame1, dataset_frame2, dataset_frame3):
         logger.info("Overall PSNR: %f db" % (PSNR / i))
         logger.info("Overall SSIM: %f db" % (SSIM / i))
 
-"""
+
+hist_logging = False
 try:
     from table_logger import TableLogger
-    LOGGING = True
+    hist_logging = True
 except:
-    logger.warning('Continue running without logging to a CSV file as table-logger is not installed.'
+    print('Continue running without logging to a CSV file as table-logger is not installed.'
           ' To enable logging, "pip install table-logger" and rerun this code.')
-    LOGGING = False
-"""
-LOGGING = False
 
 
 def timestamp():
@@ -464,11 +463,37 @@ if __name__ == '__main__':
     out_dir = FLAGS.train_dir + '/' + config_str
     Path(out_dir).mkdir(parents=True, exist_ok=True)
 
-    log_file_path = out_dir + '/log_{}.csv'.format(config_str) #log_file_path = FLAGS.train_dir + '/' + 'train.log'
+
 
     log_sep = ' ,'
-    #format_str = log_sep.join(['%(asctime)s.%(msecs)03d','%(module)s','%(funcName)s','%(levelname)s','%(message)s'])
-    format_str = log_sep.join(['%(asctime)s.%(msecs)03d', '%(levelname)s', '%(message)s'])
+
+    hist_logger = None
+    if hist_logging:
+        history_cols = ['Step', 'Learning_Rate', 'Loss', 'Reconstruction_Loss', 'Cycle_Consistency_Loss',
+                        'Motion_Linearity_Loss']
+        file_name = out_dir + '/hist_{}.csv'.format(config_str)
+        hist_logger = TableLogger(csv=True, file=file_name,
+                                 columns=','.join(history_cols),
+                                 rownum=True, time_delta=True, timestamp=True,
+                                 float_format='{:.9e}'.format)
+        logger.info('The loss values will be logged to: {}'.format(file_name))
+
+    """
+    format_str = log_sep.join([])
+    logging.basicConfig(level=logging.DEBUG,
+                        format='%(message)s',
+                        handlers=[
+                            logging.FileHandler(log_file_path),
+                            logging.StreamHandler()
+                        ]
+                        )
+    history_cols = ['Step','Learning_Rate','Loss','Reconstruction_Loss','Cycle_Consistency_Loss','Motion_Linearity_Loss']
+    logger.info(log_sep.join(['Datetime', 'Level', 'Hist'] + history_cols))
+    """
+
+    log_file_path = out_dir + '/log_{}.csv'.format(config_str)
+    format_str = log_sep.join(['%(asctime)s.%(msecs)03d','%(module)s','%(funcName)s','%(levelname)s','%(message)s'])
+    #format_str = log_sep.join(['%(asctime)s.%(msecs)03d', '%(levelname)s', '%(message)s'])
     logging.basicConfig(level=logging.DEBUG,
                         format=format_str, datefmt='%Y-%m-%dT%H:%M:%S',
                         handlers=[
@@ -476,9 +501,8 @@ if __name__ == '__main__':
                             logging.StreamHandler()
                         ]
                         )
-
-    history_cols = ['Step','Learning','Loss','Reconstruction_Loss','Cycle_Consistency_Loss','Motion_Linearity_Loss']
-    logger.info(log_sep.join(['Hist'] + history_cols))
+    #history_cols = ['Step','Learning_Rate','Loss','Reconstruction_Loss','Cycle_Consistency_Loss','Motion_Linearity_Loss']
+    #logger.info(log_sep.join(['Hist'] + history_cols))
 
     try:
         assert FLAGS.stage in ['s1', 's2', 's1s2'], '{} is not valid.'.format(FLAGS.stage)
@@ -486,17 +510,6 @@ if __name__ == '__main__':
         assert FLAGS.dataset in ['ucf101', 'ucf101_256', 'middlebury'], '{} is not valid.'.format(FLAGS.dataset)
 
         logger.info('Output_directory: {}'.format(out_dir))
-
-
-        csv_logger = None
-        if LOGGING:
-            file_name = out_dir + '/hist_{}.csv'.format(config_str)
-
-            csv_logger = TableLogger(csv=True, file=file_name,
-                             columns=','.join(history_cols),
-                             rownum=True, time_delta=True, timestamp=True,
-                             float_format='{:f}'.format)
-            logger.info('The loss values will be logged to: {}'.format(file_name))
 
         if FLAGS.model_size == 'large':
             from CyclicGen_model_large import Voxel_flow_model
@@ -523,7 +536,7 @@ if __name__ == '__main__':
             ucf101_dataset_frame2 = dataset.Dataset(data_list_path_frame2)
             ucf101_dataset_frame3 = dataset.Dataset(data_list_path_frame3)
 
-            train(ucf101_dataset_frame1, ucf101_dataset_frame2, ucf101_dataset_frame3, out_dir, log_sep=' ,', csv_logger=csv_logger)
+            train(ucf101_dataset_frame1, ucf101_dataset_frame2, ucf101_dataset_frame3, out_dir, log_sep=' ,', hist_logger=hist_logger)
 
 
         elif FLAGS.subset == 'test':

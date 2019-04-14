@@ -8,6 +8,7 @@ import numpy as np
 import os
 import tensorflow as tf
 from datetime import datetime
+from pytz import timezone
 from utils.image_utils import imwrite
 from skimage.measure import compare_ssim as ssim
 from vgg16 import Vgg16
@@ -47,7 +48,7 @@ tf.app.flags.DEFINE_bool('save_summary', False, """ save summary if True.  """) 
 tf.app.flags.DEFINE_integer('graph_level_seed', 0, """ TensorFlow's Graph-level random seed. """) ##
 tf.app.flags.DEFINE_float('coef_cycle_consistency_loss', 1.0, """ TensorFlow's Graph-level random seed. """) ##
 tf.app.flags.DEFINE_float('coef_motion_linearity_loss', 0.1, """ TensorFlow's Graph-level random seed. """) ##
-
+tf.app.flags.DEFINE_integer('crop_size', 128, """ Crop size (width and height) """) ##
 
 def _read_image(filename):
     image_string = tf.read_file(filename)
@@ -65,7 +66,7 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
     """Trains a model."""
 
     tf.set_random_seed(FLAGS.graph_level_seed)
-
+    crop_size = FLAGS.crop_size
     graph = tf.Graph()
     with graph.as_default():
         s2_flag_tensor = tf.placeholder(dtype="float", shape=None)
@@ -78,7 +79,10 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
             tf.contrib.data.shuffle_and_repeat(buffer_size=1000000, count=None, seed=seed)).map(_read_image).map(
             lambda image: tf.image.random_flip_left_right(image, seed=seed)).map(
             lambda image: tf.image.random_flip_up_down(image, seed=seed)).map(
-            lambda image: tf.random_crop(image, [256, 256, 3], seed=seed))
+            lambda image: tf.random_crop(image, [crop_size, crop_size, 3], seed=seed)).map(
+            lambda image: tf.expand_dims(image, 0)).map(
+            lambda image: tf.image.resize_bilinear(image, [256, 256])).map(
+            lambda image: image[0,:,:,:])
         dataset_frame1 = dataset_frame1.prefetch(8)
 
         data_list_frame2 = dataset_frame2.read_data_list_file()
@@ -88,7 +92,10 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
             tf.contrib.data.shuffle_and_repeat(buffer_size=1000000, count=None, seed=seed)).map(_read_image).map(
             lambda image: tf.image.random_flip_left_right(image, seed=seed)).map(
             lambda image: tf.image.random_flip_up_down(image, seed=seed)).map(
-            lambda image: tf.random_crop(image, [256, 256, 3], seed=seed))
+            lambda image: tf.random_crop(image, [crop_size, crop_size, 3], seed=seed)).map(
+            lambda image: tf.expand_dims(image, 0)).map(
+            lambda image: tf.image.resize_bilinear(image, [256, 256])).map(
+            lambda image: image[0,:,:,:])
         dataset_frame2 = dataset_frame2.prefetch(8)
 
 
@@ -99,7 +106,10 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
             tf.contrib.data.shuffle_and_repeat(buffer_size=1000000, count=None, seed=seed)).map(_read_image).map(
             lambda image: tf.image.random_flip_left_right(image, seed=seed)).map(
             lambda image: tf.image.random_flip_up_down(image, seed=seed)).map(
-            lambda image: tf.random_crop(image, [256, 256, 3], seed=seed))
+            lambda image: tf.random_crop(image, [crop_size, crop_size, 3], seed=seed)).map(
+            lambda image: tf.expand_dims(image, 0)).map(
+            lambda image: tf.image.resize_bilinear(image, [256, 256])).map(
+            lambda image: image[0,:,:,:])
         dataset_frame3 = dataset_frame3.prefetch(8)
 
         batch_frame1 = dataset_frame1.batch(FLAGS.batch_size).make_initializable_iterator()
@@ -236,7 +246,7 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
                 restorer = tf.train.Saver()
                 restorer.restore(sess, FLAGS.pretrained_model_checkpoint_path)
                 logger.info('%s: Pre-trained model restored from %s' %
-                      (datetime.now(), FLAGS.pretrained_model_checkpoint_path))
+                      (timestamp(), FLAGS.pretrained_model_checkpoint_path))
                 try:
                     last_step = int(str(FLAGS.pretrained_model_checkpoint_path).split(sep='-')[-1])
                 except ValueError:
@@ -399,7 +409,7 @@ def test(dataset_frame1, dataset_frame2, dataset_frame3):
             restorer = tf.train.Saver()
             restorer.restore(sess, FLAGS.pretrained_model_checkpoint_path)
             logger.info('%s: Pre-trained model restored from %s' %
-                  (datetime.now(), FLAGS.pretrained_model_checkpoint_path))
+                  (timestamp(), FLAGS.pretrained_model_checkpoint_path))
 
         # Process on test dataset.
         data_list_frame1 = dataset_frame1.read_data_list_file()
@@ -471,14 +481,14 @@ except:
 
 
 def timestamp():
-    return datetime.now().strftime('%Y-%m-%dT%H%M%S')
+    return datetime.now(timezone('Asia/Singapore')).strftime('%Y-%m-%dT%H%M%S')
 
 
 if __name__ == '__main__':
 
     start_time = timestamp()
 
-    config_str = '_'.join([FLAGS.model_size, FLAGS.dataset, FLAGS.stage, start_time])
+    config_str = '_'.join([start_time])
     out_dir = FLAGS.train_dir + '/' + config_str
     Path(out_dir).mkdir(parents=True, exist_ok=True)
 
@@ -541,6 +551,7 @@ if __name__ == '__main__':
         logger.info('graph_level_seed: {}'.format(FLAGS.graph_level_seed))
         logger.info('coef_cycle_consistency_loss: {}'.format(FLAGS.coef_cycle_consistency_loss))
         logger.info('coef_motion_linearity_loss: {}'.format(FLAGS.coef_motion_linearity_loss))
+        logger.info('crop_size: {}'.format(FLAGS.crop_size))
 
         assert FLAGS.stage in ['s1', 's2', 's1s2'], '{} is not valid.'.format(FLAGS.stage)
         assert FLAGS.subset in ['train', 'test'], '{} is not valid.'.format(FLAGS.subset)

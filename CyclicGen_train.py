@@ -38,11 +38,13 @@ tf.app.flags.DEFINE_integer('training_data_step', 1, """The step used to reduce 
 tf.app.flags.DEFINE_string('model_size', 'large', """The size of model""") ##
 tf.app.flags.DEFINE_string('dataset', 'ucf101_256', """dataset (ucf101_256 or middlebury) """) ##
 tf.app.flags.DEFINE_string('stage', 's1s2', """stage (s1 or s2)""") ##
-tf.app.flags.DEFINE_integer('s1_steps', 10000, """ number of steps for stage1 if 's1s2' is specified as stage. """) ##
+tf.app.flags.DEFINE_integer('s1_steps', None, """ number of steps for stage1 if 's1s2' is specified as stage. """) ##
 tf.app.flags.DEFINE_integer('logging_interval', 10, """ number of steps of interval to log. """) ##
 tf.app.flags.DEFINE_integer('checkpoint_interval', 5000, """ number of steps of interval to save checkpoints. """) ##
-tf.app.flags.DEFINE_integer('save_summary', 0, """ save summary if 1.  """) ##
+tf.app.flags.DEFINE_bool('save_summary', False, """ save summary if True.  """) ##
 tf.app.flags.DEFINE_integer('graph_level_seed', 0, """ TensorFlow's Graph-level random seed. """) ##
+tf.app.flags.DEFINE_float('coef_cycle_consistency_loss', 1.0, """ TensorFlow's Graph-level random seed. """) ##
+tf.app.flags.DEFINE_float('coef_motion_linearity_loss', 0.1, """ TensorFlow's Graph-level random seed. """) ##
 
 
 def _read_image(filename):
@@ -179,7 +181,9 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
 
         if True: #if stage == 's2':
             motion_linearity_loss = tf.reduce_mean(tf.square(model4_s2_i00_i20.flow - model3_s2_i05_i15.flow * 2.0))
-            total_loss = reconstruction_loss + s2_flag_tensor * cycle_consistency_loss + s2_flag_tensor * 0.1 * motion_linearity_loss
+            total_loss = reconstruction_loss \
+                         + s2_flag_tensor * FLAGS.coef_cycle_consistency_loss * cycle_consistency_loss \
+                         + s2_flag_tensor * FLAGS.coef_motion_linearity_loss * motion_linearity_loss
 
         # Perform learning rate scheduling.
         # Create an optimizer that performs gradient descent.
@@ -259,14 +263,17 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
             logger.info('data_size: {}'.format(data_size))
             num_batches_per_epoch = int(data_size // FLAGS.batch_size)
             logger.info('num_batches_per_epoch: {}'.format(num_batches_per_epoch))
+            data_size_dropped_last = num_batches_per_epoch * FLAGS.batch_size
 
             max_steps = FLAGS.max_steps
             if max_steps is None:
-                max_steps = num_batches_per_epoch * FLAGS.batch_size
+                max_steps = 2 * data_size_dropped_last
             logger.info('max_steps: {}'.format(max_steps))
 
             if FLAGS.stage == 's1s2':
                 s1_steps = FLAGS.s1_steps
+                if s1_steps is None:
+                    s1_steps = data_size_dropped_last
             if FLAGS.stage == 's2':
                 s1_steps = 0
             if FLAGS.stage == 's1':
@@ -529,6 +536,8 @@ if __name__ == '__main__':
         logger.info('checkpoint_interval: {}'.format(FLAGS.checkpoint_interval))
         logger.info('save_summary: {}'.format(FLAGS.save_summary))
         logger.info('graph_level_seed: {}'.format(FLAGS.graph_level_seed))
+        logger.info('coef_cycle_consistency_loss: {}'.format(FLAGS.coef_cycle_consistency_loss))
+        logger.info('coef_motion_linearity_loss: {}'.format(FLAGS.coef_motion_linearity_loss))
 
         assert FLAGS.stage in ['s1', 's2', 's1s2'], '{} is not valid.'.format(FLAGS.stage)
         assert FLAGS.subset in ['train', 'test'], '{} is not valid.'.format(FLAGS.subset)

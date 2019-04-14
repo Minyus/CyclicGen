@@ -31,7 +31,9 @@ tf.app.flags.DEFINE_string('pretrained_model_checkpoint_path', None,
                            """If specified, restore this pretrained model """
                            """before beginning any training.""")
 tf.app.flags.DEFINE_integer('max_steps', None,
-                            """Number of batches to run. if None, steps equivalent to 1 epoch. """)
+                            """Number of steps to run. if None, steps equivalent to max_epochs. """)
+tf.app.flags.DEFINE_integer('max_epochs', 5,
+                            """Number of epochs to run. """)
 tf.app.flags.DEFINE_integer('batch_size', 8, 'The number of samples in each batch.')
 
 tf.app.flags.DEFINE_integer('training_data_step', 1, """The step used to reduce training data size""")
@@ -128,7 +130,7 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
         if False: #if stage == 's1':
             with tf.variable_scope("Cycle_DVF"):
                 model1_s1_i00_i20 = Voxel_flow_model()
-                prediction1, flow1 = model1_s1_i00_i20.inference(tf.concat([input1, input3, edge_1, edge_3], 3))
+                prediction1, _ = model1_s1_i00_i20.inference(tf.concat([input1, input3, edge_1, edge_3], 3))
                 reconstruction_loss = model1_s1_i00_i20.l1loss(prediction1, input2)
 
         if True: #if stage == 's2':
@@ -140,11 +142,11 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
 
             with tf.variable_scope("Cycle_DVF"):
                 model1_s2_i00_i10 = Voxel_flow_model()
-                prediction1, flow1 = model1_s2_i00_i10.inference(input_placeholder1)
+                prediction1, _ = model1_s2_i00_i10.inference(input_placeholder1)
 
             with tf.variable_scope("Cycle_DVF", reuse=True):
                 model2_s2_i10_i20 = Voxel_flow_model()
-                prediction2, flow2 = model2_s2_i10_i20.inference(input_placeholder2)
+                prediction2, _ = model2_s2_i10_i20.inference(input_placeholder2)
 
             edge_vgg_prediction1 = Vgg16(prediction1,reuse=True)
             edge_vgg_prediction2 = Vgg16(prediction2,reuse=True)
@@ -157,12 +159,12 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
 
             with tf.variable_scope("Cycle_DVF", reuse=True):
                 model3_s2_i05_i15 = Voxel_flow_model()
-                prediction3, flow3 = model3_s2_i05_i15.inference(tf.concat([prediction1, prediction2, edge_prediction1, edge_prediction2], 3))
+                prediction3, _ = model3_s2_i05_i15.inference(tf.concat([prediction1, prediction2, edge_prediction1, edge_prediction2], 3))
                 cycle_consistency_loss = model3_s2_i05_i15.l1loss(prediction3, input2)
 
             with tf.variable_scope("Cycle_DVF", reuse=True):
                 model4_s2_i00_i20 = Voxel_flow_model()
-                prediction4, flow4 = model4_s2_i00_i20.inference(tf.concat([input1, input3,edge_1,edge_3], 3))
+                prediction4, _ = model4_s2_i00_i20.inference(tf.concat([input1, input3,edge_1,edge_3], 3))
                 reconstruction_loss = model4_s2_i00_i20.l1loss(prediction4, input2)
 
         t_vars = tf.trainable_variables()
@@ -261,23 +263,23 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
 
             data_size = len(data_list_frame1)
             logger.info('data_size: {}'.format(data_size))
-            num_batches_per_epoch = int(data_size // FLAGS.batch_size)
-            logger.info('num_batches_per_epoch: {}'.format(num_batches_per_epoch))
-            data_size_dropped_last = num_batches_per_epoch * FLAGS.batch_size
+            num_steps_per_epoch = int(data_size // FLAGS.batch_size)
+            logger.info('num_steps_per_epoch: {}'.format(num_steps_per_epoch))
 
             max_steps = FLAGS.max_steps
             if max_steps is None:
-                max_steps = 2 * data_size_dropped_last
+                max_steps = FLAGS.max_epochs * num_steps_per_epoch
             logger.info('max_steps: {}'.format(max_steps))
 
             if FLAGS.stage == 's1s2':
                 s1_steps = FLAGS.s1_steps
                 if s1_steps is None:
-                    s1_steps = data_size_dropped_last
+                    s1_steps = num_steps_per_epoch
             if FLAGS.stage == 's2':
                 s1_steps = 0
             if FLAGS.stage == 's1':
                 s1_steps = max_steps
+            logger.info('s1_steps: {}'.format(s1_steps))
 
             initial_step = last_step + 1
 
@@ -287,7 +289,7 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
             motion_linearity_loss_ssum = 0
 
             for step_i in range(initial_step, max_steps):
-                batch_idx = step_i % num_batches_per_epoch
+                batch_idx = step_i % num_steps_per_epoch
 
                 # Run single step update.
                 if step_i == s1_steps:
@@ -302,7 +304,7 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
                 sess.run(update_op, feed_dict={s2_flag_tensor: s2_flag})
 
                 if batch_idx == 0:
-                    logger.info('Epoch Number: %d' % int(step_i // num_batches_per_epoch))
+                    logger.info('Epoch Number: %d' % int(step_i // num_steps_per_epoch))
 
                 if True: # if step_i % FLAGS.logging_interval == 0:
                     total_loss_bsum, reconstruction_loss_bsum, cycle_consistency_loss_bsum, motion_linearity_loss_bsum = \
@@ -526,6 +528,7 @@ if __name__ == '__main__':
         logger.info('subset: {}'.format(FLAGS.subset))
         logger.info('pretrained_model_checkpoint_path: {}'.format(FLAGS.pretrained_model_checkpoint_path))
         logger.info('max_steps: {}'.format(FLAGS.max_steps))
+        logger.info('max_epochs: {}'.format(FLAGS.max_epochs))
         logger.info('batch_size: {}'.format(FLAGS.batch_size))
         logger.info('training_data_step: {}'.format(FLAGS.training_data_step))
         logger.info('model_size: {}'.format(FLAGS.model_size))

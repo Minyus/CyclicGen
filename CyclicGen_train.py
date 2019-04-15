@@ -43,7 +43,7 @@ tf.app.flags.DEFINE_string('dataset', 'ucf101_256', """dataset (ucf101_256 or mi
 tf.app.flags.DEFINE_string('stage', 's1s2', """stage (s1 or s2)""") ##
 tf.app.flags.DEFINE_integer('s1_steps', None, """ number of steps for stage1 if 's1s2' is specified as stage. """) ##
 tf.app.flags.DEFINE_integer('logging_interval', 10, """ number of steps of interval to log. """) ##
-tf.app.flags.DEFINE_integer('checkpoint_interval', 5000, """ number of steps of interval to save checkpoints. """) ##
+tf.app.flags.DEFINE_integer('checkpoint_interval', None, """ number of steps of interval to save checkpoints. if None, 1 epoch. """) ##
 tf.app.flags.DEFINE_bool('save_summary', False, """ save summary if True.  """) ##
 tf.app.flags.DEFINE_integer('graph_level_seed', 0, """ TensorFlow's Graph-level random seed. """) ##
 tf.app.flags.DEFINE_float('coef_cycle_consistency_loss', 1.0, """ TensorFlow's Graph-level random seed. """) ##
@@ -291,6 +291,10 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
                 s1_steps = max_steps
             logger.info('s1_steps: {}'.format(s1_steps))
 
+            checkpoint_interval = FLAGS.checkpoint_interval
+            if checkpoint_interval is None:
+                checkpoint_interval = num_steps_per_epoch
+
             initial_step = last_step + 1
 
             total_loss_ssum = 0
@@ -359,7 +363,7 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
                     motion_linearity_loss_ssum = 0
 
                 # Save checkpoint
-                if step_i % FLAGS.checkpoint_interval == (FLAGS.checkpoint_interval-1) or ((step_i) == (max_steps-1)):
+                if step_i % checkpoint_interval == (checkpoint_interval-1) or ((step_i) == (max_steps-1)):
                     # Output Summary
                     if FLAGS.save_summary:
                         summary_str = sess.run(summary_op)

@@ -46,9 +46,11 @@ tf.app.flags.DEFINE_integer('logging_interval', 10, """ number of steps of inter
 tf.app.flags.DEFINE_integer('checkpoint_interval', None, """ number of steps of interval to save checkpoints. if None, 1 epoch. """) ##
 tf.app.flags.DEFINE_bool('save_summary', False, """ save summary if True.  """) ##
 tf.app.flags.DEFINE_integer('graph_level_seed', 0, """ TensorFlow's Graph-level random seed. """) ##
-tf.app.flags.DEFINE_float('coef_cycle_consistency_loss', 1.0, """ TensorFlow's Graph-level random seed. """) ##
-tf.app.flags.DEFINE_float('coef_motion_linearity_loss', 0.1, """ TensorFlow's Graph-level random seed. """) ##
 tf.app.flags.DEFINE_integer('crop_size', 128, """ Crop size (width and height) """) ##
+tf.app.flags.DEFINE_float('coef_loss_c', 1.0, """ coef_cycle_consistency_loss """) ##
+tf.app.flags.DEFINE_float('coef_loss_m', 0.1, """ coef_motion_linearity_loss """) ##
+tf.app.flags.DEFINE_float('coef_loss_s', 0.0, """ coef_stable_motion_loss """) ##
+tf.app.flags.DEFINE_float('coef_loss_t', 0.0, """ coef_temporal_regularization_loss """) ##
 
 def _read_image(filename):
     image_string = tf.read_file(filename)
@@ -141,7 +143,7 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
             with tf.variable_scope("Cycle_DVF"):
                 model1_s1_i00_i20 = Voxel_flow_model()
                 prediction1, _ = model1_s1_i00_i20.inference(tf.concat([input1, input3, edge_1, edge_3], 3))
-                reconstruction_loss = model1_s1_i00_i20.l1loss(prediction1, input2)
+                loss_c = model1_s1_i00_i20.l1loss(prediction1, input2)
 
         if True: #if stage == 's2':
             input_placeholder1 = tf.concat([input1, input2], 3)
@@ -170,12 +172,12 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
             with tf.variable_scope("Cycle_DVF", reuse=True):
                 model3_s2_i05_i15 = Voxel_flow_model()
                 prediction3, _ = model3_s2_i05_i15.inference(tf.concat([prediction1, prediction2, edge_prediction1, edge_prediction2], 3))
-                cycle_consistency_loss = model3_s2_i05_i15.l1loss(prediction3, input2)
+                loss_c = model3_s2_i05_i15.l1loss(prediction3, input2)
 
             with tf.variable_scope("Cycle_DVF", reuse=True):
                 model4_s2_i00_i20 = Voxel_flow_model()
                 prediction4, _ = model4_s2_i00_i20.inference(tf.concat([input1, input3,edge_1,edge_3], 3))
-                reconstruction_loss = model4_s2_i00_i20.l1loss(prediction4, input2)
+                loss_r = model4_s2_i00_i20.l1loss(prediction4, input2)
 
         t_vars = tf.trainable_variables()
         #logger.debug('all layers:')
@@ -187,15 +189,19 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
         logger.debug('optimize layers:' + ' | '.join([var.name for var in dof_vars]))
 
         if False: #if stage == 's1':
-            cycle_consistency_loss = tf.convert_to_tensor(0.0, dtype=tf.float32)
-            motion_linearity_loss =  tf.convert_to_tensor(0.0, dtype=tf.float32)
-            total_loss = reconstruction_loss
+            loss_c = tf.convert_to_tensor(0.0, dtype=tf.float32)
+            loss_m =  tf.convert_to_tensor(0.0, dtype=tf.float32)
+            total_loss = loss_r
 
         if True: #if stage == 's2':
-            motion_linearity_loss = tf.reduce_mean(tf.square(model4_s2_i00_i20.flow - model3_s2_i05_i15.flow * 2.0))
-            total_loss = reconstruction_loss \
-                         + s2_flag_tensor * FLAGS.coef_cycle_consistency_loss * cycle_consistency_loss \
-                         + s2_flag_tensor * FLAGS.coef_motion_linearity_loss * motion_linearity_loss
+            loss_m = tf.reduce_mean(tf.square(model4_s2_i00_i20.flow - model3_s2_i05_i15.flow * 2.0))
+            loss_s = tf.reduce_mean(tf.square((model2_s2_i10_i20.flow - model1_s2_i00_i10.flow) * 2.0))
+            loss_t = tf.reduce_mean(tf.square((model4_s2_i00_i20.mask - 0.5) * 2.0))
+            total_loss = loss_r \
+                         + s2_flag_tensor * FLAGS.coef_loss_c * loss_c \
+                         + s2_flag_tensor * FLAGS.coef_loss_m * loss_m \
+                         + s2_flag_tensor * FLAGS.coef_loss_s * loss_s \
+                         + s2_flag_tensor * FLAGS.coef_loss_t * loss_t
 
         # Perform learning rate scheduling.
         # Create an optimizer that performs gradient descent.
@@ -298,9 +304,11 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
             initial_step = last_step + 1
 
             total_loss_ssum = 0
-            reconstruction_loss_ssum = 0
-            cycle_consistency_loss_ssum = 0
-            motion_linearity_loss_ssum = 0
+            loss_r_ssum = 0
+            loss_c_ssum = 0
+            loss_m_ssum = 0
+            loss_s_ssum = 0
+            loss_t_ssum = 0
 
             for step_i in range(initial_step, max_steps):
                 batch_idx = step_i % num_steps_per_epoch
@@ -321,46 +329,56 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
                     logger.info('Epoch Number: %d' % int(step_i // num_steps_per_epoch))
 
                 if True: # if step_i % FLAGS.logging_interval == 0:
-                    total_loss_bsum, reconstruction_loss_bsum, cycle_consistency_loss_bsum, motion_linearity_loss_bsum = \
-                        sess.run([total_loss,
-                                  reconstruction_loss, cycle_consistency_loss, motion_linearity_loss],
+                    total_loss_bsum, loss_r_bsum, loss_c_bsum, loss_m_bsum, loss_s_bsum, loss_t_bsum = \
+                        sess.run([total_loss, loss_r, loss_c, loss_m, loss_s, loss_t],
                                  feed_dict={s2_flag_tensor: s2_flag})
 
                     total_loss_ssum += total_loss_bsum
-                    reconstruction_loss_ssum += reconstruction_loss_bsum
-                    cycle_consistency_loss_ssum += cycle_consistency_loss_bsum
-                    motion_linearity_loss_ssum += motion_linearity_loss_bsum
+                    loss_r_ssum += loss_r_bsum
+                    loss_c_ssum += loss_c_bsum
+                    loss_m_ssum += loss_m_bsum
+                    loss_s_ssum += loss_s_bsum
+                    loss_t_ssum += loss_t_bsum
 
                 if step_i % FLAGS.logging_interval == (FLAGS.logging_interval-1):
                     total_loss_mean = total_loss_ssum / (FLAGS.logging_interval * FLAGS.batch_size)
-                    reconstruction_loss_mean = reconstruction_loss_ssum / (FLAGS.logging_interval * FLAGS.batch_size)
-                    cycle_consistency_loss_mean = cycle_consistency_loss_ssum / (FLAGS.logging_interval * FLAGS.batch_size)
-                    motion_linearity_loss_mean = motion_linearity_loss_ssum / (FLAGS.logging_interval * FLAGS.batch_size)
+                    loss_r_mean = loss_r_ssum / (FLAGS.logging_interval * FLAGS.batch_size)
+                    loss_c_mean = loss_c_ssum / (FLAGS.logging_interval * FLAGS.batch_size)
+                    loss_m_mean = loss_m_ssum / (FLAGS.logging_interval * FLAGS.batch_size)
+                    loss_s_mean = loss_s_ssum / (FLAGS.logging_interval * FLAGS.batch_size)
+                    loss_t_mean = loss_t_ssum / (FLAGS.logging_interval * FLAGS.batch_size)
 
-                    hist_latest_str = log_sep.join(['Hist', '{:06d}', '{:.9e}', '{:.9e}', '{:.9e}', '{:.9e}', '{:.9e}']).format( \
+                    hist_latest_str = log_sep.join(['Hist', '{:06d}',
+                        '{:.9e}', '{:.9e}', '{:.9e}', '{:.9e}', '{:.9e}', '{:.9e}', '{:.9e}']).format( \
                         step_i,
                         learning_rate,
                         total_loss_mean,
-                        reconstruction_loss_mean,
-                        cycle_consistency_loss_mean,
-                        motion_linearity_loss_mean)
+                        loss_r_mean,
+                        loss_c_mean,
+                        loss_m_mean,
+                        loss_s_mean,
+                        loss_t_mean)
 
                     if hist_logger is None:
                         logger.info(hist_latest_str)
 
                     if hist_logger is not None:
                         hist_logger(step_i,
-                                   learning_rate,
-                                   total_loss_mean,
-                                   reconstruction_loss_mean,
-                                   cycle_consistency_loss_mean,
-                                   motion_linearity_loss_mean)
+                                    learning_rate,
+                                    total_loss_mean,
+                                    loss_r_mean,
+                                    loss_c_mean,
+                                    loss_m_mean,
+                                    loss_s_mean,
+                                    loss_t_mean)
                         print(hist_latest_str)
 
                     total_loss_ssum = 0
-                    reconstruction_loss_ssum = 0
-                    cycle_consistency_loss_ssum = 0
-                    motion_linearity_loss_ssum = 0
+                    loss_r_ssum = 0
+                    loss_c_ssum = 0
+                    loss_m_ssum = 0
+                    loss_s_ssum = 0
+                    loss_t_ssum = 0
 
                 # Save checkpoint
                 if step_i % checkpoint_interval == (checkpoint_interval-1) or ((step_i) == (max_steps-1)):
@@ -502,8 +520,8 @@ if __name__ == '__main__':
 
     hist_logger = None
     if hist_logging:
-        history_cols = ['Step', 'Learning_Rate', 'Loss', 'Reconstruction_Loss', 'Cycle_Consistency_Loss',
-                        'Motion_Linearity_Loss']
+        history_cols = ['Step', 'Learning_Rate', 'Total_Loss', 'Reconstruction_Loss', 'Cycle_Consistency_Loss',
+                        'Motion_Linearity_Loss', 'Stable_Motion_Loss', 'Temporal_Regularization_Loss']
         file_name = out_dir + '/hist_{}.csv'.format(config_str)
         hist_logger = TableLogger(csv=True, file=file_name,
                                  columns=','.join(history_cols),
@@ -553,9 +571,11 @@ if __name__ == '__main__':
         logger.info('checkpoint_interval: {}'.format(FLAGS.checkpoint_interval))
         logger.info('save_summary: {}'.format(FLAGS.save_summary))
         logger.info('graph_level_seed: {}'.format(FLAGS.graph_level_seed))
-        logger.info('coef_cycle_consistency_loss: {}'.format(FLAGS.coef_cycle_consistency_loss))
-        logger.info('coef_motion_linearity_loss: {}'.format(FLAGS.coef_motion_linearity_loss))
         logger.info('crop_size: {}'.format(FLAGS.crop_size))
+        logger.info('coef_loss_c: {}'.format(FLAGS.coef_loss_c))
+        logger.info('coef_loss_m: {}'.format(FLAGS.coef_loss_m))
+        logger.info('coef_loss_s: {}'.format(FLAGS.coef_loss_s))
+        logger.info('coef_loss_t: {}'.format(FLAGS.coef_loss_t))
 
         assert FLAGS.stage in ['s1', 's2', 's1s2'], '{} is not valid.'.format(FLAGS.stage)
         assert FLAGS.subset in ['train', 'test'], '{} is not valid.'.format(FLAGS.subset)

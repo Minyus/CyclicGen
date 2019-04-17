@@ -15,14 +15,16 @@ epsilon = 0.001
 
 
 class Voxel_flow_model(object):
-    def __init__(self, is_train=True):
+    def __init__(self, batch_size = 8, is_train=True, adaptive_temporal_flow=False):
         self.is_train = is_train
+        self.adaptive_temporal_flow = adaptive_temporal_flow
+        self.batch_size = batch_size
 
     def inference(self, input_images):
         """Inference on a set of input_images.
         Args:
         """
-        return self._build_model(input_images)
+        return self._build_model(input_images, target_time_point=0.5)
 
     def total_var(self, images):
         pixel_dif1 = images[:, 1:, :, :] - images[:, :-1, :, :]
@@ -48,7 +50,7 @@ class Voxel_flow_model(object):
         self.reproduction_loss = l1_loss(predictions, targets)
         return self.reproduction_loss
 
-    def _build_model(self, input_images):
+    def _build_model(self, input_images, target_time_point=0.5):
         with slim.arg_scope([slim.conv2d],
                             activation_fn=tf.nn.leaky_relu,
                             weights_initializer=tf.truncated_normal_initializer(0.0, 0.01),
@@ -109,39 +111,41 @@ class Voxel_flow_model(object):
                           normalizer_fn=None, scope='conv12')
         net_copy = net
 
-        flow = net[:, :, :, 0:2]
-        mask = tf.expand_dims(net[:, :, :, 2], 3)
+        flow = net[:, :, :, 0:2] #_ (B,H,W,2)
+        self.flow = flow #_ (B,H,W,2)
 
-        self.flow = flow
+        temporal_flow_for_pixel = net[:, :, :, 2] #_ (B,H,W)
+        mask_for_pixel = 0.5 * (1.0 + temporal_flow_for_pixel) #_ (B,H,W)
+        mask = tf.expand_dims(mask_for_pixel, 3) #_ (B,H,W,1)
+        self.mask = mask #_ (B,H,W,1)
 
+        target_time_point_for_pixel = target_time_point * tf.ones_like(mask_for_pixel) #_ (B,H,W)
+        if self.adaptive_temporal_flow:
+            target_time_point_for_pixel = 1.0-mask_for_pixel #_ (B,H,W)
 
         grid_x, grid_y = meshgrid(x0.get_shape().as_list()[1], x0.get_shape().as_list()[2])
-        grid_x = tf.tile(grid_x, [FLAGS.batch_size, 1, 1])
-        grid_y = tf.tile(grid_y, [FLAGS.batch_size, 1, 1])
+        grid_x = tf.tile(grid_x, [self.batch_size, 1, 1])
+        grid_y = tf.tile(grid_y, [self.batch_size, 1, 1])
 
-        flow = 0.5 * flow
+        flow_ratio = tf.constant([255.0 / (x0.get_shape().as_list()[2]-1), 255.0 / (x0.get_shape().as_list()[1]-1)]) #_ (2,)
+        flow = flow * tf.expand_dims(tf.expand_dims(tf.expand_dims(flow_ratio, 0), 0), 0) #_ (1,1,1,2)
 
-        flow_ratio = tf.constant([255.0 / (x0.get_shape().as_list()[2]-1), 255.0 / (x0.get_shape().as_list()[1]-1)])
-        flow = flow * tf.expand_dims(tf.expand_dims(tf.expand_dims(flow_ratio, 0), 0), 0)
+        coor_x_1 = grid_x + target_time_point_for_pixel * flow[:, :, :, 0] #_ (B,H,W)
+        coor_y_1 = grid_y + target_time_point_for_pixel * flow[:, :, :, 1] #_ (B,H,W)
 
-        coor_x_1 = grid_x + flow[:, :, :, 0]
-        coor_y_1 = grid_y + flow[:, :, :, 1]
+        coor_x_2 = grid_x + (target_time_point_for_pixel-1.0) * flow[:, :, :, 0] #_ (B,H,W)
+        coor_y_2 = grid_y + (target_time_point_for_pixel-1.0) * flow[:, :, :, 1] #_ (B,H,W)
 
-        coor_x_2 = grid_x - flow[:, :, :, 0]
-        coor_y_2 = grid_y - flow[:, :, :, 1]
+        output_1 = bilinear_interp(input_images[:, :, :, 0:3], coor_x_1, coor_y_1, 'interpolate') #_ (B,H,W,3)
+        output_2 = bilinear_interp(input_images[:, :, :, 3:6], coor_x_2, coor_y_2, 'interpolate') #_ (B,H,W,3)
 
-        output_1 = bilinear_interp(input_images[:, :, :, 0:3], coor_x_1, coor_y_1, 'interpolate')
-        output_2 = bilinear_interp(input_images[:, :, :, 3:6], coor_x_2, coor_y_2, 'interpolate')
+        self.warped_img1 = output_1 #_ (B,H,W,3)
+        self.warped_img2 = output_2 #_ (B,H,W,3)
 
-        self.warped_img1 = output_1
-        self.warped_img2 = output_2
+        self.warped_flow1 = bilinear_interp(-flow[:, :, :, 0:3]*0.5*0.5, coor_x_1, coor_y_1, 'interpolate') #_ (B,H,W,3)
+        self.warped_flow2 = bilinear_interp(flow[:, :, :, 0:3]*0.5*0.5, coor_x_2, coor_y_2, 'interpolate') #_ (B,H,W,3)
 
-        self.warped_flow1 = bilinear_interp(-flow[:, :, :, 0:3]*0.5, coor_x_1, coor_y_1, 'interpolate')
-        self.warped_flow2 = bilinear_interp(flow[:, :, :, 0:3]*0.5, coor_x_2, coor_y_2, 'interpolate')
-
-        mask = 0.5 * (1.0 + mask)
-        self.mask = mask
-        mask = tf.tile(mask, [1, 1, 1, 3])
-        net = tf.multiply(mask, output_1) + tf.multiply(1.0 - mask, output_2)
+        mask = tf.tile(mask, [1, 1, 1, 3]) #_ (B,H,W,3)
+        net = tf.multiply(mask, output_1) + tf.multiply(1.0 - mask, output_2) #_ (B,H,W,3)
 
         return [net, net_copy]

@@ -121,3 +121,5 @@ hed_model/
 UCF-101/
 *.zip
 CyclicGen_checkpoints/
+
+train_dir/201904/

@@ -1,4 +1,4 @@
-"""CyclicGen_train.py"""
+"""CyclicGen_main.py"""
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -26,8 +26,8 @@ tf.app.flags.DEFINE_string('train_dir', './train_dir',
                            """Directory where to write event logs """
                            """and checkpoint.""")
 
-tf.app.flags.DEFINE_string('subset', 'train',
-                           """Either 'train' or 'test'.""")
+tf.app.flags.DEFINE_string('subset', 'train_test',
+                           """Either train_test, 'train', or 'test'.""")
 tf.app.flags.DEFINE_string('pretrained_model_checkpoint_path', None,
                            """If specified, restore this pretrained model """
                            """before beginning any training.""")
@@ -39,7 +39,8 @@ tf.app.flags.DEFINE_integer('batch_size', 8, 'The number of samples in each batc
 
 tf.app.flags.DEFINE_integer('training_data_step', 1, """The step used to reduce training data size""")
 tf.app.flags.DEFINE_string('model_size', 'large', """The size of model""") ##
-tf.app.flags.DEFINE_string('dataset', 'ucf101_256', """dataset (ucf101_256 or middlebury) """) ##
+tf.app.flags.DEFINE_string('dataset_train', 'ucf101_256', """dataset_train (ucf101_256 or middlebury) """) ##
+tf.app.flags.DEFINE_string('dataset_test', 'ucf101', """dataset_test (ucf101, ucf101_256, or middlebury) """) ##
 tf.app.flags.DEFINE_string('stage', 's1s2', """stage (s1 or s2)""") ##
 tf.app.flags.DEFINE_integer('s1_steps', None, """ number of steps for stage1 if 's1s2' is specified as stage. """) ##
 tf.app.flags.DEFINE_integer('logging_interval', 10, """ number of steps of interval to log. """) ##
@@ -51,6 +52,8 @@ tf.app.flags.DEFINE_float('coef_loss_c', 1.0, """ coef_cycle_consistency_loss ""
 tf.app.flags.DEFINE_float('coef_loss_m', 0.1, """ coef_motion_linearity_loss """) ##
 tf.app.flags.DEFINE_float('coef_loss_s', 0.0, """ coef_stable_motion_loss """) ##
 tf.app.flags.DEFINE_float('coef_loss_t', 0.0, """ coef_temporal_regularization_loss """) ##
+tf.app.flags.DEFINE_bool('adaptive_temporal_flow', False, """ adaptive_temporal_flow """) ##
+tf.app.flags.DEFINE_string('logging_level', 'info', """ logging_level """) ##
 
 def _read_image(filename):
     image_string = tf.read_file(filename)
@@ -69,6 +72,7 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
 
     tf.set_random_seed(FLAGS.graph_level_seed)
     crop_size = FLAGS.crop_size
+    batch_size = FLAGS.batch_size
     graph = tf.Graph()
     with graph.as_default():
         s2_flag_tensor = tf.placeholder(dtype="float", shape=None)
@@ -85,7 +89,7 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
             lambda image: tf.expand_dims(image, 0)).map(
             lambda image: tf.image.resize_bilinear(image, [256, 256])).map(
             lambda image: image[0,:,:,:])
-        dataset_frame1 = dataset_frame1.prefetch(8)
+        dataset_frame1 = dataset_frame1.prefetch(batch_size)
 
         data_list_frame2 = dataset_frame2.read_data_list_file()
         data_list_frame2 = data_list_frame2[::FLAGS.training_data_step]
@@ -98,7 +102,7 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
             lambda image: tf.expand_dims(image, 0)).map(
             lambda image: tf.image.resize_bilinear(image, [256, 256])).map(
             lambda image: image[0,:,:,:])
-        dataset_frame2 = dataset_frame2.prefetch(8)
+        dataset_frame2 = dataset_frame2.prefetch(batch_size)
 
 
         data_list_frame3 = dataset_frame3.read_data_list_file()
@@ -112,7 +116,7 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
             lambda image: tf.expand_dims(image, 0)).map(
             lambda image: tf.image.resize_bilinear(image, [256, 256])).map(
             lambda image: image[0,:,:,:])
-        dataset_frame3 = dataset_frame3.prefetch(8)
+        dataset_frame3 = dataset_frame3.prefetch(batch_size)
 
         batch_frame1 = dataset_frame1.batch(FLAGS.batch_size).make_initializable_iterator()
         batch_frame2 = dataset_frame2.batch(FLAGS.batch_size).make_initializable_iterator()
@@ -141,7 +145,7 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
 
         if False: #if stage == 's1':
             with tf.variable_scope("Cycle_DVF"):
-                model1_s1_i00_i20 = Voxel_flow_model()
+                model1_s1_i00_i20 = Voxel_flow_model(adaptive_temporal_flow=FLAGS.adaptive_temporal_flow)
                 prediction1, _ = model1_s1_i00_i20.inference(tf.concat([input1, input3, edge_1, edge_3], 3))
                 loss_c = model1_s1_i00_i20.l1loss(prediction1, input2)
 
@@ -153,11 +157,11 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
             input_placeholder2 = tf.concat([input_placeholder2, edge_2, edge_3], 3)
 
             with tf.variable_scope("Cycle_DVF"):
-                model1_s2_i00_i10 = Voxel_flow_model()
+                model1_s2_i00_i10 = Voxel_flow_model(batch_size=batch_size)
                 prediction1, _ = model1_s2_i00_i10.inference(input_placeholder1)
 
             with tf.variable_scope("Cycle_DVF", reuse=True):
-                model2_s2_i10_i20 = Voxel_flow_model()
+                model2_s2_i10_i20 = Voxel_flow_model(batch_size=batch_size)
                 prediction2, _ = model2_s2_i10_i20.inference(input_placeholder2)
 
             edge_vgg_prediction1 = Vgg16(prediction1,reuse=True)
@@ -170,12 +174,12 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
             edge_prediction2 = tf.reshape(edge_prediction2,[-1,input1.get_shape().as_list()[1],input1.get_shape().as_list()[2],1])
 
             with tf.variable_scope("Cycle_DVF", reuse=True):
-                model3_s2_i05_i15 = Voxel_flow_model()
+                model3_s2_i05_i15 = Voxel_flow_model(batch_size=batch_size, adaptive_temporal_flow=FLAGS.adaptive_temporal_flow)
                 prediction3, _ = model3_s2_i05_i15.inference(tf.concat([prediction1, prediction2, edge_prediction1, edge_prediction2], 3))
                 loss_c = model3_s2_i05_i15.l1loss(prediction3, input2)
 
             with tf.variable_scope("Cycle_DVF", reuse=True):
-                model4_s2_i00_i20 = Voxel_flow_model()
+                model4_s2_i00_i20 = Voxel_flow_model(batch_size=batch_size, adaptive_temporal_flow=FLAGS.adaptive_temporal_flow)
                 prediction4, _ = model4_s2_i00_i20.inference(tf.concat([input1, input3,edge_1,edge_3], 3))
                 loss_r = model4_s2_i00_i20.l1loss(prediction4, input2)
 
@@ -389,6 +393,8 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
                     #
                     checkpoint_path = os.path.join(out_dir, 'model.ckpt')
                     saver.save(sess, checkpoint_path, global_step=step_i)
+                    latest_ckpt_w_step_path = '{}-{}'.format(checkpoint_path, step_i)
+                    logger.info('Model was saved at: {}'.format(latest_ckpt_w_step_path))
 
     sess.close()
 
@@ -414,20 +420,25 @@ def test(dataset_frame1, dataset_frame2, dataset_frame3):
 
         edge_1 = tf.nn.sigmoid(edge_vgg_1.fuse)
         edge_3 = tf.nn.sigmoid(edge_vgg_3.fuse)
+        logger.debug('edge_1.shape: {}'.format(edge_1.shape))
 
         edge_1 = tf.reshape(edge_1, [-1, input_placeholder.get_shape().as_list()[1], input_placeholder.get_shape().as_list()[2], 1])
         edge_3 = tf.reshape(edge_3, [-1, input_placeholder.get_shape().as_list()[1], input_placeholder.get_shape().as_list()[2], 1])
+        logger.debug('edge_1.shape: {}'.format(edge_1.shape))
 
         with tf.variable_scope("Cycle_DVF"):
             # Prepare model.
-            model = Voxel_flow_model(is_train=False)
-            prediction = model.inference(tf.concat([input_placeholder, edge_1, edge_3], 3))
+            model = Voxel_flow_model(is_train=False, batch_size=1)
+            prediction, _ = model.inference(tf.concat([input_placeholder, edge_1, edge_3], 3))
 
         # Create a saver and load.
         sess = tf.Session()
 
         # Restore checkpoint from file.
-        if FLAGS.pretrained_model_checkpoint_path:
+        pretrained_model_checkpoint_path = FLAGS.pretrained_model_checkpoint_path
+        if latest_ckpt_w_step_path is not None:
+            pretrained_model_checkpoint_path = latest_ckpt_w_step_path
+        if pretrained_model_checkpoint_path:
             restorer = tf.train.Saver()
             restorer.restore(sess, FLAGS.pretrained_model_checkpoint_path)
             logger.info('%s: Pre-trained model restored from %s' %
@@ -436,6 +447,7 @@ def test(dataset_frame1, dataset_frame2, dataset_frame3):
         # Process on test dataset.
         data_list_frame1 = dataset_frame1.read_data_list_file()
         data_size = len(data_list_frame1)
+        logger.info('data_size: {}'.format(data_size))
 
         data_list_frame2 = dataset_frame2.read_data_list_file()
 
@@ -445,43 +457,64 @@ def test(dataset_frame1, dataset_frame2, dataset_frame3):
         PSNR = 0
         SSIM = 0
 
+        use_motion_mask_png = False
+        compute_metrics = False
         for id_img in range(0, data_size):
             UCF_index = data_list_frame1[id_img][:-12]
+            logger.info('id: {} | UCF_index: {}'.format(id_img, UCF_index))
             # Load single data.
 
             batch_data_frame1 = [dataset_frame1.process_func(os.path.join('ucf101_interp_ours', ll)[:-5] + '00.png') for
                                  ll in data_list_frame1[id_img:id_img + 1]]
-            batch_data_frame2 = [dataset_frame2.process_func(os.path.join('ucf101_interp_ours', ll)[:-5] + '01_gt.png')
-                                 for ll in data_list_frame2[id_img:id_img + 1]]
+            if compute_metrics:
+                batch_data_frame2 = [dataset_frame2.process_func(os.path.join('ucf101_interp_ours', ll)[:-5] + '01_gt.png')
+                                     for ll in data_list_frame2[id_img:id_img + 1]]
             batch_data_frame3 = [dataset_frame3.process_func(os.path.join('ucf101_interp_ours', ll)[:-5] + '02.png') for
                                  ll in data_list_frame3[id_img:id_img + 1]]
-            batch_data_mask = [
-                dataset_frame3.process_func(os.path.join('motion_masks_ucf101_interp', ll)[:-11] + 'motion_mask.png')
-                for ll in data_list_frame3[id_img:id_img + 1]]
+
+            if use_motion_mask_png:
+                batch_data_mask = [
+                    dataset_frame3.process_func(os.path.join('motion_masks_ucf101_interp', ll)[:-11] + 'motion_mask.png')
+                    for ll in data_list_frame3[id_img:id_img + 1]]
 
             batch_data_frame1 = np.array(batch_data_frame1)
-            batch_data_frame2 = np.array(batch_data_frame2)
+            if compute_metrics:
+                batch_data_frame2 = np.array(batch_data_frame2)
             batch_data_frame3 = np.array(batch_data_frame3)
-            batch_data_mask = (np.array(batch_data_mask) + 1.0) / 2.0
 
-            feed_dict = {input_placeholder: np.concatenate((batch_data_frame1, batch_data_frame3), 3),
-                         target_placeholder: batch_data_frame2}
+            if use_motion_mask_png:
+                batch_data_mask = (np.array(batch_data_mask) + 1.0) / 2.0
+
+            if compute_metrics:
+                feed_dict = {input_placeholder: np.concatenate((batch_data_frame1, batch_data_frame3), 3),
+                             target_placeholder: batch_data_frame2}
+            else:
+                feed_dict = {input_placeholder: np.concatenate((batch_data_frame1, batch_data_frame3), 3)}
+
             # Run single step update.
-            prediction_np, target_np, warped_img1, warped_img2 = sess.run([prediction,
-                                                                                       target_placeholder, model.warped_img1,
-                                                                                       model.warped_img2],
-                                                                                      feed_dict=feed_dict)
+            if compute_metrics:
+                prediction_np, target_np, warped_img1, warped_img2 = \
+                    sess.run([prediction, target_placeholder, model.warped_img1, model.warped_img2], feed_dict=feed_dict)
+            else:
+                prediction_np = sess.run(prediction, feed_dict=feed_dict)
 
-            imwrite('ucf101_interp_ours/' + str(UCF_index) + '/frame_01_CyclicGen.png', prediction_np[0][-1, :, :, :])
+            ckpt_dir, ckpt_name = os.path.split(pretrained_model_checkpoint_path)
+            _, ckpt_dir = os.path.split(ckpt_dir)
 
-            logger.info(np.sum(batch_data_mask))
-            if np.sum(batch_data_mask) > 0:
-                img_pred_mask = np.expand_dims(batch_data_mask[0], -1) * (prediction_np[0][-1] + 1.0) / 2.0
+
+            imwrite('ucf101_interp_ours/' + str(UCF_index) + '/frame_01_' + \
+                    ckpt_dir + '_' + ckpt_name + '.png', prediction_np[-1, :, :, :])
+
+            if use_motion_mask_png:
+                logger.info(np.sum(batch_data_mask))
+
+            if False: # if (not use_motion_mask_png) or np.sum(batch_data_mask) > 0:
+                img_pred_mask = np.expand_dims(batch_data_mask[0], -1) * (prediction_np[-1] + 1.0) / 2.0
                 img_target_mask = np.expand_dims(batch_data_mask[0], -1) * (target_np[-1] + 1.0) / 2.0
                 mse = np.sum((img_pred_mask - img_target_mask) ** 2) / (3. * np.sum(batch_data_mask))
                 psnr_cur = 20.0 * np.log10(1.0) - 10.0 * np.log10(mse)
 
-                img_pred_gray = rgb2gray((prediction_np[0][-1] + 1.0) / 2.0)
+                img_pred_gray = rgb2gray((prediction_np[-1] + 1.0) / 2.0)
                 img_target_gray = rgb2gray((target_np[-1] + 1.0) / 2.0)
                 ssim_cur = ssim(img_pred_gray, img_target_gray, data_range=1.0)
 
@@ -489,9 +522,10 @@ def test(dataset_frame1, dataset_frame2, dataset_frame3):
                 SSIM += ssim_cur
 
                 i += 1
-        logger.info("Overall PSNR: %f db" % (PSNR / i))
-        logger.info("Overall SSIM: %f db" % (SSIM / i))
+        # logger.info("Overall PSNR: %f db" % (PSNR / i))
+        # logger.info("Overall SSIM: %f db" % (SSIM / i))
 
+        sess.close()
 
 hist_logging = False
 try:
@@ -513,8 +547,6 @@ if __name__ == '__main__':
     config_str = '_'.join([start_time])
     out_dir = FLAGS.train_dir + '/' + config_str
     Path(out_dir).mkdir(parents=True, exist_ok=True)
-
-
 
     log_sep = ' ,'
 
@@ -545,7 +577,15 @@ if __name__ == '__main__':
     log_file_path = out_dir + '/log_{}.csv'.format(config_str)
     format_str = log_sep.join(['%(asctime)s.%(msecs)03d','%(module)s','%(funcName)s','%(levelname)s','%(message)s'])
     #format_str = log_sep.join(['%(asctime)s.%(msecs)03d', '%(levelname)s', '%(message)s'])
-    logging.basicConfig(level=logging.DEBUG,
+
+    if FLAGS.logging_level.lower() == 'debug':
+        logging_level = logging.DEBUG
+    if FLAGS.logging_level.lower() == 'info':
+        logging_level = logging.INFO
+    if FLAGS.logging_level.lower() == 'warn':
+        logging_level = logging.WARN
+
+    logging.basicConfig(level=logging_level,
                         format=format_str, datefmt='%Y-%m-%dT%H:%M:%S',
                         handlers=[
                             logging.FileHandler(log_file_path),
@@ -564,7 +604,8 @@ if __name__ == '__main__':
         logger.info('batch_size: {}'.format(FLAGS.batch_size))
         logger.info('training_data_step: {}'.format(FLAGS.training_data_step))
         logger.info('model_size: {}'.format(FLAGS.model_size))
-        logger.info('dataset: {}'.format(FLAGS.dataset))
+        logger.info('dataset_train: {}'.format(FLAGS.dataset_train))
+        logger.info('dataset_test: {}'.format(FLAGS.dataset_test))
         logger.info('stage: {}'.format(FLAGS.stage))
         logger.info('s1_steps: {}'.format(FLAGS.s1_steps))
         logger.info('logging_interval: {}'.format(FLAGS.logging_interval))
@@ -576,10 +617,13 @@ if __name__ == '__main__':
         logger.info('coef_loss_m: {}'.format(FLAGS.coef_loss_m))
         logger.info('coef_loss_s: {}'.format(FLAGS.coef_loss_s))
         logger.info('coef_loss_t: {}'.format(FLAGS.coef_loss_t))
+        logger.info('adaptive_temporal_flow: {}'.format(FLAGS.adaptive_temporal_flow))
+        logger.info('logging_level: {}'.format(FLAGS.logging_level))
 
         assert FLAGS.stage in ['s1', 's2', 's1s2'], '{} is not valid.'.format(FLAGS.stage)
-        assert FLAGS.subset in ['train', 'test'], '{} is not valid.'.format(FLAGS.subset)
-        assert FLAGS.dataset in ['ucf101', 'ucf101_256', 'middlebury'], '{} is not valid.'.format(FLAGS.dataset)
+        assert FLAGS.subset in ['train_test', 'train', 'test'], '{} is not valid.'.format(FLAGS.subset)
+        assert FLAGS.dataset_train in ['ucf101', 'ucf101_256', 'middlebury'], '{} is not valid.'.format(FLAGS.dataset_train)
+        assert FLAGS.dataset_test in ['ucf101', 'ucf101_256', 'middlebury'], '{} is not valid.'.format(FLAGS.dataset_test)
 
         logger.info('Output_directory: {}'.format(out_dir))
 
@@ -588,18 +632,21 @@ if __name__ == '__main__':
         else:
             from CyclicGen_model import Voxel_flow_model
 
-        if FLAGS.subset == 'train':
+        global latest_ckpt_w_step_path
+        latest_ckpt_w_step_path = None
+
+        if FLAGS.subset in ['train', 'train_test']:
             os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
-            if FLAGS.dataset == 'ucf101':
+            if FLAGS.dataset_train == 'ucf101':
                 data_list_path_frame1 = "data_list/ucf101_train_files_frame1.txt"
                 data_list_path_frame2 = "data_list/ucf101_train_files_frame2.txt"
                 data_list_path_frame3 = "data_list/ucf101_train_files_frame3.txt"
-            if FLAGS.dataset == 'ucf101_256':
+            if FLAGS.dataset_train == 'ucf101_256':
                 data_list_path_frame1 = "data_list/ucf101_256_train_files_frame1.txt"
                 data_list_path_frame2 = "data_list/ucf101_256_train_files_frame2.txt"
                 data_list_path_frame3 = "data_list/ucf101_256_train_files_frame3.txt"
-            if FLAGS.dataset == 'middlebury':
+            if FLAGS.dataset_train == 'middlebury':
                 data_list_path_frame1 = "data_list/middlebury_train_files_frame1.txt"
                 data_list_path_frame2 = "data_list/middlebury_train_files_frame2.txt"
                 data_list_path_frame3 = "data_list/middlebury_train_files_frame3.txt"
@@ -611,18 +658,18 @@ if __name__ == '__main__':
             train(ucf101_dataset_frame1, ucf101_dataset_frame2, ucf101_dataset_frame3, out_dir, log_sep=' ,', hist_logger=hist_logger)
 
 
-        elif FLAGS.subset == 'test':
+        elif FLAGS.subset in ['test', 'train_test']:
             os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
-            if FLAGS.dataset == 'ucf101':
+            if FLAGS.dataset_test == 'ucf101':
                 data_list_path_frame1 = "data_list/ucf101_test_files_frame1.txt"
                 data_list_path_frame2 = "data_list/ucf101_test_files_frame2.txt"
                 data_list_path_frame3 = "data_list/ucf101_test_files_frame3.txt"
-            if FLAGS.dataset == 'ucf101_256':
+            if FLAGS.dataset_test == 'ucf101_256':
                 data_list_path_frame1 = "data_list/ucf101_256_train_files_frame1.txt"
                 data_list_path_frame2 = "data_list/ucf101_256_train_files_frame2.txt"
                 data_list_path_frame3 = "data_list/ucf101_256_train_files_frame3.txt"
-            if FLAGS.dataset == 'middlebury':
+            if FLAGS.dataset_test == 'middlebury':
                 data_list_path_frame1 = "data_list/middlebury_test_files_frame1.txt"
                 data_list_path_frame2 = "data_list/middlebury_test_files_frame2.txt"
                 data_list_path_frame3 = "data_list/middlebury_test_files_frame3.txt"
@@ -634,4 +681,4 @@ if __name__ == '__main__':
             test(ucf101_dataset_frame1, ucf101_dataset_frame2, ucf101_dataset_frame3)
 
     except:
-        logger.exception('### An Exception occured')
+        logger.exception('### An Exception occurred.')

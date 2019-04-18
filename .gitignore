@@ -123,3 +123,9 @@ UCF-101/
 CyclicGen_checkpoints/
 
 train_dir/201904/
+
+UCF-101_frames256/
+
+Pipfile
+Pipfile.lock
+scratch_codes.py

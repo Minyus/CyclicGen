@@ -3,20 +3,633 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import dataset
-import numpy as np
-import os
-import tensorflow as tf
+# import numpy as np
+# import os
+# import tensorflow as tf
 from datetime import datetime
 from pytz import timezone
-from utils.image_utils import imwrite
 from skimage.measure import compare_ssim as ssim
-from vgg16 import Vgg16
 from pathlib import Path
 from logging import getLogger
 import logging
 
 
+# from cyclicgen import dataset #import dataset
+""" dataset.py  """
+
+"""Implements a dataset class for handling image data"""
+
+from utils.image_utils import imread, imsave
+
+DATA_PATH_BASE = '/home/VoxelFlow/dataset/ucf101_triplets/'
+
+
+class Dataset(object):
+    def __init__(self, data_list_file=None, process_func=None):
+        """
+          Args:
+        """
+        self.data_list_file = data_list_file
+
+    def read_data_list_file(self):
+        """Reads the data list_file into python list
+        """
+        f = open(self.data_list_file)
+        data_list = [line.rstrip() for line in f]
+        self.data_list = data_list
+        return data_list
+
+    def process_func(self, example_line):
+        return imread(example_line)
+
+"""   """
+
+
+# from cyclicgen.utils import imwrite # from utils.image_utils import imwrite
+""" image_utils.py  """
+import scipy as sp
+from scipy import misc
+
+def imread(filename):
+  """Read image from file.
+  Args:
+    filename: .
+  Returns:
+    im_array: .
+  """
+  im = sp.misc.imread(filename)
+  # return im / 255.0
+  return im / 127.5 - 1.0
+
+
+def imwrite(filename, np_image):
+  """Save image to file.
+  Args:
+    filename: .
+    np_image: .
+  """
+  # im = sp.misc.toimage(np_image, cmin=0, cmax=1.0)
+  im = sp.misc.toimage(np_image, cmin=-1.0, cmax=1.0)
+  im.save(filename)
+"""   """
+
+# from cyclicgen.vgg16 import Vgg16 # vgg16 import Vgg16
+""" vgg16.py  """
+# Adapted from : VGG 16 model : https://github.com/machrisaa/tensorflow-vgg
+import time
+import os
+import inspect
+
+import numpy as np
+from termcolor import colored
+import tensorflow as tf
+
+# from losses import sigmoid_cross_entropy_balanced
+""" losses.py  """
+import tensorflow as tf
+
+
+def sigmoid_cross_entropy_balanced(logits, label, name='cross_entropy_loss'):
+    """
+    Implements Equation [2] in https://arxiv.org/pdf/1504.06375.pdf
+    Compute edge pixels for each training sample and set as pos_weights to
+    tf.nn.weighted_cross_entropy_with_logits
+    """
+    y = tf.cast(label, tf.float32)
+
+    count_neg = tf.reduce_sum(1. - y)
+    count_pos = tf.reduce_sum(y)
+
+    # Equation [2]
+    beta = count_neg / (count_neg + count_pos)
+
+    # Equation [2] divide by 1 - beta
+    pos_weight = beta / (1 - beta)
+
+    cost = tf.nn.weighted_cross_entropy_with_logits(logits=logits, targets=y, pos_weight=pos_weight)
+
+    # Multiply by 1 - beta
+    cost = tf.reduce_mean(cost * (1 - beta))
+
+    # check if image has no edge pixels return 0 else return complete error function
+    return tf.where(tf.equal(count_pos, 0.0), 0.0, cost, name=name)
+
+"""   """
+
+
+# import pdb
+#from io import IO
+
+VGG_MEAN = [103.939, 116.779, 123.68]
+class Vgg16():
+
+    def __init__(self, input_image,reuse=None):
+
+        # self.cfgs 1= cfgs
+#        self.io = IO()
+
+        base_path = os.path.abspath(os.path.dirname(__file__))
+        if __name__ == '__main__':
+            base_path = os.getcwd()
+        weights_file = os.path.join(base_path, 'vgg16.npy')
+
+        self.data_dict = np.load(weights_file, encoding='latin1').item()
+        # self.io.print_info("Model weights loaded from {}".format(self.cfgs['model_weights_path']))
+
+        rgb_scaled = tf.subtract((input_image+tf.ones_like(input_image)),2)*255.
+        red, green, blue = tf.split(rgb_scaled, 3, 3)
+
+        self.images = tf.concat([blue - VGG_MEAN[0],
+                        green - VGG_MEAN[1],
+                        red - VGG_MEAN[2]],
+                        3)
+        # self.images = tf.placeholder(tf.float32, [None, self.cfgs[run]['image_height'], self.cfgs[run]['image_width'], self.cfgs[run]['n_channels']])
+        # self.edgemaps = tf.placeholder(tf.float32, [None, self.cfgs[run]['image_height'], self.cfgs[run]['image_width'], 1])
+        self.define_model(reuse=reuse)
+
+    def define_model(self,reuse=None):
+
+        """
+        Load VGG params from disk without FC layers A
+        Add branch layers (with deconv) after each CONV block
+        """
+        with tf.variable_scope('hed'):
+            start_time = time.time()
+            self.conv1_1 = self.conv_layer_vgg(self.images, "conv1_1")
+            self.conv1_2 = self.conv_layer_vgg(self.conv1_1, "conv1_2")
+            self.side_1 = self.side_layer(self.conv1_2, "side_1", 1,reuse=reuse)
+            self.pool1 = self.max_pool(self.conv1_2, 'pool1')
+
+            # self.io.print_info('Added CONV-BLOCK-1+SIDE-1')
+
+            self.conv2_1 = self.conv_layer_vgg(self.pool1, "conv2_1")
+            self.conv2_2 = self.conv_layer_vgg(self.conv2_1, "conv2_2")
+            self.side_2 = self.side_layer(self.conv2_2, "side_2", 2,reuse=reuse)
+            self.pool2 = self.max_pool(self.conv2_2, 'pool2')
+
+            # self.io.print_info('Added CONV-BLOCK-2+SIDE-2')
+
+            self.conv3_1 = self.conv_layer_vgg(self.pool2, "conv3_1")
+            self.conv3_2 = self.conv_layer_vgg(self.conv3_1, "conv3_2")
+            self.conv3_3 = self.conv_layer_vgg(self.conv3_2, "conv3_3")
+            self.side_3 = self.side_layer(self.conv3_3, "side_3", 4,reuse=reuse)
+            self.pool3 = self.max_pool(self.conv3_3, 'pool3')
+
+            # self.io.print_info('Added CONV-BLOCK-3+SIDE-3')
+
+            self.conv4_1 = self.conv_layer_vgg(self.pool3, "conv4_1")
+            self.conv4_2 = self.conv_layer_vgg(self.conv4_1, "conv4_2")
+            self.conv4_3 = self.conv_layer_vgg(self.conv4_2, "conv4_3")
+            self.side_4 = self.side_layer(self.conv4_3, "side_4", 8,reuse=reuse)
+            self.pool4 = self.max_pool(self.conv4_3, 'pool4')
+
+            # self.io.print_info('Added CONV-BLOCK-4+SIDE-4')
+
+            self.conv5_1 = self.conv_layer_vgg(self.pool4, "conv5_1")
+            self.conv5_2 = self.conv_layer_vgg(self.conv5_1, "conv5_2")
+            self.conv5_3 = self.conv_layer_vgg(self.conv5_2, "conv5_3")
+            self.side_5 = self.side_layer(self.conv5_3, "side_5", 16,reuse=reuse)
+
+            # self.io.print_info('Added CONV-BLOCK-5+SIDE-5')
+
+            self.side_outputs = [self.side_1, self.side_2, self.side_3, self.side_4, self.side_5]
+            w_shape = [1, 1, len(self.side_outputs), 1]
+            if reuse == True:
+                tf.get_variable_scope().reuse_variables()
+            self.fuse = self.conv_layer(tf.concat(self.side_outputs, axis=3),
+                                    w_shape, name='fuse_1', use_bias=False,
+                                    w_init=tf.constant_initializer(0.2))
+            #tf.get_variable_scope().reuse == False
+
+            # self.io.print_info('Added FUSE layer')
+
+            # complete output maps from side layer and fuse layers
+            self.outputs = self.side_outputs + [self.fuse]
+
+            self.data_dict = None
+            # self.io.print_info("Build model finished: {:.4f}s".format(time.time() - start_time))
+
+    def max_pool(self, bottom, name):
+        return tf.nn.max_pool(bottom, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME', name=name)
+
+    def conv_layer_vgg(self, bottom, name):
+        """
+            Adding a conv layer + weight parameters from a dict
+        """
+        with tf.variable_scope(name):
+            filt = self.get_conv_filter(name)
+
+            conv = tf.nn.conv2d(bottom, filt, [1, 1, 1, 1], padding='SAME')
+
+            conv_biases = self.get_bias(name)
+            bias = tf.nn.bias_add(conv, conv_biases)
+
+            relu = tf.nn.relu(bias)
+            return relu
+
+    def conv_layer(self, x, W_shape, b_shape=None, name=None,
+                   padding='SAME', use_bias=True, w_init=None, b_init=None):
+
+        W = self.weight_variable(W_shape, w_init, 'Variable')
+        tf.summary.histogram('weights_{}'.format(name), W)
+
+        if use_bias:
+            b = self.bias_variable([b_shape], b_init, 'Variable_1')
+            tf.summary.histogram('biases_{}'.format(name), b)
+
+        conv = tf.nn.conv2d(x, W, strides=[1, 1, 1, 1], padding=padding)
+
+        return conv + b if use_bias else conv
+
+    def deconv_layer(self, x, upscale, name, padding='SAME', w_init=None):
+
+        x_shape = tf.shape(x)
+        in_shape = x.shape.as_list()
+
+        w_shape = [upscale * 2, upscale * 2, in_shape[-1], 1]
+        strides = [1, upscale, upscale, 1]
+
+        W = self.weight_variable(w_shape, w_init, 'Variable_2')
+        tf.summary.histogram('weights_{}'.format(name), W)
+
+        out_shape = tf.stack([x_shape[0], x_shape[1], x_shape[2], w_shape[2]]) * tf.constant(strides, tf.int32)
+        deconv = tf.nn.conv2d_transpose(x, W, out_shape, strides=strides, padding=padding)
+
+        return deconv
+
+    def side_layer(self, inputs, name, upscale,reuse=None):
+        """
+            https://github.com/s9xie/hed/blob/9e74dd710773d8d8a469ad905c76f4a7fa08f945/examples/hed/train_val.prototxt#L122
+            1x1 conv followed with Deconvoltion layer to upscale the size of input image sans color
+        """
+        with tf.variable_scope(name,reuse=reuse):
+
+            in_shape = inputs.shape.as_list()
+            w_shape = [1, 1, in_shape[-1], 1]
+
+            classifier = self.conv_layer(inputs, w_shape, b_shape=1,
+                                         w_init=tf.constant_initializer(),
+                                         b_init=tf.constant_initializer(),
+                                         name=name + '_reduction')
+
+            classifier = self.deconv_layer(classifier, upscale=upscale,
+                                           name='{}_deconv_{}'.format(name, upscale),
+                                           w_init=tf.truncated_normal_initializer(stddev=0.1))
+
+            return classifier
+
+    def get_conv_filter(self, name):
+        return tf.constant(self.data_dict[name][0], name="filter")
+
+    def get_bias(self, name):
+        return tf.constant(self.data_dict[name][1], name="biases")
+
+    def weight_variable(self, shape, initial, name):
+
+        return tf.get_variable(name, shape=shape, initializer=initial)
+
+    def bias_variable(self, shape, initial, name):
+
+        return tf.get_variable(name, shape=shape, initializer=initial)
+
+    def setup_testing(self, session):
+
+        """
+            Apply sigmoid non-linearity to side layer ouputs + fuse layer outputs for predictions
+        """
+
+        self.predictions = []
+
+        for idx, b in enumerate(self.outputs):
+            output = tf.nn.sigmoid(b, name='output_{}'.format(idx))
+            self.predictions.append(output)
+
+    def setup_training(self, session):
+
+        """
+            Apply sigmoid non-linearity to side layer ouputs + fuse layer outputs
+            Compute total loss := side_layer_loss + fuse_layer_loss
+            Compute predicted edge maps from fuse layer as pseudo performance metric to track
+        """
+
+        self.predictions = []
+        self.loss = 0
+
+        self.io.print_warning('Deep supervision application set to {}'.format(self.cfgs['deep_supervision']))
+
+        for idx, b in enumerate(self.side_outputs):
+            output = tf.nn.sigmoid(b, name='output_{}'.format(idx))
+            cost = sigmoid_cross_entropy_balanced(b, self.edgemaps, name='cross_entropy{}'.format(idx))
+
+            self.predictions.append(output)
+            if self.cfgs['deep_supervision']:
+                self.loss += (self.cfgs['loss_weights'] * cost)
+
+        fuse_output = tf.nn.sigmoid(self.fuse, name='fuse')
+        fuse_cost = sigmoid_cross_entropy_balanced(self.fuse, self.edgemaps, name='cross_entropy_fuse')
+
+        self.predictions.append(fuse_output)
+        self.loss += (self.cfgs['loss_weights'] * fuse_cost)
+
+        pred = tf.cast(tf.greater(fuse_output, 0.5), tf.int32, name='predictions')
+        error = tf.cast(tf.not_equal(pred, tf.cast(self.edgemaps, tf.int32)), tf.float32)
+        self.error = tf.reduce_mean(error, name='pixel_error')
+
+        tf.summary.scalar('loss', self.loss)
+        tf.summary.scalar('error', self.error)
+
+        self.merged_summary = tf.summary.merge_all()
+
+        self.train_writer = tf.summary.FileWriter(self.cfgs['save_dir'] + '/train', session.graph)
+        self.val_writer = tf.summary.FileWriter(self.cfgs['save_dir'] + '/val')
+
+"""   """
+
+# from CyclicGen_model_large import Voxel_flow_model
+""" CyclicGen_model_large.py  """
+"""Implements a voxel flow model."""
+
+import tensorflow as tf
+import tensorflow.contrib.slim as slim
+# from utils.loss_utils import l1_loss #, l2_loss, vae_loss
+""" loss_utils.py  """
+
+def l1_loss(predictions, targets):
+  """Implements tensorflow l1 loss.
+  Args:
+  Returns:
+  """
+  total_elements = (tf.shape(targets)[0] * tf.shape(targets)[1] * tf.shape(targets)[2]
+      * tf.shape(targets)[3])
+  total_elements = tf.to_float(total_elements)
+
+  loss = tf.reduce_sum(tf.abs(predictions- targets))
+  loss = tf.div(loss, total_elements)
+  return loss
+"""   """
+
+
+# from utils.geo_layer_utils import bilinear_interp
+# from utils.geo_layer_utils import meshgrid
+""" geo_layer_utils.py """
+
+
+def bilinear_interp(im, x, y, name):
+    """Perform bilinear sampling on im given x, y coordinates
+
+    This function implements the differentiable sampling mechanism with
+    bilinear kernel. Introduced in https://arxiv.org/abs/1506.02025, equation
+    (5).
+
+    x,y are tensors specfying normalized coorindates [-1,1] to sample from im.
+    (-1,1) means (0,0) coordinate in im. (1,1) means the most bottom right pixel.
+
+    Args:
+      im: Tensor of size [batch_size, height, width, depth]
+      x: Tensor of size [batch_size, height, width, 1]
+      y: Tensor of size [batch_size, height, width, 1]
+      name: String for the name for this opt.
+    Returns:
+      Tensor of size [batch_size, height, width, depth]
+    """
+    with tf.variable_scope(name):
+        x = tf.reshape(x, [-1])
+        y = tf.reshape(y, [-1])
+
+        # constants
+        num_batch = tf.shape(im)[0]
+        _, height, width, channels = im.get_shape().as_list()
+
+        x = tf.to_float(x)
+        y = tf.to_float(y)
+
+        height_f = tf.cast(height, 'float32')
+        width_f = tf.cast(width, 'float32')
+        zero = tf.constant(0, dtype=tf.int32)
+
+        max_x = tf.cast(tf.shape(im)[2] - 1, 'int32')
+        max_y = tf.cast(tf.shape(im)[1] - 1, 'int32')
+        x = (x + 1.0) * (width_f - 1.0) / 2.0
+        y = (y + 1.0) * (height_f - 1.0) / 2.0
+
+        # Sampling
+        x0 = tf.cast(tf.floor(x), 'int32')
+        x1 = x0 + 1
+        y0 = tf.cast(tf.floor(y), 'int32')
+        y1 = y0 + 1
+
+        x0 = tf.clip_by_value(x0, zero, max_x)
+        x1 = tf.clip_by_value(x1, zero, max_x)
+        y0 = tf.clip_by_value(y0, zero, max_y)
+        y1 = tf.clip_by_value(y1, zero, max_y)
+
+        dim2 = width
+        dim1 = width * height
+
+        # Create base index
+        base = tf.range(num_batch) * dim1
+        base = tf.reshape(base, [-1, 1])
+        base = tf.tile(base, [1, height * width])
+        base = tf.reshape(base, [-1])
+
+        base_y0 = base + y0 * dim2
+        base_y1 = base + y1 * dim2
+        idx_a = base_y0 + x0
+        idx_b = base_y1 + x0
+        idx_c = base_y0 + x1
+        idx_d = base_y1 + x1
+
+        # Use indices to look up pixels
+        im_flat = tf.reshape(im, tf.stack([-1, channels]))
+        im_flat = tf.to_float(im_flat)
+        pixel_a = tf.gather(im_flat, idx_a)
+        pixel_b = tf.gather(im_flat, idx_b)
+        pixel_c = tf.gather(im_flat, idx_c)
+        pixel_d = tf.gather(im_flat, idx_d)
+
+        # Interpolate the values
+        x1_f = tf.to_float(x1)
+        y1_f = tf.to_float(y1)
+
+        wa = tf.expand_dims((x1_f - x) * (y1_f - y), 1)
+        wb = tf.expand_dims((x1_f - x) * (1.0 - (y1_f - y)), 1)
+        wc = tf.expand_dims((1.0 - (x1_f - x)) * (y1_f - y), 1)
+        wd = tf.expand_dims((1.0 - (x1_f - x)) * (1.0 - (y1_f - y)), 1)
+
+        output = tf.add_n([wa * pixel_a, wb * pixel_b, wc * pixel_c, wd * pixel_d])
+        output = tf.reshape(output, shape=tf.stack([num_batch, height, width, channels]))
+        return output
+
+
+def meshgrid(height, width):
+    """Tensorflow meshgrid function.
+    """
+    with tf.variable_scope('meshgrid'):
+        x_t = tf.matmul(
+            tf.ones(shape=tf.stack([height, 1])),
+            tf.transpose(
+                tf.expand_dims(
+                    tf.linspace(-1.0, 1.0, width), 1), [1, 0]))
+        y_t = tf.matmul(
+            tf.expand_dims(
+                tf.linspace(-1.0, 1.0, height), 1),
+            tf.ones(shape=tf.stack([1, width])))
+        x_t_flat = tf.reshape(x_t, (1, -1))
+        y_t_flat = tf.reshape(y_t, (1, -1))
+        # grid_x = tf.reshape(x_t_flat, [1, height, width, 1])
+        # grid_y = tf.reshape(y_t_flat, [1, height, width, 1])
+        grid_x = tf.reshape(x_t_flat, [1, height, width])
+        grid_y = tf.reshape(y_t_flat, [1, height, width])
+        return grid_x, grid_y
+
+
+"""   """
+
+
+
+FLAGS = tf.app.flags.FLAGS
+epsilon = 0.001
+
+
+class Voxel_flow_model(object):
+    def __init__(self, batch_size = 8, is_train=True, adaptive_temporal_flow=False):
+        self.is_train = is_train
+        self.adaptive_temporal_flow = adaptive_temporal_flow
+        self.batch_size = batch_size
+
+    def inference(self, input_images, target_time_point=0.5):
+        """Inference on a set of input_images.
+        Args:
+        """
+        return self._build_model(input_images, target_time_point=target_time_point)
+
+    def total_var(self, images):
+        pixel_dif1 = images[:, 1:, :, :] - images[:, :-1, :, :]
+        pixel_dif2 = images[:, :, 1:, :] - images[:, :, :-1, :]
+        tot_var = (tf.reduce_mean(tf.sqrt(tf.square(pixel_dif1) + epsilon**2)) + tf.reduce_mean(tf.sqrt(tf.square(pixel_dif2) + epsilon**2)))
+        return tot_var
+
+    def loss(self, predictions, targets):
+        """Compute the necessary loss for training.
+        Args:
+        Returns:
+        """
+        # self.reproduction_loss = l1_loss(predictions, targets)
+        self.reproduction_loss = tf.reduce_mean(tf.sqrt(tf.square(predictions - targets) + epsilon**2))
+
+        self.motion_loss = self.total_var(self.flow)
+        self.mask_loss = self.total_var(self.mask)
+
+        # return [self.reproduction_loss, self.prior_loss]
+        return self.reproduction_loss + 0.01 * self.motion_loss + 0.005 * self.mask_loss
+
+    def l1loss(self, predictions, targets):
+        self.reproduction_loss = l1_loss(predictions, targets)
+        return self.reproduction_loss
+
+    def _build_model(self, input_images, target_time_point=0.5):
+        with slim.arg_scope([slim.conv2d],
+                            activation_fn=tf.nn.leaky_relu,
+                            weights_initializer=tf.truncated_normal_initializer(0.0, 0.01),
+                            weights_regularizer=slim.l2_regularizer(0.0001)):
+            # Define network
+            batch_norm_params = {
+                'decay': 0.9997,
+                'epsilon': 0.001,
+                'is_training': self.is_train,
+            }
+            with slim.arg_scope([slim.batch_norm], is_training=self.is_train, updates_collections=None):
+                with slim.arg_scope([slim.conv2d], normalizer_fn=slim.batch_norm,
+                                    normalizer_params=batch_norm_params):
+                    x0 = slim.conv2d(input_images, 32, [7, 7], stride=1, scope='conv1')
+                    x0_1 = slim.conv2d(x0, 32, [7, 7], stride=1, scope='conv1_1')
+
+                    net = slim.avg_pool2d(x0_1, [2, 2], scope='pool1')
+                    x1 = slim.conv2d(net, 64, [5, 5], stride=1, scope='conv2')
+                    x1_1 = slim.conv2d(x1, 64, [5, 5], stride=1, scope='conv2_1')
+
+                    net = slim.avg_pool2d(x1_1, [2, 2], scope='pool2')
+                    x2 = slim.conv2d(net, 128, [3, 3], stride=1, scope='conv3')
+                    x2_1 = slim.conv2d(x2, 128, [3, 3], stride=1, scope='conv3_1')
+
+                    net = slim.avg_pool2d(x2_1, [2, 2], scope='pool3')
+                    x3 = slim.conv2d(net, 256, [3, 3], stride=1, scope='conv4')
+                    x3_1 = slim.conv2d(x3, 256, [3, 3], stride=1, scope='conv4_1')
+
+                    net = slim.avg_pool2d(x3_1, [2, 2], scope='pool4')
+                    x4 = slim.conv2d(net, 512, [3, 3], stride=1, scope='conv5')
+                    x4_1 = slim.conv2d(x4, 512, [3, 3], stride=1, scope='conv5_1')
+
+                    net = slim.avg_pool2d(x4_1, [2, 2], scope='pool5')
+                    net = slim.conv2d(net, 512, [3, 3], stride=1, scope='conv6')
+                    net = slim.conv2d(net, 512, [3, 3], stride=1, scope='conv6_1')
+
+                    net = tf.image.resize_bilinear(net, [x4.get_shape().as_list()[1], x4.get_shape().as_list()[2]])
+                    net = slim.conv2d(tf.concat([net, x4_1], -1), 512, [3, 3], stride=1, scope='conv7')
+                    net = slim.conv2d(net, 512, [3, 3], stride=1, scope='conv7_1')
+
+                    net = tf.image.resize_bilinear(net, [x3.get_shape().as_list()[1], x3.get_shape().as_list()[2]])
+                    net = slim.conv2d(tf.concat([net, x3_1], -1), 256, [3, 3], stride=1, scope='conv8')
+                    net = slim.conv2d(net, 256, [3, 3], stride=1, scope='conv8_1')
+
+                    net = tf.image.resize_bilinear(net, [x2.get_shape().as_list()[1], x2.get_shape().as_list()[2]])
+                    net = slim.conv2d(tf.concat([net, x2_1], -1), 128, [3, 3], stride=1, scope='conv9')
+                    net = slim.conv2d(net, 128, [3, 3], stride=1, scope='conv9_1')
+
+                    net = tf.image.resize_bilinear(net, [x1.get_shape().as_list()[1], x1.get_shape().as_list()[2]])
+                    net = slim.conv2d(tf.concat([net, x1_1], -1), 64, [3, 3], stride=1, scope='conv10')
+                    net = slim.conv2d(net, 64, [3, 3], stride=1, scope='conv10_1')
+
+                    net = tf.image.resize_bilinear(net, [x0.get_shape().as_list()[1], x0.get_shape().as_list()[2]])
+                    net = slim.conv2d(tf.concat([net, x0_1], -1), 32, [3, 3], stride=1, scope='conv11')
+                    y0 = slim.conv2d(net, 32, [3, 3], stride=1, scope='conv11_1')
+
+        net = slim.conv2d(y0, 3, [5, 5], stride=1, activation_fn=tf.tanh,
+                          normalizer_fn=None, scope='conv12')
+        net_copy = net
+
+        flow = net[:, :, :, 0:2] #_ (B,H,W,2)
+        self.flow = flow #_ (B,H,W,2)
+
+        temporal_flow_for_pixel = net[:, :, :, 2] #_ (B,H,W)
+        mask_for_pixel = 0.5 * (1.0 + temporal_flow_for_pixel) #_ (B,H,W)
+        mask = tf.expand_dims(mask_for_pixel, 3) #_ (B,H,W,1)
+        self.mask = mask #_ (B,H,W,1)
+
+        target_time_point_for_pixel = target_time_point * tf.ones_like(mask_for_pixel) #_ (B,H,W)
+        if self.adaptive_temporal_flow:
+            target_time_point_for_pixel = 1.0-mask_for_pixel #_ (B,H,W)
+
+        grid_x, grid_y = meshgrid(x0.get_shape().as_list()[1], x0.get_shape().as_list()[2])
+        grid_x = tf.tile(grid_x, [self.batch_size, 1, 1])
+        grid_y = tf.tile(grid_y, [self.batch_size, 1, 1])
+
+        flow_ratio = tf.constant([255.0 / (x0.get_shape().as_list()[2]-1), 255.0 / (x0.get_shape().as_list()[1]-1)]) #_ (2,)
+        flow = flow * tf.expand_dims(tf.expand_dims(tf.expand_dims(flow_ratio, 0), 0), 0) #_ (1,1,1,2)
+
+        coor_x_1 = grid_x + target_time_point_for_pixel * flow[:, :, :, 0] #_ (B,H,W)
+        coor_y_1 = grid_y + target_time_point_for_pixel * flow[:, :, :, 1] #_ (B,H,W)
+
+        coor_x_2 = grid_x + (target_time_point_for_pixel-1.0) * flow[:, :, :, 0] #_ (B,H,W)
+        coor_y_2 = grid_y + (target_time_point_for_pixel-1.0) * flow[:, :, :, 1] #_ (B,H,W)
+
+        output_1 = bilinear_interp(input_images[:, :, :, 0:3], coor_x_1, coor_y_1, 'interpolate') #_ (B,H,W,3)
+        output_2 = bilinear_interp(input_images[:, :, :, 3:6], coor_x_2, coor_y_2, 'interpolate') #_ (B,H,W,3)
+
+        self.warped_img1 = output_1 #_ (B,H,W,3)
+        self.warped_img2 = output_2 #_ (B,H,W,3)
+
+        self.warped_flow1 = bilinear_interp(-flow[:, :, :, 0:3]*0.5*0.5, coor_x_1, coor_y_1, 'interpolate') #_ (B,H,W,3)
+        self.warped_flow2 = bilinear_interp(flow[:, :, :, 0:3]*0.5*0.5, coor_x_2, coor_y_2, 'interpolate') #_ (B,H,W,3)
+
+        mask = tf.tile(mask, [1, 1, 1, 3]) #_ (B,H,W,3)
+        net = tf.multiply(mask, output_1) + tf.multiply(1.0 - mask, output_2) #_ (B,H,W,3)
+
+        return [net, net_copy]
+
+"""   """
+
+""" main from here """
 logger = getLogger(__name__)
 
 FLAGS = tf.app.flags.FLAGS
@@ -52,7 +665,7 @@ tf.app.flags.DEFINE_float('coef_loss_c', 1.0, """ coef_cycle_consistency_loss ""
 tf.app.flags.DEFINE_float('coef_loss_m', 0.1, """ coef_motion_linearity_loss """) ##
 tf.app.flags.DEFINE_float('coef_loss_s', 0.0, """ coef_stable_motion_loss """) ##
 tf.app.flags.DEFINE_float('coef_loss_t', 0.0, """ coef_temporal_regularization_loss """) ##
-tf.app.flags.DEFINE_bool('adaptive_temporal_flow', False, """ adaptive_temporal_flow """) ##
+tf.app.flags.DEFINE_string('strategy', 'original_cycle_gen', """ strategy: original_cycle_gen, adaptive_temporal_flow, accel_adjust """) ##
 tf.app.flags.DEFINE_string('logging_level', 'info', """ logging_level """) ##
 
 def _read_image(filename):
@@ -143,11 +756,11 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
             edge_2 = tf.reshape(edge_2,[-1,input1.get_shape().as_list()[1],input1.get_shape().as_list()[2],1])
         edge_3 = tf.reshape(edge_3,[-1,input1.get_shape().as_list()[1],input1.get_shape().as_list()[2],1])
 
-        if False: #if stage == 's1':
-            with tf.variable_scope("Cycle_DVF"):
-                model1_s1_i00_i20 = Voxel_flow_model(adaptive_temporal_flow=FLAGS.adaptive_temporal_flow)
-                prediction1, _ = model1_s1_i00_i20.inference(tf.concat([input1, input3, edge_1, edge_3], 3))
-                loss_c = model1_s1_i00_i20.l1loss(prediction1, input2)
+        # if stage == 's1':
+        #     with tf.variable_scope("Cycle_DVF"):
+        #         model1_s1_i00_i20 = Voxel_flow_model(adaptive_temporal_flow=FLAGS.strategy == 'adaptive_temporal_flow')
+        #         prediction1, _ = model1_s1_i00_i20.inference(tf.concat([input1, input3, edge_1, edge_3], 3))
+        #         loss_c = model1_s1_i00_i20.l1loss(prediction1, input2)
 
         if True: #if stage == 's2':
             input_placeholder1 = tf.concat([input1, input2], 3)
@@ -173,29 +786,43 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
             edge_prediction1 = tf.reshape(edge_prediction1,[-1,input1.get_shape().as_list()[1],input1.get_shape().as_list()[2],1])
             edge_prediction2 = tf.reshape(edge_prediction2,[-1,input1.get_shape().as_list()[1],input1.get_shape().as_list()[2],1])
 
+            adaptive_temporal_flow = FLAGS.strategy == 'adaptive_temporal_flow'
+            accel_adjust = FLAGS.strategy == 'accel_adjust'
+
+            target_time_point = 0.5
+
+            if accel_adjust:
+                f1 = model1_s2_i00_i10.flow #_ (B,H,W,2)
+                f2 = (model1_s2_i00_i10.flow + model2_s2_i10_i20.flow) #_ (B,H,W,2)
+
+                f1f2 = tf.reduce_sum(tf.multiply(f1, f2), axis=3, keepdims=False) #_ (B,H,W)
+                f2f2 = tf.reduce_sum(tf.multiply(f2, f2), axis=3, keepdims=False) #_ (B,H,W)
+                epsilon_pixel_sq = 1.0
+                target_time_point = (f1f2 + epsilon_pixel_sq) / (f2f2 + 2.0 * epsilon_pixel_sq) #_ (B,H,W)
+
             with tf.variable_scope("Cycle_DVF", reuse=True):
-                model3_s2_i05_i15 = Voxel_flow_model(batch_size=batch_size, adaptive_temporal_flow=FLAGS.adaptive_temporal_flow)
-                prediction3, _ = model3_s2_i05_i15.inference(tf.concat([prediction1, prediction2, edge_prediction1, edge_prediction2], 3))
+                model3_s2_i05_i15 = Voxel_flow_model(batch_size=batch_size, adaptive_temporal_flow=adaptive_temporal_flow)
+                prediction3, _ = model3_s2_i05_i15.inference(tf.concat([prediction1, prediction2, edge_prediction1, edge_prediction2], 3),
+                                                             target_time_point=target_time_point)
                 loss_c = model3_s2_i05_i15.l1loss(prediction3, input2)
 
             with tf.variable_scope("Cycle_DVF", reuse=True):
-                model4_s2_i00_i20 = Voxel_flow_model(batch_size=batch_size, adaptive_temporal_flow=FLAGS.adaptive_temporal_flow)
-                prediction4, _ = model4_s2_i00_i20.inference(tf.concat([input1, input3,edge_1,edge_3], 3))
+                model4_s2_i00_i20 = Voxel_flow_model(batch_size=batch_size, adaptive_temporal_flow=adaptive_temporal_flow)
+                prediction4, _ = model4_s2_i00_i20.inference(tf.concat([input1, input3,edge_1,edge_3], 3),
+                                                             target_time_point=target_time_point)
                 loss_r = model4_s2_i00_i20.l1loss(prediction4, input2)
 
         t_vars = tf.trainable_variables()
-        #logger.debug('all layers:')
-        #for var in t_vars: logger.debug(var.name)
+
         logger.debug('all_layers:' + ' | '.join([var.name for var in t_vars]))
         dof_vars = [var for var in t_vars if not 'hed' in var.name]
-        #logger.debug('optimize layers:')
-        #for var in dof_vars: logger.debug(var.name)
+
         logger.debug('optimize layers:' + ' | '.join([var.name for var in dof_vars]))
 
-        if False: #if stage == 's1':
-            loss_c = tf.convert_to_tensor(0.0, dtype=tf.float32)
-            loss_m =  tf.convert_to_tensor(0.0, dtype=tf.float32)
-            total_loss = loss_r
+        # if False: #if stage == 's1':
+        #     loss_c = tf.convert_to_tensor(0.0, dtype=tf.float32)
+        #     loss_m =  tf.convert_to_tensor(0.0, dtype=tf.float32)
+        #     total_loss = loss_r
 
         if True: #if stage == 's2':
             loss_m = tf.reduce_mean(tf.square(model4_s2_i00_i20.flow - model3_s2_i05_i15.flow * 2.0))
@@ -617,7 +1244,7 @@ if __name__ == '__main__':
         logger.info('coef_loss_m: {}'.format(FLAGS.coef_loss_m))
         logger.info('coef_loss_s: {}'.format(FLAGS.coef_loss_s))
         logger.info('coef_loss_t: {}'.format(FLAGS.coef_loss_t))
-        logger.info('adaptive_temporal_flow: {}'.format(FLAGS.adaptive_temporal_flow))
+        logger.info('strategy: {}'.format(FLAGS.strategy))
         logger.info('logging_level: {}'.format(FLAGS.logging_level))
 
         assert FLAGS.stage in ['s1', 's2', 's1s2'], '{} is not valid.'.format(FLAGS.stage)
@@ -627,9 +1254,7 @@ if __name__ == '__main__':
 
         logger.info('Output_directory: {}'.format(out_dir))
 
-        if FLAGS.model_size == 'large':
-            from CyclicGen_model_large import Voxel_flow_model
-        else:
+        if FLAGS.model_size != 'large':
             from CyclicGen_model import Voxel_flow_model
 
         global latest_ckpt_w_step_path
@@ -651,9 +1276,9 @@ if __name__ == '__main__':
                 data_list_path_frame2 = "data_list/middlebury_train_files_frame2.txt"
                 data_list_path_frame3 = "data_list/middlebury_train_files_frame3.txt"
 
-            ucf101_dataset_frame1 = dataset.Dataset(data_list_path_frame1)
-            ucf101_dataset_frame2 = dataset.Dataset(data_list_path_frame2)
-            ucf101_dataset_frame3 = dataset.Dataset(data_list_path_frame3)
+            ucf101_dataset_frame1 = Dataset(data_list_path_frame1)
+            ucf101_dataset_frame2 = Dataset(data_list_path_frame2)
+            ucf101_dataset_frame3 = Dataset(data_list_path_frame3)
 
             train(ucf101_dataset_frame1, ucf101_dataset_frame2, ucf101_dataset_frame3, out_dir, log_sep=' ,', hist_logger=hist_logger)
 
@@ -674,9 +1299,9 @@ if __name__ == '__main__':
                 data_list_path_frame2 = "data_list/middlebury_test_files_frame2.txt"
                 data_list_path_frame3 = "data_list/middlebury_test_files_frame3.txt"
 
-            ucf101_dataset_frame1 = dataset.Dataset(data_list_path_frame1)
-            ucf101_dataset_frame2 = dataset.Dataset(data_list_path_frame2)
-            ucf101_dataset_frame3 = dataset.Dataset(data_list_path_frame3)
+            ucf101_dataset_frame1 = Dataset(data_list_path_frame1)
+            ucf101_dataset_frame2 = Dataset(data_list_path_frame2)
+            ucf101_dataset_frame3 = Dataset(data_list_path_frame3)
 
             test(ucf101_dataset_frame1, ucf101_dataset_frame2, ucf101_dataset_frame3)
 

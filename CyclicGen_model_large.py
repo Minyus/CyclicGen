@@ -20,11 +20,11 @@ class Voxel_flow_model(object):
         self.adaptive_temporal_flow = adaptive_temporal_flow
         self.batch_size = batch_size
 
-    def inference(self, input_images):
+    def inference(self, input_images, target_time_point=0.5):
         """Inference on a set of input_images.
         Args:
         """
-        return self._build_model(input_images, target_time_point=0.5)
+        return self._build_model(input_images, target_time_point=target_time_point)
 
     def total_var(self, images):
         pixel_dif1 = images[:, 1:, :, :] - images[:, :-1, :, :]

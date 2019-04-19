@@ -19,13 +19,13 @@ import logging
 
 """Implements a dataset class for handling image data"""
 
-from utils.image_utils import imread, imsave
+# from utils.image_utils import imread, imsave
 
 DATA_PATH_BASE = '/home/VoxelFlow/dataset/ucf101_triplets/'
 
 
 class Dataset(object):
-    def __init__(self, data_list_file=None, process_func=None):
+    def __init__(self, data_list_file=None):
         """
           Args:
         """
@@ -45,10 +45,18 @@ class Dataset(object):
 """   """
 
 
+def tf_imread(filename):
+    image_string = tf.read_file(filename)
+    image_decoded = tf.image.decode_image(image_string, channels=3)
+    # image_decoded.set_shape([256, 256, 3])
+    return tf.cast(image_decoded, dtype=tf.float32) / 127.5 - 1.0 # value between -1 and +1
+
+
 # from cyclicgen.utils import imwrite # from utils.image_utils import imwrite
 """ image_utils.py  """
 import scipy as sp
 from scipy import misc
+
 
 def imread(filename):
   """Read image from file.
@@ -68,10 +76,15 @@ def imwrite(filename, np_image):
     filename: .
     np_image: .
   """
+  np_image = np.clip(np_image, -1.0, 1.0)
   # im = sp.misc.toimage(np_image, cmin=0, cmax=1.0)
   im = sp.misc.toimage(np_image, cmin=-1.0, cmax=1.0)
   im.save(filename)
 """   """
+
+
+
+
 
 # from cyclicgen.vgg16 import Vgg16 # vgg16 import Vgg16
 """ vgg16.py  """
@@ -672,11 +685,6 @@ tf.app.flags.DEFINE_string('gen_i1_path', './Middlebury/eval-color-allframes/eva
 tf.app.flags.DEFINE_string('gen_out_path', None, """ gen_out_path """) ##
 
 
-def _read_image(filename):
-    image_string = tf.read_file(filename)
-    image_decoded = tf.image.decode_image(image_string, channels=3)
-    # image_decoded.set_shape([256, 256, 3])
-    return tf.cast(image_decoded, dtype=tf.float32) / 127.5 - 1.0
 
 """
 def random_scaling(image, seed=1):
@@ -699,7 +707,7 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
         data_list_frame1 = data_list_frame1[::FLAGS.training_data_step]
         dataset_frame1 = tf.data.Dataset.from_tensor_slices(tf.constant(data_list_frame1))
         dataset_frame1 = dataset_frame1.apply(
-            tf.contrib.data.shuffle_and_repeat(buffer_size=1000000, count=None, seed=seed)).map(_read_image).map(
+            tf.contrib.data.shuffle_and_repeat(buffer_size=1000000, count=None, seed=seed)).map(tf_imread).map(
             lambda image: tf.image.random_flip_left_right(image, seed=seed)).map(
             lambda image: tf.image.random_flip_up_down(image, seed=seed)).map(
             lambda image: tf.random_crop(image, [crop_size, crop_size, 3], seed=seed)).map(
@@ -712,7 +720,7 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
         data_list_frame2 = data_list_frame2[::FLAGS.training_data_step]
         dataset_frame2 = tf.data.Dataset.from_tensor_slices(tf.constant(data_list_frame2))
         dataset_frame2 = dataset_frame2.apply(
-            tf.contrib.data.shuffle_and_repeat(buffer_size=1000000, count=None, seed=seed)).map(_read_image).map(
+            tf.contrib.data.shuffle_and_repeat(buffer_size=1000000, count=None, seed=seed)).map(tf_imread).map(
             lambda image: tf.image.random_flip_left_right(image, seed=seed)).map(
             lambda image: tf.image.random_flip_up_down(image, seed=seed)).map(
             lambda image: tf.random_crop(image, [crop_size, crop_size, 3], seed=seed)).map(
@@ -726,7 +734,7 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
         data_list_frame3 = data_list_frame3[::FLAGS.training_data_step]
         dataset_frame3 = tf.data.Dataset.from_tensor_slices(tf.constant(data_list_frame3))
         dataset_frame3 = dataset_frame3.apply(
-            tf.contrib.data.shuffle_and_repeat(buffer_size=1000000, count=None, seed=seed)).map(_read_image).map(
+            tf.contrib.data.shuffle_and_repeat(buffer_size=1000000, count=None, seed=seed)).map(tf_imread).map(
             lambda image: tf.image.random_flip_left_right(image, seed=seed)).map(
             lambda image: tf.image.random_flip_up_down(image, seed=seed)).map(
             lambda image: tf.random_crop(image, [crop_size, crop_size, 3], seed=seed)).map(
@@ -1037,8 +1045,8 @@ def validate(dataset_frame1, dataset_frame2, dataset_frame3):
 
 
 def test(dataset_frame1, dataset_frame2, dataset_frame3, target_time_point=0.5):
-    def rgb2gray(rgb):
-        return np.dot(rgb[..., :3], [0.299, 0.587, 0.114])
+    # def rgb2gray(rgb):
+    #     return np.dot(rgb[..., :3], [0.299, 0.587, 0.114])
 
     """Perform test on a trained model."""
     with tf.Graph().as_default():
@@ -1133,8 +1141,12 @@ def test(dataset_frame1, dataset_frame2, dataset_frame3, target_time_point=0.5):
             ckpt_dir, ckpt_name = os.path.split(pretrained_model_checkpoint_path)
             _, ckpt_dir = os.path.split(ckpt_dir)
 
-            imwrite('ucf101_interp_ours/' + str(UCF_index) + '/frame_01_' + \
-                    ckpt_dir + '_' + ckpt_name + '.png', prediction_np[-1, :, :, :])
+            # out = 'ucf101_interp_ours/' + str(UCF_index) + '/frame_01_' + ckpt_dir + '_' + ckpt_name + '.png'
+            ckpt_str = ckpt_dir + '_' + ckpt_name
+            out = 'ucf101_interp_ours/{}/frame_01_{}.png'.format(UCF_index, ckpt_str)
+            imwrite(out, prediction_np[-1, :, :, :])
+
+            logger.info('Generated image was saved at: '.format(out))
 
             if use_motion_mask_png:
                 logger.info(np.sum(batch_data_mask))
@@ -1175,8 +1187,7 @@ def generate(first, second, out, pretrained_model_checkpoint_path, target_time_p
     pad_left = int(np.ceil((adatptive_W - W) / 2.0))
     pad_right = int(np.floor((adatptive_W - W) / 2.0))
 
-    print(str(H) + ', ' + str(W))
-    print(str(adatptive_H) + ', ' + str(adatptive_W))
+    logger.info('input image shape: ({}, {}) -> ({}, {})'.format(H, W, adatptive_H, adatptive_W))
 
     """Perform test on a trained model."""
     with tf.Graph().as_default():
@@ -1197,27 +1208,26 @@ def generate(first, second, out, pretrained_model_checkpoint_path, target_time_p
         with tf.variable_scope("Cycle_DVF"):
             # Prepare model.
             model = Voxel_flow_model(batch_size=1, is_train=False)
-            prediction = model.inference(tf.concat([input_pad, edge_1, edge_3], 3))[0]
+            prediction, _ = model.inference(tf.concat([input_pad, edge_1, edge_3], 3))
 
         # Create a saver and load.
-        sess = tf.Session()
+        with tf.Session() as sess:
 
-        # Restore checkpoint from file.
-        if pretrained_model_checkpoint_path:
-            restorer = tf.train.Saver()
-            restorer.restore(sess, pretrained_model_checkpoint_path)
-            print('%s: Pre-trained model restored from %s' %
-                  (datetime.now(), pretrained_model_checkpoint_path))
+            # Restore checkpoint from file.
+            if pretrained_model_checkpoint_path:
+                restorer = tf.train.Saver()
+                restorer.restore(sess, pretrained_model_checkpoint_path)
+                logger.info('Pre-trained model restored from: {}'.format(pretrained_model_checkpoint_path))
 
-        feed_dict = {input_placeholder: np.concatenate((data_frame1, data_frame3), 3)}
-        # Run single step update.
-        prediction_np = sess.run(prediction, feed_dict=feed_dict)
+            feed_dict = {input_placeholder: np.concatenate((data_frame1, data_frame3), 3)}
+            # Run single step update.
+            prediction_np = sess.run(prediction, feed_dict=feed_dict)
 
-        img_output = prediction_np[-1, pad_up:adatptive_H - pad_bot, pad_left:adatptive_W - pad_right, :]
-        img_output = np.round(((img_output + 1.0) * 255.0 / 2.0)).astype(np.uint8)
-        img_output = np.dstack((img_output[:, :, 2], img_output[:, :, 1], img_output[:, :, 0]))
+            img_output = prediction_np[-1, pad_up:adatptive_H - pad_bot, pad_left:adatptive_W - pad_right, :]
 
-        imwrite(out, img_output) # cv2.imwrite(out, output)
+            imwrite(out, img_output)
+            logger.info('Generated image was saved at: '.format(out))
+
 
 
 hist_logging = False

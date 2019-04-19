@@ -659,7 +659,7 @@ tf.app.flags.DEFINE_string('pretrained_model_checkpoint_path', None,
                            """before beginning any training.""")
 tf.app.flags.DEFINE_integer('max_steps', None,
                             """Number of steps to run. if None, steps equivalent to max_epochs. """)
-tf.app.flags.DEFINE_integer('max_epochs', 5,
+tf.app.flags.DEFINE_integer('max_epochs', 10,
                             """Number of epochs to run. """)
 tf.app.flags.DEFINE_integer('batch_size', 8, 'The number of samples in each batch.')
 
@@ -668,7 +668,8 @@ tf.app.flags.DEFINE_string('model_size', 'large', """The size of model""") ##
 tf.app.flags.DEFINE_string('dataset_train', 'ucf101_256', """dataset_train (ucf101_256 or middlebury) """) ##
 tf.app.flags.DEFINE_string('dataset_test', 'ucf101', """dataset_test (ucf101, ucf101_256, or middlebury) """) ##
 tf.app.flags.DEFINE_string('stage', 's1s2', """stage (s1 or s2)""") ##
-tf.app.flags.DEFINE_integer('s1_steps', None, """ number of steps for stage1 if 's1s2' is specified as stage. """) ##
+tf.app.flags.DEFINE_integer('s1_steps', None, """ number of steps for stage1 if 's1s2' is specified as stage. s1_epochs if None (defalt) """) ##
+tf.app.flags.DEFINE_integer('s1_epochs', 5, """ number of epochs for stage1 if 's1s2' is specified as stage and s1_steps = None """) ##
 tf.app.flags.DEFINE_integer('logging_interval', 10, """ number of steps of interval to log. """) ##
 tf.app.flags.DEFINE_integer('checkpoint_interval', None, """ number of steps of interval to save checkpoints. if None, 1 epoch. """) ##
 tf.app.flags.DEFINE_bool('save_summary', False, """ save summary if True.  """) ##
@@ -933,7 +934,7 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
             if FLAGS.stage == 's1s2':
                 s1_steps = FLAGS.s1_steps
                 if s1_steps is None:
-                    s1_steps = num_steps_per_epoch
+                    s1_steps = FLAGS.s1_epochs * num_steps_per_epoch
             if FLAGS.stage == 's2':
                 s1_steps = 0
             if FLAGS.stage == 's1':
@@ -1306,25 +1307,26 @@ if __name__ == '__main__':
         logger.info('train_dir: {}'.format(FLAGS.train_dir))
         logger.info('task: {}'.format(FLAGS.task))
         logger.info('pretrained_model_checkpoint_path: {}'.format(FLAGS.pretrained_model_checkpoint_path))
-        logger.info('max_steps: {}'.format(FLAGS.max_steps))
-        logger.info('max_epochs: {}'.format(FLAGS.max_epochs))
         logger.info('batch_size: {}'.format(FLAGS.batch_size))
         logger.info('training_data_step: {}'.format(FLAGS.training_data_step))
         logger.info('model_size: {}'.format(FLAGS.model_size))
         logger.info('dataset_train: {}'.format(FLAGS.dataset_train))
         logger.info('dataset_test: {}'.format(FLAGS.dataset_test))
         logger.info('stage: {}'.format(FLAGS.stage))
+        logger.info('max_steps: {}'.format(FLAGS.max_steps))
+        logger.info('max_epochs: {}'.format(FLAGS.max_epochs))
         logger.info('s1_steps: {}'.format(FLAGS.s1_steps))
-        logger.info('logging_interval: {}'.format(FLAGS.logging_interval))
-        logger.info('checkpoint_interval: {}'.format(FLAGS.checkpoint_interval))
-        logger.info('save_summary: {}'.format(FLAGS.save_summary))
-        logger.info('graph_level_seed: {}'.format(FLAGS.graph_level_seed))
+        logger.info('s1_epochs: {}'.format(FLAGS.s1_epochs))
         logger.info('crop_size: {}'.format(FLAGS.crop_size))
         logger.info('coef_loss_c: {}'.format(FLAGS.coef_loss_c))
         logger.info('coef_loss_m: {}'.format(FLAGS.coef_loss_m))
         logger.info('coef_loss_s: {}'.format(FLAGS.coef_loss_s))
         logger.info('coef_loss_t: {}'.format(FLAGS.coef_loss_t))
         logger.info('strategy: {}'.format(FLAGS.strategy))
+        logger.info('logging_interval: {}'.format(FLAGS.logging_interval))
+        logger.info('checkpoint_interval: {}'.format(FLAGS.checkpoint_interval))
+        logger.info('save_summary: {}'.format(FLAGS.save_summary))
+        logger.info('graph_level_seed: {}'.format(FLAGS.graph_level_seed))
         logger.info('logging_level: {}'.format(FLAGS.logging_level))
 
         logger.info('Output_directory: {}'.format(out_dir))

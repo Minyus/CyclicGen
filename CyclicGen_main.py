@@ -6,8 +6,8 @@ from __future__ import print_function
 # import numpy as np
 # import os
 # import tensorflow as tf
-from datetime import datetime
-from pytz import timezone
+from datetime import datetime, timedelta
+
 from skimage.measure import compare_ssim as ssim
 from pathlib import Path
 from logging import getLogger
@@ -492,7 +492,7 @@ epsilon = 0.001
 
 
 class Voxel_flow_model(object):
-    def __init__(self, batch_size = 8, is_train=True, adaptive_temporal_flow=False):
+    def __init__(self, batch_size, is_train=True, adaptive_temporal_flow=False):
         self.is_train = is_train
         self.adaptive_temporal_flow = adaptive_temporal_flow
         self.batch_size = batch_size
@@ -640,7 +640,7 @@ tf.app.flags.DEFINE_string('train_dir', './train_dir',
                            """and checkpoint.""")
 
 tf.app.flags.DEFINE_string('subset', 'train_test',
-                           """Either train_test, 'train', or 'test'.""")
+                           """Either train_test, 'train', 'test', 'generate', 'all.""")
 tf.app.flags.DEFINE_string('pretrained_model_checkpoint_path', None,
                            """If specified, restore this pretrained model """
                            """before beginning any training.""")
@@ -667,6 +667,10 @@ tf.app.flags.DEFINE_float('coef_loss_s', 0.0, """ coef_stable_motion_loss """) #
 tf.app.flags.DEFINE_float('coef_loss_t', 0.0, """ coef_temporal_regularization_loss """) ##
 tf.app.flags.DEFINE_string('strategy', 'original_cycle_gen', """ strategy: original_cycle_gen, adaptive_temporal_flow, accel_adjust """) ##
 tf.app.flags.DEFINE_string('logging_level', 'info', """ logging_level """) ##
+tf.app.flags.DEFINE_string('gen_i0_path', './Middlebury/eval-color-allframes/eval-data/Backyard/frame07.png', """ gen_i0_path """) ##
+tf.app.flags.DEFINE_string('gen_i1_path', './Middlebury/eval-color-allframes/eval-data/Backyard/frame08.png', """ gen_i1_path """) ##
+tf.app.flags.DEFINE_string('gen_out_path', None, """ gen_out_path """) ##
+
 
 def _read_image(filename):
     image_string = tf.read_file(filename)
@@ -910,7 +914,7 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
 
             data_size = len(data_list_frame1)
             logger.info('data_size: {}'.format(data_size))
-            num_steps_per_epoch = int(data_size // FLAGS.batch_size)
+            num_steps_per_epoch = int(data_size // batch_size)
             logger.info('num_steps_per_epoch: {}'.format(num_steps_per_epoch))
 
             max_steps = FLAGS.max_steps
@@ -972,12 +976,12 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
                     loss_t_ssum += loss_t_bsum
 
                 if step_i % FLAGS.logging_interval == (FLAGS.logging_interval-1):
-                    total_loss_mean = total_loss_ssum / (FLAGS.logging_interval * FLAGS.batch_size)
-                    loss_r_mean = loss_r_ssum / (FLAGS.logging_interval * FLAGS.batch_size)
-                    loss_c_mean = loss_c_ssum / (FLAGS.logging_interval * FLAGS.batch_size)
-                    loss_m_mean = loss_m_ssum / (FLAGS.logging_interval * FLAGS.batch_size)
-                    loss_s_mean = loss_s_ssum / (FLAGS.logging_interval * FLAGS.batch_size)
-                    loss_t_mean = loss_t_ssum / (FLAGS.logging_interval * FLAGS.batch_size)
+                    total_loss_mean = total_loss_ssum / (FLAGS.logging_interval * batch_size)
+                    loss_r_mean = loss_r_ssum / (FLAGS.logging_interval * batch_size)
+                    loss_c_mean = loss_c_ssum / (FLAGS.logging_interval * batch_size)
+                    loss_m_mean = loss_m_ssum / (FLAGS.logging_interval * batch_size)
+                    loss_s_mean = loss_s_ssum / (FLAGS.logging_interval * batch_size)
+                    loss_t_mean = loss_t_ssum / (FLAGS.logging_interval * batch_size)
 
                     hist_latest_str = log_sep.join(['Hist', '{:06d}',
                         '{:.9e}', '{:.9e}', '{:.9e}', '{:.9e}', '{:.9e}', '{:.9e}', '{:.9e}']).format( \
@@ -1032,7 +1036,7 @@ def validate(dataset_frame1, dataset_frame2, dataset_frame3):
     pass
 
 
-def test(dataset_frame1, dataset_frame2, dataset_frame3):
+def test(dataset_frame1, dataset_frame2, dataset_frame3, target_time_point=0.5):
     def rgb2gray(rgb):
         return np.dot(rgb[..., :3], [0.299, 0.587, 0.114])
 
@@ -1055,8 +1059,9 @@ def test(dataset_frame1, dataset_frame2, dataset_frame3):
 
         with tf.variable_scope("Cycle_DVF"):
             # Prepare model.
-            model = Voxel_flow_model(is_train=False, batch_size=1)
-            prediction, _ = model.inference(tf.concat([input_placeholder, edge_1, edge_3], 3))
+            model = Voxel_flow_model(batch_size=1, is_train=False)
+            prediction, _ = model.inference(tf.concat([input_placeholder, edge_1, edge_3], 3),
+                                            target_time_point=target_time_point)
 
         # Create a saver and load.
         sess = tf.Session()
@@ -1128,7 +1133,6 @@ def test(dataset_frame1, dataset_frame2, dataset_frame3):
             ckpt_dir, ckpt_name = os.path.split(pretrained_model_checkpoint_path)
             _, ckpt_dir = os.path.split(ckpt_dir)
 
-
             imwrite('ucf101_interp_ours/' + str(UCF_index) + '/frame_01_' + \
                     ckpt_dir + '_' + ckpt_name + '.png', prediction_np[-1, :, :, :])
 
@@ -1154,6 +1158,68 @@ def test(dataset_frame1, dataset_frame2, dataset_frame3):
 
         sess.close()
 
+
+def generate(first, second, out, pretrained_model_checkpoint_path, target_time_point=0.5):
+
+    data_frame1 = np.expand_dims(imread(first), 0)
+    data_frame3 = np.expand_dims(imread(second), 0)
+
+    H = data_frame1.shape[1]
+    W = data_frame1.shape[2]
+
+    adatptive_H = int(np.ceil(H / 32.0) * 32.0)
+    adatptive_W = int(np.ceil(W / 32.0) * 32.0)
+
+    pad_up = int(np.ceil((adatptive_H - H) / 2.0))
+    pad_bot = int(np.floor((adatptive_H - H) / 2.0))
+    pad_left = int(np.ceil((adatptive_W - W) / 2.0))
+    pad_right = int(np.floor((adatptive_W - W) / 2.0))
+
+    print(str(H) + ', ' + str(W))
+    print(str(adatptive_H) + ', ' + str(adatptive_W))
+
+    """Perform test on a trained model."""
+    with tf.Graph().as_default():
+        # Create input and target placeholder.
+        input_placeholder = tf.placeholder(tf.float32, shape=(None, H, W, 6))
+
+        input_pad = tf.pad(input_placeholder, [[0, 0], [pad_up, pad_bot], [pad_left, pad_right], [0, 0]], 'SYMMETRIC')
+
+        edge_vgg_1 = Vgg16(input_pad[:, :, :, :3], reuse=None)
+        edge_vgg_3 = Vgg16(input_pad[:, :, :, 3:6], reuse=True)
+
+        edge_1 = tf.nn.sigmoid(edge_vgg_1.fuse)
+        edge_3 = tf.nn.sigmoid(edge_vgg_3.fuse)
+
+        edge_1 = tf.reshape(edge_1, [-1, input_pad.get_shape().as_list()[1], input_pad.get_shape().as_list()[2], 1])
+        edge_3 = tf.reshape(edge_3, [-1, input_pad.get_shape().as_list()[1], input_pad.get_shape().as_list()[2], 1])
+
+        with tf.variable_scope("Cycle_DVF"):
+            # Prepare model.
+            model = Voxel_flow_model(batch_size=1, is_train=False)
+            prediction = model.inference(tf.concat([input_pad, edge_1, edge_3], 3))[0]
+
+        # Create a saver and load.
+        sess = tf.Session()
+
+        # Restore checkpoint from file.
+        if pretrained_model_checkpoint_path:
+            restorer = tf.train.Saver()
+            restorer.restore(sess, pretrained_model_checkpoint_path)
+            print('%s: Pre-trained model restored from %s' %
+                  (datetime.now(), pretrained_model_checkpoint_path))
+
+        feed_dict = {input_placeholder: np.concatenate((data_frame1, data_frame3), 3)}
+        # Run single step update.
+        prediction_np = sess.run(prediction, feed_dict=feed_dict)
+
+        img_output = prediction_np[-1, pad_up:adatptive_H - pad_bot, pad_left:adatptive_W - pad_right, :]
+        img_output = np.round(((img_output + 1.0) * 255.0 / 2.0)).astype(np.uint8)
+        img_output = np.dstack((img_output[:, :, 2], img_output[:, :, 1], img_output[:, :, 0]))
+
+        imwrite(out, img_output) # cv2.imwrite(out, output)
+
+
 hist_logging = False
 try:
     from table_logger import TableLogger
@@ -1164,7 +1230,9 @@ except:
 
 
 def timestamp():
-    return datetime.now(timezone('Asia/Singapore')).strftime('%Y-%m-%dT%H%M%S')
+    dt = datetime.now()
+    dt += timedelta(hours=8) # timezone('Asia/Singapore')
+    return dt.strftime('%Y-%m-%dT%H%M%S')
 
 
 if __name__ == '__main__':
@@ -1247,11 +1315,6 @@ if __name__ == '__main__':
         logger.info('strategy: {}'.format(FLAGS.strategy))
         logger.info('logging_level: {}'.format(FLAGS.logging_level))
 
-        assert FLAGS.stage in ['s1', 's2', 's1s2'], '{} is not valid.'.format(FLAGS.stage)
-        assert FLAGS.subset in ['train_test', 'train', 'test'], '{} is not valid.'.format(FLAGS.subset)
-        assert FLAGS.dataset_train in ['ucf101', 'ucf101_256', 'middlebury'], '{} is not valid.'.format(FLAGS.dataset_train)
-        assert FLAGS.dataset_test in ['ucf101', 'ucf101_256', 'middlebury'], '{} is not valid.'.format(FLAGS.dataset_test)
-
         logger.info('Output_directory: {}'.format(out_dir))
 
         if FLAGS.model_size != 'large':
@@ -1260,7 +1323,7 @@ if __name__ == '__main__':
         global latest_ckpt_w_step_path
         latest_ckpt_w_step_path = None
 
-        if FLAGS.subset in ['train', 'train_test']:
+        if FLAGS.subset in ['train', 'train_test', 'all']:
             os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
             if FLAGS.dataset_train == 'ucf101':
@@ -1282,8 +1345,7 @@ if __name__ == '__main__':
 
             train(ucf101_dataset_frame1, ucf101_dataset_frame2, ucf101_dataset_frame3, out_dir, log_sep=' ,', hist_logger=hist_logger)
 
-
-        elif FLAGS.subset in ['test', 'train_test']:
+        if FLAGS.subset in ['test', 'train_test', 'all']:
             os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
             if FLAGS.dataset_test == 'ucf101':
@@ -1304,6 +1366,41 @@ if __name__ == '__main__':
             ucf101_dataset_frame3 = Dataset(data_list_path_frame3)
 
             test(ucf101_dataset_frame1, ucf101_dataset_frame2, ucf101_dataset_frame3)
+
+        if FLAGS.subset in ['generate', 'all']:
+            os.environ["CUDA_VISIBLE_DEVICES"] = ""
+
+            if True: #if FLAGS.dataset_test == 'middlebury':
+                data_list_path_frame1 = "data_list/middlebury_test_files_frame1.txt"
+                data_list_path_frame2 = "data_list/middlebury_test_files_frame2.txt"
+                data_list_path_frame3 = "data_list/middlebury_test_files_frame3.txt"
+
+            ucf101_dataset_frame1 = Dataset(data_list_path_frame1)
+            ucf101_dataset_frame2 = Dataset(data_list_path_frame2)
+            ucf101_dataset_frame3 = Dataset(data_list_path_frame3)
+
+            pretrained_model_checkpoint_path = FLAGS.pretrained_model_checkpoint_path
+            if latest_ckpt_w_step_path is not None:
+                pretrained_model_checkpoint_path = latest_ckpt_w_step_path
+            for tp in [0.1, 0.2, 0.3, 0,4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.5, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0]:
+                gen_i0_path = FLAGS.gen_i0_path # './Middlebury/eval-color-allframes/eval-data/Backyard/frame07.png'
+                gen_i1_path = FLAGS.gen_i1_path # './Middlebury/eval-color-allframes/eval-data/Backyard/frame08.png'
+
+                i0_num = gen_i0_path[-len('.png') - 2:-len('.png')]
+                i1_num = gen_i1_path[-len('.png') - 2:-len('.png')]
+
+                gen_out_path = FLAGS.gen_out_path
+                if gen_out_path is None:
+                    ckpt_dir, ckpt_name = os.path.split(pretrained_model_checkpoint_path)
+                    _, ckpt_dir = os.path.split(ckpt_dir)
+
+                    gen_out_path = gen_i0_path[:-len('07.png')] + \
+                                   '{:05.2f}_from{}_{}_{}.png'.format(int(i0_num) + tp,
+                                                            i0_num,
+                                                            i1_num,
+                                                            (ckpt_dir + '_' + ckpt_name))
+
+                generate(gen_i0_path, gen_i1_path, gen_out_path, pretrained_model_checkpoint_path, target_time_point=tp)
 
     except:
         logger.exception('### An Exception occurred.')

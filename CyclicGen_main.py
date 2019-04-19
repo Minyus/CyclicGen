@@ -652,8 +652,8 @@ tf.app.flags.DEFINE_string('train_dir', './train_dir',
                            """Directory where to write event logs """
                            """and checkpoint.""")
 
-tf.app.flags.DEFINE_string('subset', 'train_test',
-                           """Either train_test, 'train', 'test', 'generate', 'all.""")
+tf.app.flags.DEFINE_string('task', 'all',
+                           """Either train_test, 'train', 'test', 'generate', 'all'.""")
 tf.app.flags.DEFINE_string('pretrained_model_checkpoint_path', None,
                            """If specified, restore this pretrained model """
                            """before beginning any training.""")
@@ -1170,7 +1170,6 @@ def test(dataset_frame1, dataset_frame2, dataset_frame3, target_time_point=0.5):
 
         sess.close()
 
-
 def generate(first, second, out, pretrained_model_checkpoint_path, target_time_point=0.5):
 
     data_frame1 = np.expand_dims(imread(first), 0)
@@ -1208,7 +1207,8 @@ def generate(first, second, out, pretrained_model_checkpoint_path, target_time_p
         with tf.variable_scope("Cycle_DVF"):
             # Prepare model.
             model = Voxel_flow_model(batch_size=1, is_train=False)
-            prediction, _ = model.inference(tf.concat([input_pad, edge_1, edge_3], 3))
+            prediction, _ = model.inference(tf.concat([input_pad, edge_1, edge_3], 3),
+                                            target_time_point=target_time_point)
 
         # Create a saver and load.
         with tf.Session() as sess:
@@ -1226,7 +1226,7 @@ def generate(first, second, out, pretrained_model_checkpoint_path, target_time_p
             img_output = prediction_np[-1, pad_up:adatptive_H - pad_bot, pad_left:adatptive_W - pad_right, :]
 
             imwrite(out, img_output)
-            logger.info('Generated image was saved at: '.format(out))
+            logger.info('Generated image was saved at: {}'.format(out))
 
 
 
@@ -1244,6 +1244,8 @@ def timestamp():
     dt += timedelta(hours=8) # timezone('Asia/Singapore')
     return dt.strftime('%Y-%m-%dT%H%M%S')
 
+def insert_str(string, index, str_to_insert):
+    return string[:index] + str_to_insert + string[index:]
 
 if __name__ == '__main__':
 
@@ -1302,7 +1304,7 @@ if __name__ == '__main__':
 
     try:
         logger.info('train_dir: {}'.format(FLAGS.train_dir))
-        logger.info('subset: {}'.format(FLAGS.subset))
+        logger.info('task: {}'.format(FLAGS.task))
         logger.info('pretrained_model_checkpoint_path: {}'.format(FLAGS.pretrained_model_checkpoint_path))
         logger.info('max_steps: {}'.format(FLAGS.max_steps))
         logger.info('max_epochs: {}'.format(FLAGS.max_epochs))
@@ -1333,7 +1335,7 @@ if __name__ == '__main__':
         global latest_ckpt_w_step_path
         latest_ckpt_w_step_path = None
 
-        if FLAGS.subset in ['train', 'train_test', 'all']:
+        if FLAGS.task in ['train', 'train_test', 'all']:
             os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
             if FLAGS.dataset_train == 'ucf101':
@@ -1355,7 +1357,7 @@ if __name__ == '__main__':
 
             train(ucf101_dataset_frame1, ucf101_dataset_frame2, ucf101_dataset_frame3, out_dir, log_sep=' ,', hist_logger=hist_logger)
 
-        if FLAGS.subset in ['test', 'train_test', 'all']:
+        if FLAGS.task in ['test', 'train_test', 'all']:
             os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
             if FLAGS.dataset_test == 'ucf101':
@@ -1377,7 +1379,7 @@ if __name__ == '__main__':
 
             test(ucf101_dataset_frame1, ucf101_dataset_frame2, ucf101_dataset_frame3)
 
-        if FLAGS.subset in ['generate', 'all']:
+        if FLAGS.task in ['generate', 'all']:
             os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
             if True: #if FLAGS.dataset_test == 'middlebury':
@@ -1392,7 +1394,7 @@ if __name__ == '__main__':
             pretrained_model_checkpoint_path = FLAGS.pretrained_model_checkpoint_path
             if latest_ckpt_w_step_path is not None:
                 pretrained_model_checkpoint_path = latest_ckpt_w_step_path
-            for tp in [0.1, 0.2, 0.3, 0,4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.5, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0]:
+            for tp in [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.5, 2.0]:
                 gen_i0_path = FLAGS.gen_i0_path # './Middlebury/eval-color-allframes/eval-data/Backyard/frame07.png'
                 gen_i1_path = FLAGS.gen_i1_path # './Middlebury/eval-color-allframes/eval-data/Backyard/frame08.png'
 
@@ -1405,7 +1407,7 @@ if __name__ == '__main__':
                     _, ckpt_dir = os.path.split(ckpt_dir)
 
                     gen_out_path = gen_i0_path[:-len('07.png')] + \
-                                   '{:05.2f}_from{}_{}_{}.png'.format(int(i0_num) + tp,
+                                   '{}_from{}_{}_{}.png'.format(insert_str('{:05.2f}'.format(int(i0_num) + tp),2,'_'),
                                                             i0_num,
                                                             i1_num,
                                                             (ckpt_dir + '_' + ckpt_name))

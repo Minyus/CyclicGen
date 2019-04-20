@@ -653,8 +653,8 @@ tf.app.flags.DEFINE_string('train_dir', './train_dir',
                            """Directory where to write event logs """
                            """and checkpoint.""")
 
-tf.app.flags.DEFINE_string('task', 'all',
-                           """Either train_test, 'train', 'test', 'generate', 'all'.""")
+tf.app.flags.DEFINE_string('task', 'train_test_generate',
+                           """ One or more of 'train', 'test', 'generate'.""")
 tf.app.flags.DEFINE_string('pretrained_model_checkpoint_path', None,
                            """If specified, restore this pretrained model """
                            """before beginning any training.""")
@@ -694,7 +694,8 @@ def random_scaling(image, seed=1):
     return tf.image.resize_images(image, [tf.cast(tf.round(256*scaling), tf.int32), tf.cast(tf.round(256*scaling), tf.int32)])
 """
 
-def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',hist_logger=None, seed=1):
+def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',hist_logger=None, seed=1,
+          trained_model_checkpoint_path=None):
     """Trains a model."""
 
     tf.set_random_seed(FLAGS.graph_level_seed)
@@ -893,20 +894,19 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
             last_step = -1
 
             # Restore checkpoint from file.
-            if FLAGS.pretrained_model_checkpoint_path:
+            if trained_model_checkpoint_path:
                 restorer = tf.train.Saver()
-                restorer.restore(sess, FLAGS.pretrained_model_checkpoint_path)
+                restorer.restore(sess, trained_model_checkpoint_path)
                 logger.info('%s: Pre-trained model restored from %s' %
-                      (timestamp(), FLAGS.pretrained_model_checkpoint_path))
+                      (timestamp(), trained_model_checkpoint_path))
                 try:
-                    last_step = int(str(FLAGS.pretrained_model_checkpoint_path).split(sep='-')[-1])
+                    last_step = int(str(trained_model_checkpoint_path).split(sep='-')[-1])
                 except ValueError:
                     logger.warning('The step number could not retrieved from the checkpoint path.'
                           'Continue running.')
 
             else:
                 # Build an initialization operation to run below.
-
                 sess.run([init], feed_dict={s2_flag_tensor: s2_flag})
 
             sess.run([batch_frame1.initializer, batch_frame2.initializer, batch_frame3.initializer], feed_dict={s2_flag_tensor: s2_flag})
@@ -1034,10 +1034,11 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
                     #
                     checkpoint_path = os.path.join(out_dir, 'model.ckpt')
                     saver.save(sess, checkpoint_path, global_step=step_i)
-                    latest_ckpt_w_step_path = '{}-{}'.format(checkpoint_path, step_i)
-                    logger.info('Model was saved at: {}'.format(latest_ckpt_w_step_path))
+                    trained_model_checkpoint_path = '{}-{}'.format(checkpoint_path, step_i)
+                    logger.info('Model was saved at: {}'.format(trained_model_checkpoint_path))
 
     sess.close()
+    return trained_model_checkpoint_path
 
 def validate(dataset_frame1, dataset_frame2, dataset_frame3):
     """Performs validation on model.
@@ -1046,7 +1047,7 @@ def validate(dataset_frame1, dataset_frame2, dataset_frame3):
     pass
 
 
-def test(dataset_frame1, dataset_frame2, dataset_frame3, target_time_point=0.5):
+def test(dataset_frame1, dataset_frame2, dataset_frame3, target_time_point=0.5, trained_model_checkpoint_path=None):
     # def rgb2gray(rgb):
     #     return np.dot(rgb[..., :3], [0.299, 0.587, 0.114])
 
@@ -1077,14 +1078,14 @@ def test(dataset_frame1, dataset_frame2, dataset_frame3, target_time_point=0.5):
         sess = tf.Session()
 
         # Restore checkpoint from file.
-        pretrained_model_checkpoint_path = FLAGS.pretrained_model_checkpoint_path
-        if latest_ckpt_w_step_path is not None:
-            pretrained_model_checkpoint_path = latest_ckpt_w_step_path
-        if pretrained_model_checkpoint_path:
+
+        if trained_model_checkpoint_path is None:
+            raise Exception('Trained model checkpoint is needed.')
+
+        if trained_model_checkpoint_path:
             restorer = tf.train.Saver()
-            restorer.restore(sess, FLAGS.pretrained_model_checkpoint_path)
-            logger.info('%s: Pre-trained model restored from %s' %
-                  (timestamp(), FLAGS.pretrained_model_checkpoint_path))
+            restorer.restore(sess, trained_model_checkpoint_path)
+            logger.info('Pre-trained model restored from {}'.format(trained_model_checkpoint_path))
 
         # Process on test dataset.
         data_list_frame1 = dataset_frame1.read_data_list_file()
@@ -1140,7 +1141,7 @@ def test(dataset_frame1, dataset_frame2, dataset_frame3, target_time_point=0.5):
             else:
                 prediction_np = sess.run(prediction, feed_dict=feed_dict)
 
-            ckpt_dir, ckpt_name = os.path.split(pretrained_model_checkpoint_path)
+            ckpt_dir, ckpt_name = os.path.split(trained_model_checkpoint_path)
             _, ckpt_dir = os.path.split(ckpt_dir)
 
             # out = 'ucf101_interp_ours/' + str(UCF_index) + '/frame_01_' + ckpt_dir + '_' + ckpt_name + '.png'
@@ -1148,7 +1149,7 @@ def test(dataset_frame1, dataset_frame2, dataset_frame3, target_time_point=0.5):
             out = 'ucf101_interp_ours/{}/frame_01_{}.png'.format(UCF_index, ckpt_str)
             imwrite(out, prediction_np[-1, :, :, :])
 
-            logger.info('Generated image was saved at: '.format(out))
+            logger.info('Generated image was saved at: {}'.format(out))
 
             if use_motion_mask_png:
                 logger.info(np.sum(batch_data_mask))
@@ -1172,7 +1173,7 @@ def test(dataset_frame1, dataset_frame2, dataset_frame3, target_time_point=0.5):
 
         sess.close()
 
-def generate(first, second, out, pretrained_model_checkpoint_path, target_time_point=0.5):
+def generate(first, second, out, target_time_point=0.5, trained_model_checkpoint_path=None):
 
     data_frame1 = np.expand_dims(imread(first), 0)
     data_frame3 = np.expand_dims(imread(second), 0)
@@ -1216,10 +1217,13 @@ def generate(first, second, out, pretrained_model_checkpoint_path, target_time_p
         with tf.Session() as sess:
 
             # Restore checkpoint from file.
-            if pretrained_model_checkpoint_path:
+            if trained_model_checkpoint_path is None:
+                raise Exception('Trained model checkpoint is not available.')
+
+            if trained_model_checkpoint_path:
                 restorer = tf.train.Saver()
-                restorer.restore(sess, pretrained_model_checkpoint_path)
-                logger.info('Pre-trained model restored from: {}'.format(pretrained_model_checkpoint_path))
+                restorer.restore(sess, trained_model_checkpoint_path)
+                logger.info('Pre-trained model restored from: {}'.format(trained_model_checkpoint_path))
 
             feed_dict = {input_placeholder: np.concatenate((data_frame1, data_frame3), 3)}
             # Run single step update.
@@ -1336,10 +1340,9 @@ if __name__ == '__main__':
             # from CyclicGen_model import VoxelFlowModel
             logger.error('Only large model is supported.')
 
-        global latest_ckpt_w_step_path
-        latest_ckpt_w_step_path = None
+        trained_model_checkpoint_path = FLAGS.pretrained_model_checkpoint_path
 
-        if FLAGS.task in ['train', 'train_test', 'all']:
+        if 'train' in FLAGS.task.lower():
             os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
             if FLAGS.dataset_train == 'ucf101':
@@ -1359,9 +1362,12 @@ if __name__ == '__main__':
             ucf101_dataset_frame2 = Dataset(data_list_path_frame2)
             ucf101_dataset_frame3 = Dataset(data_list_path_frame3)
 
-            train(ucf101_dataset_frame1, ucf101_dataset_frame2, ucf101_dataset_frame3, out_dir, log_sep=' ,', hist_logger=hist_logger)
+            trained_model_checkpoint_path = \
+                train(ucf101_dataset_frame1, ucf101_dataset_frame2, ucf101_dataset_frame3, out_dir,
+                      log_sep=' ,', hist_logger=hist_logger,
+                      trained_model_checkpoint_path=trained_model_checkpoint_path)
 
-        if FLAGS.task in ['test', 'train_test', 'all']:
+        if 'test' in FLAGS.task.lower():
             os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
             if FLAGS.dataset_test == 'ucf101':
@@ -1381,9 +1387,10 @@ if __name__ == '__main__':
             ucf101_dataset_frame2 = Dataset(data_list_path_frame2)
             ucf101_dataset_frame3 = Dataset(data_list_path_frame3)
 
-            test(ucf101_dataset_frame1, ucf101_dataset_frame2, ucf101_dataset_frame3)
+            test(ucf101_dataset_frame1, ucf101_dataset_frame2, ucf101_dataset_frame3,
+                 trained_model_checkpoint_path=trained_model_checkpoint_path)
 
-        if FLAGS.task in ['generate', 'all']:
+        if 'generate' in FLAGS.task.lower():
             os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
             if True: #if FLAGS.dataset_test == 'middlebury':
@@ -1395,10 +1402,7 @@ if __name__ == '__main__':
             ucf101_dataset_frame2 = Dataset(data_list_path_frame2)
             ucf101_dataset_frame3 = Dataset(data_list_path_frame3)
 
-            pretrained_model_checkpoint_path = FLAGS.pretrained_model_checkpoint_path
-            if latest_ckpt_w_step_path is not None:
-                pretrained_model_checkpoint_path = latest_ckpt_w_step_path
-            for tp in [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.5, 2.0]:
+            for tp in [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.5]:
                 gen_i0_path = FLAGS.gen_i0_path # './Middlebury/eval-color-allframes/eval-data/Backyard/frame07.png'
                 gen_i1_path = FLAGS.gen_i1_path # './Middlebury/eval-color-allframes/eval-data/Backyard/frame08.png'
 
@@ -1407,16 +1411,17 @@ if __name__ == '__main__':
 
                 gen_out_path = FLAGS.gen_out_path
                 if gen_out_path is None:
-                    ckpt_dir, ckpt_name = os.path.split(pretrained_model_checkpoint_path)
+                    ckpt_dir, ckpt_name = os.path.split(trained_model_checkpoint_path)
                     _, ckpt_dir = os.path.split(ckpt_dir)
 
                     gen_out_path = gen_i0_path[:-len('07.png')] + \
-                                   '{}_from{}_{}_{}.png'.format(insert_str('{:05.2f}'.format(int(i0_num) + tp),2,'_'),
+                                   '{}_from{}_{}_{}.png'.format(insert_str('{:05.2f}'.format(int(i0_num) + tp), 2, '_'),
                                                             i0_num,
                                                             i1_num,
                                                             (ckpt_dir + '_' + ckpt_name))
 
-                generate(gen_i0_path, gen_i1_path, gen_out_path, pretrained_model_checkpoint_path, target_time_point=tp)
+                generate(gen_i0_path, gen_i1_path, gen_out_path, target_time_point=tp,
+                         trained_model_checkpoint_path=trained_model_checkpoint_path)
 
     except:
         logger.exception('### An Exception occurred.')

@@ -504,7 +504,7 @@ FLAGS = tf.app.flags.FLAGS
 epsilon = 0.001
 
 
-class Voxel_flow_model(object):
+class VoxelFlowModel(object):
     def __init__(self, batch_size, is_train=True, adaptive_temporal_flow=False):
         self.is_train = is_train
         self.adaptive_temporal_flow = adaptive_temporal_flow
@@ -606,8 +606,6 @@ class Voxel_flow_model(object):
 
         temporal_flow_for_pixel = net[:, :, :, 2] #_ (B,H,W)
         mask_for_pixel = 0.5 * (1.0 + temporal_flow_for_pixel) #_ (B,H,W)
-        mask = tf.expand_dims(mask_for_pixel, 3) #_ (B,H,W,1)
-        self.mask = mask #_ (B,H,W,1)
 
         target_time_point_for_pixel = target_time_point * tf.ones_like(mask_for_pixel) #_ (B,H,W)
         if self.adaptive_temporal_flow:
@@ -635,8 +633,11 @@ class Voxel_flow_model(object):
         self.warped_flow1 = bilinear_interp(-flow[:, :, :, 0:3]*0.5*0.5, coor_x_1, coor_y_1, 'interpolate') #_ (B,H,W,3)
         self.warped_flow2 = bilinear_interp(flow[:, :, :, 0:3]*0.5*0.5, coor_x_2, coor_y_2, 'interpolate') #_ (B,H,W,3)
 
-        mask = tf.tile(mask, [1, 1, 1, 3]) #_ (B,H,W,3)
-        net = tf.multiply(mask, output_1) + tf.multiply(1.0 - mask, output_2) #_ (B,H,W,3)
+        mask = tf.expand_dims(mask_for_pixel, 3) #_ (B,H,W,1)
+        mask = tf.clip_by_value(mask, 0.0, 1.0)
+        self.mask = mask #_ (B,H,W,1)
+        mask_rgb = tf.tile(mask, [1, 1, 1, 3]) #_ (B,H,W,3)
+        net = tf.multiply(mask_rgb, output_1) + tf.multiply(1.0 - mask_rgb, output_2) #_ (B,H,W,3)
 
         return [net, net_copy]
 
@@ -771,7 +772,7 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
 
         # if stage == 's1':
         #     with tf.variable_scope("Cycle_DVF"):
-        #         model1_s1_i00_i20 = Voxel_flow_model(adaptive_temporal_flow=FLAGS.strategy == 'adaptive_temporal_flow')
+        #         model1_s1_i00_i20 = VoxelFlowModel(adaptive_temporal_flow=FLAGS.strategy == 'adaptive_temporal_flow')
         #         prediction1, _ = model1_s1_i00_i20.inference(tf.concat([input1, input3, edge_1, edge_3], 3))
         #         loss_c = model1_s1_i00_i20.l1loss(prediction1, input2)
 
@@ -783,11 +784,11 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
             input_placeholder2 = tf.concat([input_placeholder2, edge_2, edge_3], 3)
 
             with tf.variable_scope("Cycle_DVF"):
-                model1_s2_i00_i10 = Voxel_flow_model(batch_size=batch_size)
+                model1_s2_i00_i10 = VoxelFlowModel(batch_size=batch_size)
                 prediction1, _ = model1_s2_i00_i10.inference(input_placeholder1)
 
             with tf.variable_scope("Cycle_DVF", reuse=True):
-                model2_s2_i10_i20 = Voxel_flow_model(batch_size=batch_size)
+                model2_s2_i10_i20 = VoxelFlowModel(batch_size=batch_size)
                 prediction2, _ = model2_s2_i10_i20.inference(input_placeholder2)
 
             edge_vgg_prediction1 = Vgg16(prediction1,reuse=True)
@@ -814,13 +815,13 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
                 target_time_point = (f1f2 + epsilon_pixel_sq) / (f2f2 + 2.0 * epsilon_pixel_sq) #_ (B,H,W)
 
             with tf.variable_scope("Cycle_DVF", reuse=True):
-                model3_s2_i05_i15 = Voxel_flow_model(batch_size=batch_size, adaptive_temporal_flow=adaptive_temporal_flow)
+                model3_s2_i05_i15 = VoxelFlowModel(batch_size=batch_size, adaptive_temporal_flow=adaptive_temporal_flow)
                 prediction3, _ = model3_s2_i05_i15.inference(tf.concat([prediction1, prediction2, edge_prediction1, edge_prediction2], 3),
                                                              target_time_point=target_time_point)
                 loss_c = model3_s2_i05_i15.l1loss(prediction3, input2)
 
             with tf.variable_scope("Cycle_DVF", reuse=True):
-                model4_s2_i00_i20 = Voxel_flow_model(batch_size=batch_size, adaptive_temporal_flow=adaptive_temporal_flow)
+                model4_s2_i00_i20 = VoxelFlowModel(batch_size=batch_size, adaptive_temporal_flow=adaptive_temporal_flow)
                 prediction4, _ = model4_s2_i00_i20.inference(tf.concat([input1, input3,edge_1,edge_3], 3),
                                                              target_time_point=target_time_point)
                 loss_r = model4_s2_i00_i20.l1loss(prediction4, input2)
@@ -1068,7 +1069,7 @@ def test(dataset_frame1, dataset_frame2, dataset_frame3, target_time_point=0.5):
 
         with tf.variable_scope("Cycle_DVF"):
             # Prepare model.
-            model = Voxel_flow_model(batch_size=1, is_train=False)
+            model = VoxelFlowModel(batch_size=1, is_train=False)
             prediction, _ = model.inference(tf.concat([input_placeholder, edge_1, edge_3], 3),
                                             target_time_point=target_time_point)
 
@@ -1207,7 +1208,7 @@ def generate(first, second, out, pretrained_model_checkpoint_path, target_time_p
 
         with tf.variable_scope("Cycle_DVF"):
             # Prepare model.
-            model = Voxel_flow_model(batch_size=1, is_train=False)
+            model = VoxelFlowModel(batch_size=1, is_train=False)
             prediction, _ = model.inference(tf.concat([input_pad, edge_1, edge_3], 3),
                                             target_time_point=target_time_point)
 
@@ -1332,7 +1333,8 @@ if __name__ == '__main__':
         logger.info('Output_directory: {}'.format(out_dir))
 
         if FLAGS.model_size != 'large':
-            from CyclicGen_model import Voxel_flow_model
+            # from CyclicGen_model import VoxelFlowModel
+            logger.error('Only large model is supported.')
 
         global latest_ckpt_w_step_path
         latest_ckpt_w_step_path = None

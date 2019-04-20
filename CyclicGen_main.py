@@ -514,7 +514,8 @@ class VoxelFlowModel(object):
         """Inference on a set of input_images.
         Args:
         """
-        return self._build_model(input_images, target_time_point=target_time_point)
+        self.build_voxel_flow(input_images)
+        return self.predict_image(target_time_point=target_time_point)
 
     def total_var(self, images):
         pixel_dif1 = images[:, 1:, :, :] - images[:, :-1, :, :]
@@ -530,7 +531,7 @@ class VoxelFlowModel(object):
         # self.reproduction_loss = l1_loss(predictions, targets)
         self.reproduction_loss = tf.reduce_mean(tf.sqrt(tf.square(predictions - targets) + epsilon**2))
 
-        self.motion_loss = self.total_var(self.flow)
+        self.motion_loss = self.total_var(self.spatial_flow)
         self.mask_loss = self.total_var(self.mask)
 
         # return [self.reproduction_loss, self.prior_loss]
@@ -540,7 +541,8 @@ class VoxelFlowModel(object):
         self.reproduction_loss = l1_loss(predictions, targets)
         return self.reproduction_loss
 
-    def _build_model(self, input_images, target_time_point=0.5):
+    def build_voxel_flow(self, input_images):
+        self.input_images = input_images
         with slim.arg_scope([slim.conv2d],
                             activation_fn=tf.nn.leaky_relu,
                             weights_initializer=tf.truncated_normal_initializer(0.0, 0.01),
@@ -597,32 +599,38 @@ class VoxelFlowModel(object):
                     net = slim.conv2d(tf.concat([net, x0_1], -1), 32, [3, 3], stride=1, scope='conv11')
                     y0 = slim.conv2d(net, 32, [3, 3], stride=1, scope='conv11_1')
 
-        net = slim.conv2d(y0, 3, [5, 5], stride=1, activation_fn=tf.tanh,
+        self.voxel_flow = slim.conv2d(y0, 3, [5, 5], stride=1, activation_fn=tf.tanh,
                           normalizer_fn=None, scope='conv12')
-        net_copy = net
 
-        flow = net[:, :, :, 0:2] #_ (B,H,W,2)
-        self.flow = flow #_ (B,H,W,2)
+        spatial_flow = self.voxel_flow[:, :, :, 0:2] #_ (B,H,W,2)
+        self.spatial_flow = spatial_flow #_ (B,H,W,2)
 
-        temporal_flow_for_pixel = net[:, :, :, 2] #_ (B,H,W)
-        mask_for_pixel = 0.5 * (1.0 + temporal_flow_for_pixel) #_ (B,H,W)
+        temporal_flow = self.voxel_flow[:, :, :, 2] #_ (B,H,W)
+        self.mask = 0.5 * (1.0 + temporal_flow) #_ (B,H,W)
 
-        target_time_point_for_pixel = target_time_point * tf.ones_like(mask_for_pixel) #_ (B,H,W)
-        if self.adaptive_temporal_flow:
-            target_time_point_for_pixel = 1.0-mask_for_pixel #_ (B,H,W)
+    def predict_image(self, target_time_point=0.5):
 
-        grid_x, grid_y = meshgrid(x0.get_shape().as_list()[1], x0.get_shape().as_list()[2])
+        input_images = self.input_images
+        h = input_images.shape.as_list()[1] # input_images.get_shape().as_list()[1]
+        w = input_images.shape.as_list()[2] # input_images.get_shape().as_list()[2]
+        grid_x, grid_y = meshgrid(h, w)
         grid_x = tf.tile(grid_x, [self.batch_size, 1, 1])
         grid_y = tf.tile(grid_y, [self.batch_size, 1, 1])
 
-        flow_ratio = tf.constant([255.0 / (x0.get_shape().as_list()[2]-1), 255.0 / (x0.get_shape().as_list()[1]-1)]) #_ (2,)
-        flow = flow * tf.expand_dims(tf.expand_dims(tf.expand_dims(flow_ratio, 0), 0), 0) #_ (1,1,1,2)
+        spatial_flow_ratio = tf.constant([255.0 / (w-1),
+                                          255.0 / (h-1)]) #_ (2,)
+        spatial_flow = self.spatial_flow * \
+                       tf.expand_dims(tf.expand_dims(tf.expand_dims(spatial_flow_ratio, 0), 0), 0) #_ (1,1,1,2)
 
-        coor_x_1 = grid_x + target_time_point_for_pixel * flow[:, :, :, 0] #_ (B,H,W)
-        coor_y_1 = grid_y + target_time_point_for_pixel * flow[:, :, :, 1] #_ (B,H,W)
+        target_time_point_for_pixel = target_time_point * tf.ones_like(self.mask) #_ (B,H,W)
+        if self.adaptive_temporal_flow:
+            target_time_point_for_pixel = 1.0-self.mask #_ (B,H,W)
 
-        coor_x_2 = grid_x + (target_time_point_for_pixel-1.0) * flow[:, :, :, 0] #_ (B,H,W)
-        coor_y_2 = grid_y + (target_time_point_for_pixel-1.0) * flow[:, :, :, 1] #_ (B,H,W)
+        coor_x_1 = grid_x + target_time_point_for_pixel * spatial_flow[:, :, :, 0] #_ (B,H,W)
+        coor_y_1 = grid_y + target_time_point_for_pixel * spatial_flow[:, :, :, 1] #_ (B,H,W)
+
+        coor_x_2 = grid_x + (target_time_point_for_pixel-1.0) * spatial_flow[:, :, :, 0] #_ (B,H,W)
+        coor_y_2 = grid_y + (target_time_point_for_pixel-1.0) * spatial_flow[:, :, :, 1] #_ (B,H,W)
 
         output_1 = bilinear_interp(input_images[:, :, :, 0:3], coor_x_1, coor_y_1, 'interpolate') #_ (B,H,W,3)
         output_2 = bilinear_interp(input_images[:, :, :, 3:6], coor_x_2, coor_y_2, 'interpolate') #_ (B,H,W,3)
@@ -630,16 +638,15 @@ class VoxelFlowModel(object):
         self.warped_img1 = output_1 #_ (B,H,W,3)
         self.warped_img2 = output_2 #_ (B,H,W,3)
 
-        self.warped_flow1 = bilinear_interp(-flow[:, :, :, 0:3]*0.5*0.5, coor_x_1, coor_y_1, 'interpolate') #_ (B,H,W,3)
-        self.warped_flow2 = bilinear_interp(flow[:, :, :, 0:3]*0.5*0.5, coor_x_2, coor_y_2, 'interpolate') #_ (B,H,W,3)
+        self.warped_flow1 = bilinear_interp(-spatial_flow[:, :, :, 0:3]*0.5*0.5, coor_x_1, coor_y_1, 'interpolate') #_ (B,H,W,3)
+        self.warped_flow2 = bilinear_interp(spatial_flow[:, :, :, 0:3]*0.5*0.5, coor_x_2, coor_y_2, 'interpolate') #_ (B,H,W,3)
 
-        mask = tf.expand_dims(mask_for_pixel, 3) #_ (B,H,W,1)
-        mask = tf.clip_by_value(mask, 0.0, 1.0)
-        self.mask = mask #_ (B,H,W,1)
-        mask_rgb = tf.tile(mask, [1, 1, 1, 3]) #_ (B,H,W,3)
-        net = tf.multiply(mask_rgb, output_1) + tf.multiply(1.0 - mask_rgb, output_2) #_ (B,H,W,3)
+        mask_c = tf.expand_dims(self.mask, 3) #_ (B,H,W,1)
+        mask_c = tf.clip_by_value(mask_c, 0.0, 1.0)
+        mask_rgb = tf.tile(mask_c, [1, 1, 1, 3]) #_ (B,H,W,3)
+        prediction = tf.multiply(mask_rgb, output_1) + tf.multiply(1.0 - mask_rgb, output_2) #_ (B,H,W,3)
 
-        return [net, net_copy]
+        return prediction
 
 """   """
 
@@ -680,6 +687,7 @@ tf.app.flags.DEFINE_float('coef_loss_c', 1.0, """ coef_cycle_consistency_loss ""
 tf.app.flags.DEFINE_float('coef_loss_m', 0.1, """ coef_motion_linearity_loss """) ##
 tf.app.flags.DEFINE_float('coef_loss_s', 0.0, """ coef_stable_motion_loss """) ##
 tf.app.flags.DEFINE_float('coef_loss_t', 0.0, """ coef_temporal_regularization_loss """) ##
+tf.app.flags.DEFINE_float('coef_loss_e', 0.0, """ coef_extrapolated_cycle_consistency_loss """) ##
 tf.app.flags.DEFINE_string('strategy', 'original_cycle_gen', """ strategy: original_cycle_gen, adaptive_temporal_flow, accel_adjust """) ##
 tf.app.flags.DEFINE_string('logging_level', 'info', """ logging_level """) ##
 tf.app.flags.DEFINE_string('gen_i0_path', './Middlebury/eval-color-allframes/eval-data/Backyard/frame07.png', """ gen_i0_path """) ##
@@ -774,7 +782,7 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
         # if stage == 's1':
         #     with tf.variable_scope("Cycle_DVF"):
         #         model1_s1_i00_i20 = VoxelFlowModel(adaptive_temporal_flow=FLAGS.strategy == 'adaptive_temporal_flow')
-        #         prediction1, _ = model1_s1_i00_i20.inference(tf.concat([input1, input3, edge_1, edge_3], 3))
+        #         prediction1 = model1_s1_i00_i20.inference(tf.concat([input1, input3, edge_1, edge_3], 3))
         #         loss_c = model1_s1_i00_i20.l1loss(prediction1, input2)
 
         if True: #if stage == 's2':
@@ -786,20 +794,20 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
 
             with tf.variable_scope("Cycle_DVF"):
                 model1_s2_i00_i10 = VoxelFlowModel(batch_size=batch_size)
-                prediction1, _ = model1_s2_i00_i10.inference(input_placeholder1)
+                prediction1_i05 = model1_s2_i00_i10.inference(input_placeholder1)
 
             with tf.variable_scope("Cycle_DVF", reuse=True):
                 model2_s2_i10_i20 = VoxelFlowModel(batch_size=batch_size)
-                prediction2, _ = model2_s2_i10_i20.inference(input_placeholder2)
+                prediction2_i15 = model2_s2_i10_i20.inference(input_placeholder2)
 
-            edge_vgg_prediction1 = Vgg16(prediction1,reuse=True)
-            edge_vgg_prediction2 = Vgg16(prediction2,reuse=True)
+            edge_vgg_prediction1_i05 = Vgg16(prediction1_i05,reuse=True)
+            edge_vgg_prediction2_i15 = Vgg16(prediction2_i15,reuse=True)
 
-            edge_prediction1 = tf.nn.sigmoid(edge_vgg_prediction1.fuse)
-            edge_prediction2 = tf.nn.sigmoid(edge_vgg_prediction2.fuse)
+            edge_prediction1_i05 = tf.nn.sigmoid(edge_vgg_prediction1_i05.fuse)
+            edge_prediction2_i15 = tf.nn.sigmoid(edge_vgg_prediction2_i15.fuse)
 
-            edge_prediction1 = tf.reshape(edge_prediction1,[-1,input1.get_shape().as_list()[1],input1.get_shape().as_list()[2],1])
-            edge_prediction2 = tf.reshape(edge_prediction2,[-1,input1.get_shape().as_list()[1],input1.get_shape().as_list()[2],1])
+            edge_prediction1_i05 = tf.reshape(edge_prediction1_i05,[-1,input1.get_shape().as_list()[1],input1.get_shape().as_list()[2],1])
+            edge_prediction2_i15 = tf.reshape(edge_prediction2_i15,[-1,input1.get_shape().as_list()[1],input1.get_shape().as_list()[2],1])
 
             adaptive_temporal_flow = FLAGS.strategy == 'adaptive_temporal_flow'
             accel_adjust = FLAGS.strategy == 'accel_adjust'
@@ -807,8 +815,8 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
             target_time_point = 0.5
 
             if accel_adjust:
-                f1 = model1_s2_i00_i10.flow #_ (B,H,W,2)
-                f2 = (model1_s2_i00_i10.flow + model2_s2_i10_i20.flow) #_ (B,H,W,2)
+                f1 = model1_s2_i00_i10.spatial_flow #_ (B,H,W,2)
+                f2 = (model1_s2_i00_i10.spatial_flow + model2_s2_i10_i20.spatial_flow) #_ (B,H,W,2)
 
                 f1f2 = tf.reduce_sum(tf.multiply(f1, f2), axis=3, keepdims=False) #_ (B,H,W)
                 f2f2 = tf.reduce_sum(tf.multiply(f2, f2), axis=3, keepdims=False) #_ (B,H,W)
@@ -817,15 +825,23 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
 
             with tf.variable_scope("Cycle_DVF", reuse=True):
                 model3_s2_i05_i15 = VoxelFlowModel(batch_size=batch_size, adaptive_temporal_flow=adaptive_temporal_flow)
-                prediction3, _ = model3_s2_i05_i15.inference(tf.concat([prediction1, prediction2, edge_prediction1, edge_prediction2], 3),
-                                                             target_time_point=target_time_point)
-                loss_c = model3_s2_i05_i15.l1loss(prediction3, input2)
+                prediction3_i10 = \
+                    model3_s2_i05_i15.inference(tf.concat([prediction1_i05, prediction2_i15,
+                                                           edge_prediction1_i05, edge_prediction2_i15],
+                                                          3),
+                                                target_time_point=target_time_point)
+                loss_c = model3_s2_i05_i15.l1loss(prediction3_i10, input2)
+
+                prediction_i00 = model3_s2_i05_i15.predict_image(target_time_point=-target_time_point)
+                prediction_i20 = model3_s2_i05_i15.predict_image(target_time_point=2-target_time_point)
+
+                loss_e = model3_s2_i05_i15.l1loss(prediction_i00, input1) + model3_s2_i05_i15.l1loss(prediction_i20, input3)
 
             with tf.variable_scope("Cycle_DVF", reuse=True):
                 model4_s2_i00_i20 = VoxelFlowModel(batch_size=batch_size, adaptive_temporal_flow=adaptive_temporal_flow)
-                prediction4, _ = model4_s2_i00_i20.inference(tf.concat([input1, input3,edge_1,edge_3], 3),
+                prediction4_i10 = model4_s2_i00_i20.inference(tf.concat([input1, input3,edge_1,edge_3], 3),
                                                              target_time_point=target_time_point)
-                loss_r = model4_s2_i00_i20.l1loss(prediction4, input2)
+                loss_r = model4_s2_i00_i20.l1loss(prediction4_i10, input2)
 
         t_vars = tf.trainable_variables()
 
@@ -840,14 +856,15 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
         #     total_loss = loss_r
 
         if True: #if stage == 's2':
-            loss_m = tf.reduce_mean(tf.square(model4_s2_i00_i20.flow - model3_s2_i05_i15.flow * 2.0))
-            loss_s = tf.reduce_mean(tf.square((model2_s2_i10_i20.flow - model1_s2_i00_i10.flow) * 2.0))
+            loss_m = tf.reduce_mean(tf.square(model4_s2_i00_i20.spatial_flow - model3_s2_i05_i15.spatial_flow * 2.0))
+            loss_s = tf.reduce_mean(tf.square((model2_s2_i10_i20.spatial_flow - model1_s2_i00_i10.spatial_flow) * 2.0))
             loss_t = tf.reduce_mean(tf.square((model4_s2_i00_i20.mask - 0.5) * 2.0))
             total_loss = loss_r \
                          + s2_flag_tensor * FLAGS.coef_loss_c * loss_c \
                          + s2_flag_tensor * FLAGS.coef_loss_m * loss_m \
                          + s2_flag_tensor * FLAGS.coef_loss_s * loss_s \
-                         + s2_flag_tensor * FLAGS.coef_loss_t * loss_t
+                         + s2_flag_tensor * FLAGS.coef_loss_t * loss_t \
+                         + s2_flag_tensor * FLAGS.coef_loss_e * loss_e
 
         # Perform learning rate scheduling.
         # Create an optimizer that performs gradient descent.
@@ -954,6 +971,7 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
             loss_m_ssum = 0
             loss_s_ssum = 0
             loss_t_ssum = 0
+            loss_e_ssum = 0
 
             for step_i in range(initial_step, max_steps):
                 batch_idx = step_i % num_steps_per_epoch
@@ -974,8 +992,8 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
                     logger.info('Epoch Number: %d' % int(step_i // num_steps_per_epoch))
 
                 if True: # if step_i % FLAGS.logging_interval == 0:
-                    total_loss_bsum, loss_r_bsum, loss_c_bsum, loss_m_bsum, loss_s_bsum, loss_t_bsum = \
-                        sess.run([total_loss, loss_r, loss_c, loss_m, loss_s, loss_t],
+                    total_loss_bsum, loss_r_bsum, loss_c_bsum, loss_m_bsum, loss_s_bsum, loss_t_bsum, loss_e_bsum = \
+                        sess.run([total_loss, loss_r, loss_c, loss_m, loss_s, loss_t, loss_e],
                                  feed_dict={s2_flag_tensor: s2_flag})
 
                     total_loss_ssum += total_loss_bsum
@@ -984,6 +1002,7 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
                     loss_m_ssum += loss_m_bsum
                     loss_s_ssum += loss_s_bsum
                     loss_t_ssum += loss_t_bsum
+                    loss_e_ssum += loss_e_bsum
 
                 if step_i % FLAGS.logging_interval == (FLAGS.logging_interval-1):
                     total_loss_mean = total_loss_ssum / (FLAGS.logging_interval * batch_size)
@@ -992,9 +1011,10 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
                     loss_m_mean = loss_m_ssum / (FLAGS.logging_interval * batch_size)
                     loss_s_mean = loss_s_ssum / (FLAGS.logging_interval * batch_size)
                     loss_t_mean = loss_t_ssum / (FLAGS.logging_interval * batch_size)
+                    loss_e_mean = loss_e_ssum / (FLAGS.logging_interval * batch_size)
 
                     hist_latest_str = log_sep.join(['Hist', '{:06d}',
-                        '{:.9e}', '{:.9e}', '{:.9e}', '{:.9e}', '{:.9e}', '{:.9e}', '{:.9e}']).format( \
+                        '{:.9e}', '{:.9e}', '{:.9e}', '{:.9e}', '{:.9e}', '{:.9e}', '{:.9e}', '{:.9e}']).format( \
                         step_i,
                         learning_rate,
                         total_loss_mean,
@@ -1002,7 +1022,8 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
                         loss_c_mean,
                         loss_m_mean,
                         loss_s_mean,
-                        loss_t_mean)
+                        loss_t_mean,
+                        loss_e_mean)
 
                     if hist_logger is None:
                         logger.info(hist_latest_str)
@@ -1015,7 +1036,8 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
                                     loss_c_mean,
                                     loss_m_mean,
                                     loss_s_mean,
-                                    loss_t_mean)
+                                    loss_t_mean,
+                                    loss_e_mean)
                         print(hist_latest_str)
 
                     total_loss_ssum = 0
@@ -1024,6 +1046,7 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
                     loss_m_ssum = 0
                     loss_s_ssum = 0
                     loss_t_ssum = 0
+                    loss_e_ssum = 0
 
                 # Save checkpoint
                 if step_i % checkpoint_interval == (checkpoint_interval-1) or ((step_i) == (max_steps-1)):
@@ -1071,7 +1094,7 @@ def test(dataset_frame1, dataset_frame2, dataset_frame3, target_time_point=0.5, 
         with tf.variable_scope("Cycle_DVF"):
             # Prepare model.
             model = VoxelFlowModel(batch_size=1, is_train=False)
-            prediction, _ = model.inference(tf.concat([input_placeholder, edge_1, edge_3], 3),
+            prediction = model.inference(tf.concat([input_placeholder, edge_1, edge_3], 3),
                                             target_time_point=target_time_point)
 
         # Create a saver and load.
@@ -1210,7 +1233,7 @@ def generate(first, second, out, target_time_point=0.5, trained_model_checkpoint
         with tf.variable_scope("Cycle_DVF"):
             # Prepare model.
             model = VoxelFlowModel(batch_size=1, is_train=False)
-            prediction, _ = model.inference(tf.concat([input_pad, edge_1, edge_3], 3),
+            prediction  = model.inference(tf.concat([input_pad, edge_1, edge_3], 3),
                                             target_time_point=target_time_point)
 
         # Create a saver and load.
@@ -1265,8 +1288,8 @@ if __name__ == '__main__':
 
     hist_logger = None
     if hist_logging:
-        history_cols = ['Step', 'Learning_Rate', 'Total_Loss', 'Reconstruction_Loss', 'Cycle_Consistency_Loss',
-                        'Motion_Linearity_Loss', 'Stable_Motion_Loss', 'Temporal_Regularization_Loss']
+        history_cols = ['Step', 'Learning_Rate', 'Total_Loss',
+                        'Loss_R', 'Loss_C', 'Loss_M', 'Loss_S', 'Loss_T', 'Loss_E']
         file_name = out_dir + '/hist_{}.csv'.format(config_str)
         hist_logger = TableLogger(csv=True, file=file_name,
                                  columns=','.join(history_cols),
@@ -1327,6 +1350,7 @@ if __name__ == '__main__':
         logger.info('coef_loss_m: {}'.format(FLAGS.coef_loss_m))
         logger.info('coef_loss_s: {}'.format(FLAGS.coef_loss_s))
         logger.info('coef_loss_t: {}'.format(FLAGS.coef_loss_t))
+        logger.info('coef_loss_e: {}'.format(FLAGS.coef_loss_e))
         logger.info('strategy: {}'.format(FLAGS.strategy))
         logger.info('logging_interval: {}'.format(FLAGS.logging_interval))
         logger.info('checkpoint_interval: {}'.format(FLAGS.checkpoint_interval))

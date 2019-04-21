@@ -763,7 +763,6 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
         input2 = batch_frame2.get_next()
         input3 = batch_frame3.get_next()
 
-
         edge_vgg_1 = Vgg16(input1,reuse=None)
         if True: #if stage == 's2':
             edge_vgg_2 = Vgg16(input2,reuse=True)
@@ -786,19 +785,14 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
         #         loss_c = model1_s1_i00_i20.l1loss(prediction1, input2)
 
         if True: #if stage == 's2':
-            input_placeholder1 = tf.concat([input1, input2], 3)
-            input_placeholder2 = tf.concat([input2, input3], 3)
-
-            input_placeholder1 = tf.concat([input_placeholder1, edge_1, edge_2], 3)
-            input_placeholder2 = tf.concat([input_placeholder2, edge_2, edge_3], 3)
 
             with tf.variable_scope("Cycle_DVF"):
                 model1_s2_i00_i10 = VoxelFlowModel(batch_size=batch_size)
-                prediction1_i05 = model1_s2_i00_i10.inference(input_placeholder1)
+                prediction1_i05 = model1_s2_i00_i10.inference(tf.concat([input1, input2, edge_1, edge_2], 3))
 
             with tf.variable_scope("Cycle_DVF", reuse=True):
                 model2_s2_i10_i20 = VoxelFlowModel(batch_size=batch_size)
-                prediction2_i15 = model2_s2_i10_i20.inference(input_placeholder2)
+                prediction2_i15 = model2_s2_i10_i20.inference(tf.concat([input2, input3, edge_2, edge_3], 3))
 
             edge_vgg_prediction1_i05 = Vgg16(prediction1_i05,reuse=True)
             edge_vgg_prediction2_i15 = Vgg16(prediction2_i15,reuse=True)
@@ -839,7 +833,7 @@ def train(dataset_frame1, dataset_frame2, dataset_frame3, out_dir, log_sep=' ,',
 
             with tf.variable_scope("Cycle_DVF", reuse=True):
                 model4_s2_i00_i20 = VoxelFlowModel(batch_size=batch_size, adaptive_temporal_flow=adaptive_temporal_flow)
-                prediction4_i10 = model4_s2_i00_i20.inference(tf.concat([input1, input3,edge_1,edge_3], 3),
+                prediction4_i10 = model4_s2_i00_i20.inference(tf.concat([input1, input3, edge_1, edge_3], 3),
                                                              target_time_point=target_time_point)
                 loss_r = model4_s2_i00_i20.l1loss(prediction4_i10, input2)
 

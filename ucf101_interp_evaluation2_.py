@@ -1,5 +1,4 @@
 import pandas as pd
-
 from pathlib import Path, PureWindowsPath, WindowsPath
 
 # with Path('./ucf101_interp_ours/ucf101_interp_evaluation.csv').open() as f:
@@ -14,5 +13,11 @@ lu_df = pd.read_csv('train_dir\\model_param_lookup.csv', index_col='model_id')
 print(lu_df.head(5))
 out_df = pd.merge(eval_df, lu_df, how='left', left_on='model_id', right_index=True)
 print(out_df.head(5))
+
+# out_df.loc[out_df['model_id'] == 'ours.png', 'strategy'] = 'base(deep_voxel_flow)'
+# out_df.loc[out_df['model_id'] == 'ours.png', 'model_id'] = 'base(deep_voxel_flow)'
+#
+# print(out_df.head(30))
+
 with Path('./ucf101_interp_ours/ucf101_interp_evaluation_params.csv').open('w') as f:
     out_df.to_csv(f, line_terminator='\n')

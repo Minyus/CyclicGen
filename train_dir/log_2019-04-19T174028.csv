@@ -1,0 +1,60 @@
+2019-04-19T09:40:28.813 ,CyclicGen_main ,<module> ,INFO ,train_dir: ./train_dir
+2019-04-19T09:40:28.814 ,CyclicGen_main ,<module> ,INFO ,task: all
+2019-04-19T09:40:28.814 ,CyclicGen_main ,<module> ,INFO ,pretrained_model_checkpoint_path: None
+2019-04-19T09:40:28.814 ,CyclicGen_main ,<module> ,INFO ,batch_size: 8
+2019-04-19T09:40:28.814 ,CyclicGen_main ,<module> ,INFO ,training_data_step: 1
+2019-04-19T09:40:28.814 ,CyclicGen_main ,<module> ,INFO ,model_size: large
+2019-04-19T09:40:28.814 ,CyclicGen_main ,<module> ,INFO ,dataset_train: ucf101_256
+2019-04-19T09:40:28.814 ,CyclicGen_main ,<module> ,INFO ,dataset_test: ucf101
+2019-04-19T09:40:28.814 ,CyclicGen_main ,<module> ,INFO ,stage: s1s2
+2019-04-19T09:40:28.815 ,CyclicGen_main ,<module> ,INFO ,max_steps: None
+2019-04-19T09:40:28.815 ,CyclicGen_main ,<module> ,INFO ,max_epochs: 10
+2019-04-19T09:40:28.815 ,CyclicGen_main ,<module> ,INFO ,s1_steps: None
+2019-04-19T09:40:28.815 ,CyclicGen_main ,<module> ,INFO ,s1_epochs: 5
+2019-04-19T09:40:28.815 ,CyclicGen_main ,<module> ,INFO ,crop_size: 128
+2019-04-19T09:40:28.815 ,CyclicGen_main ,<module> ,INFO ,coef_loss_c: 1.0
+2019-04-19T09:40:28.815 ,CyclicGen_main ,<module> ,INFO ,coef_loss_m: 0.1
+2019-04-19T09:40:28.815 ,CyclicGen_main ,<module> ,INFO ,coef_loss_s: 0.0
+2019-04-19T09:40:28.815 ,CyclicGen_main ,<module> ,INFO ,coef_loss_t: 0.0
+2019-04-19T09:40:28.815 ,CyclicGen_main ,<module> ,INFO ,strategy: original_cycle_gen
+2019-04-19T09:40:28.815 ,CyclicGen_main ,<module> ,INFO ,logging_interval: 10
+2019-04-19T09:40:28.816 ,CyclicGen_main ,<module> ,INFO ,checkpoint_interval: None
+2019-04-19T09:40:28.816 ,CyclicGen_main ,<module> ,INFO ,save_summary: False
+2019-04-19T09:40:28.816 ,CyclicGen_main ,<module> ,INFO ,graph_level_seed: 0
+2019-04-19T09:40:28.816 ,CyclicGen_main ,<module> ,INFO ,logging_level: info
+2019-04-19T09:40:28.816 ,CyclicGen_main ,<module> ,INFO ,Output_directory: ./train_dir/2019-04-19T174028
+2019-04-19T09:41:00.807 ,tf_logging ,info ,INFO ,Restoring parameters from hed_model/new-model.ckpt
+2019-04-19T09:41:01.553 ,CyclicGen_main ,train ,INFO ,data_size: 22461
+2019-04-19T09:41:01.553 ,CyclicGen_main ,train ,INFO ,num_steps_per_epoch: 2807
+2019-04-19T09:41:01.553 ,CyclicGen_main ,train ,INFO ,max_steps: 28070
+2019-04-19T09:41:01.554 ,CyclicGen_main ,train ,INFO ,s1_steps: 14035
+2019-04-19T09:41:40.000 ,CyclicGen_main ,train ,INFO ,Epoch Number: 0
+2019-04-19T10:48:10.643 ,CyclicGen_main ,train ,INFO ,Model was saved at: ./train_dir/2019-04-19T174028/model.ckpt-2806
+2019-04-19T10:48:11.657 ,CyclicGen_main ,train ,INFO ,Epoch Number: 1
+2019-04-19T11:54:32.125 ,CyclicGen_main ,train ,INFO ,Model was saved at: ./train_dir/2019-04-19T174028/model.ckpt-5613
+2019-04-19T11:54:33.133 ,CyclicGen_main ,train ,INFO ,Epoch Number: 2
+2019-04-19T13:00:55.819 ,CyclicGen_main ,train ,INFO ,Model was saved at: ./train_dir/2019-04-19T174028/model.ckpt-8420
+2019-04-19T13:00:56.831 ,CyclicGen_main ,train ,INFO ,Epoch Number: 3
+2019-04-19T14:07:14.566 ,CyclicGen_main ,train ,INFO ,Model was saved at: ./train_dir/2019-04-19T174028/model.ckpt-11227
+2019-04-19T14:07:15.575 ,CyclicGen_main ,train ,INFO ,Epoch Number: 4
+2019-04-19T15:13:24.678 ,CyclicGen_main ,train ,INFO ,Model was saved at: ./train_dir/2019-04-19T174028/model.ckpt-14034
+2019-04-19T15:13:59.462 ,CyclicGen_main ,train ,INFO ,Epoch Number: 5
+2019-04-19T15:20:05.233 ,CyclicGen_main ,<module> ,ERROR ,### An Exception occurred.
+Traceback (most recent call last):
+  File "CyclicGen_main.py", line 1360, in <module>
+    train(ucf101_dataset_frame1, ucf101_dataset_frame2, ucf101_dataset_frame3, out_dir, log_sep=' ,', hist_logger=hist_logger)
+  File "CyclicGen_main.py", line 978, in train
+    feed_dict={s2_flag_tensor: s2_flag})
+  File "/usr/local/lib/python3.5/dist-packages/tensorflow/python/client/session.py", line 887, in run
+    run_metadata_ptr)
+  File "/usr/local/lib/python3.5/dist-packages/tensorflow/python/client/session.py", line 1110, in _run
+    feed_dict_tensor, options, run_metadata)
+  File "/usr/local/lib/python3.5/dist-packages/tensorflow/python/client/session.py", line 1286, in _do_run
+    run_metadata)
+  File "/usr/local/lib/python3.5/dist-packages/tensorflow/python/client/session.py", line 1292, in _do_call
+    return fn(*args)
+  File "/usr/local/lib/python3.5/dist-packages/tensorflow/python/client/session.py", line 1277, in _run_fn
+    options, feed_dict, fetch_list, target_list, run_metadata)
+  File "/usr/local/lib/python3.5/dist-packages/tensorflow/python/client/session.py", line 1367, in _call_tf_sessionrun
+    run_metadata)
+KeyboardInterrupt

@@ -1,0 +1,13 @@
+﻿model_id,strategy,coef_loss_e,coef_loss_t,coef_loss_m,s1_epochs,max_epochs
+2019-04-14T232535,original_cycle_gen,0,0,0.1,1,5
+2019-04-15T111748,original_cycle_gen,0,0,0,1,5
+2019-04-17T191452,original_cycle_gen,0,0,0.1,0,0
+2019-04-18T164451,accel_adjust,0,0,0.1,1,5
+2019-04-18T233637,accel_adjust,0,0.1,0.1,1,5
+2019-04-19T174028,original_cycle_gen,0,0,0.1,5,5
+2019-04-20T012234,original_cycle_gen,0,0,0.1,5,10
+2019-04-20T151155,accel_adjust,0.5,0,0.1,5,10
+2019-04-20T215827,accel_adjust,0,0,0.1,5,10
+2019-04-21T092001,original_cycle_gen,0.5,0,0.1,5,10
+2019-04-21T224636,accel_adjust,1,0,0.1,5,10
+2019-04-22T082112,original_cycle_gen,1,0,0.1,5,10

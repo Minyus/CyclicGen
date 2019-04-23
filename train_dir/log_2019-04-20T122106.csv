@@ -1,0 +1,94 @@
+2019-04-20T04:21:06.677 ,CyclicGen_main ,<module> ,INFO ,train_dir: ./train_dir
+2019-04-20T04:21:06.677 ,CyclicGen_main ,<module> ,INFO ,task: test_generate
+2019-04-20T04:21:06.677 ,CyclicGen_main ,<module> ,INFO ,pretrained_model_checkpoint_path: ./train_dir/2019-04-20T012234/model.ckpt-28069
+2019-04-20T04:21:06.677 ,CyclicGen_main ,<module> ,INFO ,batch_size: 8
+2019-04-20T04:21:06.677 ,CyclicGen_main ,<module> ,INFO ,training_data_step: 1
+2019-04-20T04:21:06.677 ,CyclicGen_main ,<module> ,INFO ,model_size: large
+2019-04-20T04:21:06.677 ,CyclicGen_main ,<module> ,INFO ,dataset_train: ucf101_256
+2019-04-20T04:21:06.677 ,CyclicGen_main ,<module> ,INFO ,dataset_test: ucf101
+2019-04-20T04:21:06.677 ,CyclicGen_main ,<module> ,INFO ,stage: s1s2
+2019-04-20T04:21:06.678 ,CyclicGen_main ,<module> ,INFO ,max_steps: None
+2019-04-20T04:21:06.678 ,CyclicGen_main ,<module> ,INFO ,max_epochs: 10
+2019-04-20T04:21:06.678 ,CyclicGen_main ,<module> ,INFO ,s1_steps: None
+2019-04-20T04:21:06.678 ,CyclicGen_main ,<module> ,INFO ,s1_epochs: 5
+2019-04-20T04:21:06.678 ,CyclicGen_main ,<module> ,INFO ,crop_size: 128
+2019-04-20T04:21:06.678 ,CyclicGen_main ,<module> ,INFO ,coef_loss_c: 1.0
+2019-04-20T04:21:06.678 ,CyclicGen_main ,<module> ,INFO ,coef_loss_m: 0.1
+2019-04-20T04:21:06.678 ,CyclicGen_main ,<module> ,INFO ,coef_loss_s: 0.0
+2019-04-20T04:21:06.678 ,CyclicGen_main ,<module> ,INFO ,coef_loss_t: 0.0
+2019-04-20T04:21:06.678 ,CyclicGen_main ,<module> ,INFO ,strategy: original_cycle_gen
+2019-04-20T04:21:06.679 ,CyclicGen_main ,<module> ,INFO ,logging_interval: 10
+2019-04-20T04:21:06.679 ,CyclicGen_main ,<module> ,INFO ,checkpoint_interval: None
+2019-04-20T04:21:06.679 ,CyclicGen_main ,<module> ,INFO ,save_summary: False
+2019-04-20T04:21:06.679 ,CyclicGen_main ,<module> ,INFO ,graph_level_seed: 0
+2019-04-20T04:21:06.679 ,CyclicGen_main ,<module> ,INFO ,logging_level: info
+2019-04-20T04:21:06.679 ,CyclicGen_main ,<module> ,INFO ,Output_directory: ./train_dir/2019-04-20T122106
+2019-04-20T04:21:10.723 ,tf_logging ,info ,INFO ,Restoring parameters from ./train_dir/2019-04-20T012234/model.ckpt-28069
+2019-04-20T04:21:10.879 ,CyclicGen_main ,test ,INFO ,Pre-trained model restored from ./train_dir/2019-04-20T012234/model.ckpt-28069
+2019-04-20T04:21:10.879 ,CyclicGen_main ,test ,INFO ,data_size: 379
+2019-04-20T04:21:10.880 ,CyclicGen_main ,test ,INFO ,id: 0 | UCF_index: 1
+2019-04-20T04:21:13.578 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: 
+2019-04-20T04:21:13.578 ,CyclicGen_main ,test ,INFO ,id: 1 | UCF_index: 1001
+2019-04-20T04:21:14.314 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: 
+2019-04-20T04:21:14.315 ,CyclicGen_main ,test ,INFO ,id: 2 | UCF_index: 101
+2019-04-20T04:21:15.064 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: 
+2019-04-20T04:21:15.065 ,CyclicGen_main ,test ,INFO ,id: 3 | UCF_index: 1011
+2019-04-20T04:21:15.916 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: 
+2019-04-20T04:21:15.916 ,CyclicGen_main ,test ,INFO ,id: 4 | UCF_index: 1021
+2019-04-20T04:21:16.648 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: 
+2019-04-20T04:21:16.648 ,CyclicGen_main ,test ,INFO ,id: 5 | UCF_index: 1031
+2019-04-20T04:21:17.378 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: 
+2019-04-20T04:21:17.378 ,CyclicGen_main ,test ,INFO ,id: 6 | UCF_index: 1041
+2019-04-20T04:21:18.104 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: 
+2019-04-20T04:21:18.104 ,CyclicGen_main ,test ,INFO ,id: 7 | UCF_index: 1051
+2019-04-20T04:21:18.798 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: 
+2019-04-20T04:21:18.799 ,CyclicGen_main ,test ,INFO ,id: 8 | UCF_index: 1061
+2019-04-20T04:21:19.508 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: 
+2019-04-20T04:21:19.508 ,CyclicGen_main ,test ,INFO ,id: 9 | UCF_index: 1071
+2019-04-20T04:21:20.218 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: 
+2019-04-20T04:21:20.218 ,CyclicGen_main ,test ,INFO ,id: 10 | UCF_index: 1081
+2019-04-20T04:21:20.971 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: 
+2019-04-20T04:21:20.972 ,CyclicGen_main ,test ,INFO ,id: 11 | UCF_index: 1091
+2019-04-20T04:21:21.666 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: 
+2019-04-20T04:21:21.666 ,CyclicGen_main ,test ,INFO ,id: 12 | UCF_index: 11
+2019-04-20T04:21:22.409 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: 
+2019-04-20T04:21:22.409 ,CyclicGen_main ,test ,INFO ,id: 13 | UCF_index: 1101
+2019-04-20T04:21:23.146 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: 
+2019-04-20T04:21:23.146 ,CyclicGen_main ,test ,INFO ,id: 14 | UCF_index: 111
+2019-04-20T04:21:23.907 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: 
+2019-04-20T04:21:23.908 ,CyclicGen_main ,test ,INFO ,id: 15 | UCF_index: 1111
+2019-04-20T04:21:24.616 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: 
+2019-04-20T04:21:24.616 ,CyclicGen_main ,test ,INFO ,id: 16 | UCF_index: 1121
+2019-04-20T04:21:25.329 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: 
+2019-04-20T04:21:25.329 ,CyclicGen_main ,test ,INFO ,id: 17 | UCF_index: 1131
+2019-04-20T04:21:26.028 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: 
+2019-04-20T04:21:26.028 ,CyclicGen_main ,test ,INFO ,id: 18 | UCF_index: 1141
+2019-04-20T04:21:26.747 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: 
+2019-04-20T04:21:26.747 ,CyclicGen_main ,test ,INFO ,id: 19 | UCF_index: 1151
+2019-04-20T04:21:27.490 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: 
+2019-04-20T04:21:27.490 ,CyclicGen_main ,test ,INFO ,id: 20 | UCF_index: 1161
+2019-04-20T04:21:28.217 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: 
+2019-04-20T04:21:28.217 ,CyclicGen_main ,test ,INFO ,id: 21 | UCF_index: 1171
+2019-04-20T04:21:28.909 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: 
+2019-04-20T04:21:28.909 ,CyclicGen_main ,test ,INFO ,id: 22 | UCF_index: 1181
+2019-04-20T04:21:29.608 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: 
+2019-04-20T04:21:29.608 ,CyclicGen_main ,test ,INFO ,id: 23 | UCF_index: 1191
+2019-04-20T04:21:30.282 ,CyclicGen_main ,<module> ,ERROR ,### An Exception occurred.
+Traceback (most recent call last):
+  File "CyclicGen_main.py", line 1391, in <module>
+    trained_model_checkpoint_path=trained_model_checkpoint_path)
+  File "CyclicGen_main.py", line 1142, in test
+    prediction_np = sess.run(prediction, feed_dict=feed_dict)
+  File "/usr/local/lib/python3.5/dist-packages/tensorflow/python/client/session.py", line 887, in run
+    run_metadata_ptr)
+  File "/usr/local/lib/python3.5/dist-packages/tensorflow/python/client/session.py", line 1110, in _run
+    feed_dict_tensor, options, run_metadata)
+  File "/usr/local/lib/python3.5/dist-packages/tensorflow/python/client/session.py", line 1286, in _do_run
+    run_metadata)
+  File "/usr/local/lib/python3.5/dist-packages/tensorflow/python/client/session.py", line 1292, in _do_call
+    return fn(*args)
+  File "/usr/local/lib/python3.5/dist-packages/tensorflow/python/client/session.py", line 1277, in _run_fn
+    options, feed_dict, fetch_list, target_list, run_metadata)
+  File "/usr/local/lib/python3.5/dist-packages/tensorflow/python/client/session.py", line 1367, in _call_tf_sessionrun
+    run_metadata)
+KeyboardInterrupt

@@ -1,0 +1,32 @@
+2019-04-17T11:14:52.102 ,CyclicGen_main ,<module> ,INFO ,train_dir: ./train_dir
+2019-04-17T11:14:52.102 ,CyclicGen_main ,<module> ,INFO ,subset: train_test
+2019-04-17T11:14:52.102 ,CyclicGen_main ,<module> ,INFO ,pretrained_model_checkpoint_path: None
+2019-04-17T11:14:52.102 ,CyclicGen_main ,<module> ,INFO ,max_steps: 1
+2019-04-17T11:14:52.102 ,CyclicGen_main ,<module> ,INFO ,max_epochs: 5
+2019-04-17T11:14:52.102 ,CyclicGen_main ,<module> ,INFO ,batch_size: 8
+2019-04-17T11:14:52.102 ,CyclicGen_main ,<module> ,INFO ,training_data_step: 1
+2019-04-17T11:14:52.102 ,CyclicGen_main ,<module> ,INFO ,model_size: large
+2019-04-17T11:14:52.102 ,CyclicGen_main ,<module> ,INFO ,dataset_train: ucf101_256
+2019-04-17T11:14:52.103 ,CyclicGen_main ,<module> ,INFO ,dataset_test: ucf101
+2019-04-17T11:14:52.103 ,CyclicGen_main ,<module> ,INFO ,stage: s1s2
+2019-04-17T11:14:52.103 ,CyclicGen_main ,<module> ,INFO ,s1_steps: None
+2019-04-17T11:14:52.103 ,CyclicGen_main ,<module> ,INFO ,logging_interval: 10
+2019-04-17T11:14:52.103 ,CyclicGen_main ,<module> ,INFO ,checkpoint_interval: None
+2019-04-17T11:14:52.103 ,CyclicGen_main ,<module> ,INFO ,save_summary: False
+2019-04-17T11:14:52.103 ,CyclicGen_main ,<module> ,INFO ,graph_level_seed: 0
+2019-04-17T11:14:52.103 ,CyclicGen_main ,<module> ,INFO ,crop_size: 128
+2019-04-17T11:14:52.103 ,CyclicGen_main ,<module> ,INFO ,coef_loss_c: 1.0
+2019-04-17T11:14:52.103 ,CyclicGen_main ,<module> ,INFO ,coef_loss_m: 0.1
+2019-04-17T11:14:52.103 ,CyclicGen_main ,<module> ,INFO ,coef_loss_s: 0.0
+2019-04-17T11:14:52.104 ,CyclicGen_main ,<module> ,INFO ,coef_loss_t: 0.0
+2019-04-17T11:14:52.104 ,CyclicGen_main ,<module> ,INFO ,adaptive_temporal_flow: False
+2019-04-17T11:14:52.104 ,CyclicGen_main ,<module> ,INFO ,Output_directory: ./train_dir/2019-04-17T191452
+2019-04-17T11:15:07.845 ,CyclicGen_main ,train ,DEBUG ,all_layers:hed/side_1/Variable:0 | hed/side_1/Variable_1:0 | hed/side_1/Variable_2:0 | hed/side_2/Variable:0 | hed/side_2/Variable_1:0 | hed/side_2/Variable_2:0 | hed/side_3/Variable:0 | hed/side_3/Variable_1:0 | hed/side_3/Variable_2:0 | hed/side_4/Variable:0 | hed/side_4/Variable_1:0 | hed/side_4/Variable_2:0 | hed/side_5/Variable:0 | hed/side_5/Variable_1:0 | hed/side_5/Variable_2:0 | hed/Variable:0 | Cycle_DVF/conv1/weights:0 | Cycle_DVF/conv1/BatchNorm/beta:0 | Cycle_DVF/conv1_1/weights:0 | Cycle_DVF/conv1_1/BatchNorm/beta:0 | Cycle_DVF/conv2/weights:0 | Cycle_DVF/conv2/BatchNorm/beta:0 | Cycle_DVF/conv2_1/weights:0 | Cycle_DVF/conv2_1/BatchNorm/beta:0 | Cycle_DVF/conv3/weights:0 | Cycle_DVF/conv3/BatchNorm/beta:0 | Cycle_DVF/conv3_1/weights:0 | Cycle_DVF/conv3_1/BatchNorm/beta:0 | Cycle_DVF/conv4/weights:0 | Cycle_DVF/conv4/BatchNorm/beta:0 | Cycle_DVF/conv4_1/weights:0 | Cycle_DVF/conv4_1/BatchNorm/beta:0 | Cycle_DVF/conv5/weights:0 | Cycle_DVF/conv5/BatchNorm/beta:0 | Cycle_DVF/conv5_1/weights:0 | Cycle_DVF/conv5_1/BatchNorm/beta:0 | Cycle_DVF/conv6/weights:0 | Cycle_DVF/conv6/BatchNorm/beta:0 | Cycle_DVF/conv6_1/weights:0 | Cycle_DVF/conv6_1/BatchNorm/beta:0 | Cycle_DVF/conv7/weights:0 | Cycle_DVF/conv7/BatchNorm/beta:0 | Cycle_DVF/conv7_1/weights:0 | Cycle_DVF/conv7_1/BatchNorm/beta:0 | Cycle_DVF/conv8/weights:0 | Cycle_DVF/conv8/BatchNorm/beta:0 | Cycle_DVF/conv8_1/weights:0 | Cycle_DVF/conv8_1/BatchNorm/beta:0 | Cycle_DVF/conv9/weights:0 | Cycle_DVF/conv9/BatchNorm/beta:0 | Cycle_DVF/conv9_1/weights:0 | Cycle_DVF/conv9_1/BatchNorm/beta:0 | Cycle_DVF/conv10/weights:0 | Cycle_DVF/conv10/BatchNorm/beta:0 | Cycle_DVF/conv10_1/weights:0 | Cycle_DVF/conv10_1/BatchNorm/beta:0 | Cycle_DVF/conv11/weights:0 | Cycle_DVF/conv11/BatchNorm/beta:0 | Cycle_DVF/conv11_1/weights:0 | Cycle_DVF/conv11_1/BatchNorm/beta:0 | Cycle_DVF/conv12/weights:0 | Cycle_DVF/conv12/biases:0
+2019-04-17T11:15:07.846 ,CyclicGen_main ,train ,DEBUG ,optimize layers:Cycle_DVF/conv1/weights:0 | Cycle_DVF/conv1/BatchNorm/beta:0 | Cycle_DVF/conv1_1/weights:0 | Cycle_DVF/conv1_1/BatchNorm/beta:0 | Cycle_DVF/conv2/weights:0 | Cycle_DVF/conv2/BatchNorm/beta:0 | Cycle_DVF/conv2_1/weights:0 | Cycle_DVF/conv2_1/BatchNorm/beta:0 | Cycle_DVF/conv3/weights:0 | Cycle_DVF/conv3/BatchNorm/beta:0 | Cycle_DVF/conv3_1/weights:0 | Cycle_DVF/conv3_1/BatchNorm/beta:0 | Cycle_DVF/conv4/weights:0 | Cycle_DVF/conv4/BatchNorm/beta:0 | Cycle_DVF/conv4_1/weights:0 | Cycle_DVF/conv4_1/BatchNorm/beta:0 | Cycle_DVF/conv5/weights:0 | Cycle_DVF/conv5/BatchNorm/beta:0 | Cycle_DVF/conv5_1/weights:0 | Cycle_DVF/conv5_1/BatchNorm/beta:0 | Cycle_DVF/conv6/weights:0 | Cycle_DVF/conv6/BatchNorm/beta:0 | Cycle_DVF/conv6_1/weights:0 | Cycle_DVF/conv6_1/BatchNorm/beta:0 | Cycle_DVF/conv7/weights:0 | Cycle_DVF/conv7/BatchNorm/beta:0 | Cycle_DVF/conv7_1/weights:0 | Cycle_DVF/conv7_1/BatchNorm/beta:0 | Cycle_DVF/conv8/weights:0 | Cycle_DVF/conv8/BatchNorm/beta:0 | Cycle_DVF/conv8_1/weights:0 | Cycle_DVF/conv8_1/BatchNorm/beta:0 | Cycle_DVF/conv9/weights:0 | Cycle_DVF/conv9/BatchNorm/beta:0 | Cycle_DVF/conv9_1/weights:0 | Cycle_DVF/conv9_1/BatchNorm/beta:0 | Cycle_DVF/conv10/weights:0 | Cycle_DVF/conv10/BatchNorm/beta:0 | Cycle_DVF/conv10_1/weights:0 | Cycle_DVF/conv10_1/BatchNorm/beta:0 | Cycle_DVF/conv11/weights:0 | Cycle_DVF/conv11/BatchNorm/beta:0 | Cycle_DVF/conv11_1/weights:0 | Cycle_DVF/conv11_1/BatchNorm/beta:0 | Cycle_DVF/conv12/weights:0 | Cycle_DVF/conv12/biases:0
+2019-04-17T11:15:29.073 ,tf_logging ,info ,INFO ,Restoring parameters from hed_model/new-model.ckpt
+2019-04-17T11:15:29.728 ,CyclicGen_main ,train ,INFO ,data_size: 22461
+2019-04-17T11:15:29.728 ,CyclicGen_main ,train ,INFO ,num_steps_per_epoch: 2807
+2019-04-17T11:15:29.728 ,CyclicGen_main ,train ,INFO ,max_steps: 1
+2019-04-17T11:15:29.729 ,CyclicGen_main ,train ,INFO ,s1_steps: 2807
+2019-04-17T11:16:08.292 ,CyclicGen_main ,train ,INFO ,Epoch Number: 0
+2019-04-17T11:16:23.021 ,CyclicGen_main ,train ,INFO ,Model was saved at: ./train_dir/2019-04-17T191452/model.ckpt-0

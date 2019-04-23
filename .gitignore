@@ -129,3 +129,6 @@ UCF-101_frames256/
 Pipfile
 Pipfile.lock
 scratch_codes.py
+
+train_dir/old/
+trial_out/

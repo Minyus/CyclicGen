@@ -1,0 +1,39 @@
+2019-04-17T19:17:13.326 ,CyclicGen_main ,<module> ,INFO ,train_dir: ./train_dir
+2019-04-17T19:17:13.326 ,CyclicGen_main ,<module> ,INFO ,subset: train_test
+2019-04-17T19:17:13.326 ,CyclicGen_main ,<module> ,INFO ,pretrained_model_checkpoint_path: None
+2019-04-17T19:17:13.326 ,CyclicGen_main ,<module> ,INFO ,max_steps: None
+2019-04-17T19:17:13.326 ,CyclicGen_main ,<module> ,INFO ,max_epochs: 5
+2019-04-17T19:17:13.326 ,CyclicGen_main ,<module> ,INFO ,batch_size: 8
+2019-04-17T19:17:13.326 ,CyclicGen_main ,<module> ,INFO ,training_data_step: 1
+2019-04-17T19:17:13.326 ,CyclicGen_main ,<module> ,INFO ,model_size: large
+2019-04-17T19:17:13.327 ,CyclicGen_main ,<module> ,INFO ,dataset_train: ucf101_256
+2019-04-17T19:17:13.327 ,CyclicGen_main ,<module> ,INFO ,dataset_test: ucf101
+2019-04-17T19:17:13.327 ,CyclicGen_main ,<module> ,INFO ,stage: s1s2
+2019-04-17T19:17:13.327 ,CyclicGen_main ,<module> ,INFO ,s1_steps: None
+2019-04-17T19:17:13.327 ,CyclicGen_main ,<module> ,INFO ,logging_interval: 10
+2019-04-17T19:17:13.327 ,CyclicGen_main ,<module> ,INFO ,checkpoint_interval: None
+2019-04-17T19:17:13.327 ,CyclicGen_main ,<module> ,INFO ,save_summary: False
+2019-04-17T19:17:13.327 ,CyclicGen_main ,<module> ,INFO ,graph_level_seed: 0
+2019-04-17T19:17:13.327 ,CyclicGen_main ,<module> ,INFO ,crop_size: 128
+2019-04-17T19:17:13.327 ,CyclicGen_main ,<module> ,INFO ,coef_loss_c: 1.0
+2019-04-17T19:17:13.328 ,CyclicGen_main ,<module> ,INFO ,coef_loss_m: 0.1
+2019-04-17T19:17:13.328 ,CyclicGen_main ,<module> ,INFO ,coef_loss_s: 0.0
+2019-04-17T19:17:13.328 ,CyclicGen_main ,<module> ,INFO ,coef_loss_t: 0.0
+2019-04-17T19:17:13.328 ,CyclicGen_main ,<module> ,INFO ,strategy: adaptive_temporal_flow
+2019-04-17T19:17:13.328 ,CyclicGen_main ,<module> ,INFO ,logging_level: info
+2019-04-17T19:17:13.328 ,CyclicGen_main ,<module> ,INFO ,Output_directory: ./train_dir/2019-04-18T031713
+2019-04-17T19:17:47.869 ,tf_logging ,info ,INFO ,Restoring parameters from hed_model/new-model.ckpt
+2019-04-17T19:17:48.523 ,CyclicGen_main ,train ,INFO ,data_size: 22461
+2019-04-17T19:17:48.523 ,CyclicGen_main ,train ,INFO ,num_steps_per_epoch: 2807
+2019-04-17T19:17:48.523 ,CyclicGen_main ,train ,INFO ,max_steps: 14035
+2019-04-17T19:17:48.523 ,CyclicGen_main ,train ,INFO ,s1_steps: 2807
+2019-04-17T19:18:24.352 ,CyclicGen_main ,train ,INFO ,Epoch Number: 0
+2019-04-17T20:24:38.856 ,CyclicGen_main ,train ,INFO ,Model was saved at: ./train_dir/2019-04-18T031713/model.ckpt-2806
+2019-04-17T20:25:10.727 ,CyclicGen_main ,train ,INFO ,Epoch Number: 1
+2019-04-17T21:31:53.825 ,CyclicGen_main ,train ,INFO ,Model was saved at: ./train_dir/2019-04-18T031713/model.ckpt-5613
+2019-04-17T21:31:54.849 ,CyclicGen_main ,train ,INFO ,Epoch Number: 2
+2019-04-17T22:38:41.698 ,CyclicGen_main ,train ,INFO ,Model was saved at: ./train_dir/2019-04-18T031713/model.ckpt-8420
+2019-04-17T22:38:42.721 ,CyclicGen_main ,train ,INFO ,Epoch Number: 3
+2019-04-17T23:45:28.247 ,CyclicGen_main ,train ,INFO ,Model was saved at: ./train_dir/2019-04-18T031713/model.ckpt-11227
+2019-04-17T23:45:29.263 ,CyclicGen_main ,train ,INFO ,Epoch Number: 4
+2019-04-18T00:52:14.099 ,CyclicGen_main ,train ,INFO ,Model was saved at: ./train_dir/2019-04-18T031713/model.ckpt-14034

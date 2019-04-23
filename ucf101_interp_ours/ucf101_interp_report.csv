@@ -1,9 +1,9 @@
-﻿Model Description,Avg. PSNR,Avg. SSIM
-[Proposed] CyclicGen: Adapt to Acceleration & Extra Cycle Consistency Loss (coef: 0.5),34.40271432,0.94357956
-[Proposed] CyclicGen: Extra Cycle Consistency Loss (coef: 1.0),34.41376346,0.943541811
-[Proposed] CyclicGen: Adapt to Acceleration & Extra Cycle Consistency Loss (coef: 1.0),34.38320212,0.943268415
-[Proposed] CyclicGen: Extra Cycle Consistency Loss (coef: 0.5),34.34617076,0.943077876
-[Baseline]  CyclicGen,34.36665072,0.942808801
-[Proposed] CyclicGen: Adapt to Acceleration,34.36815418,0.942761952
-[Baseline]  Deep Voxel Flow,34.11845049,0.941306811
-[Baseline]  1 Batch Only,33.12600824,0.923664081
+﻿Model Description,Avg. MS-SSIM,Avg. PSNR,Avg. SSIM
+[Proposed] CyclicGen: Adapt to Acceleration & Extra Cycle Consistency Loss (coef: 0.5),0.972547397,34.40271432,0.94357956
+[Proposed] CyclicGen: Extra Cycle Consistency Loss (coef: 1.0),0.972598354,34.41376346,0.943541811
+[Proposed] CyclicGen: Adapt to Acceleration & Extra Cycle Consistency Loss (coef: 1.0),0.972378475,34.38320212,0.943268415
+[Proposed] CyclicGen: Extra Cycle Consistency Loss (coef: 0.5),0.972026352,34.34617076,0.943077876
+[Baseline]  CyclicGen,0.972566496,34.36665072,0.942808801
+[Proposed] CyclicGen: Adapt to Acceleration,0.972570103,34.36815418,0.942761952
+[Baseline]  Deep Voxel Flow,0.971949685,34.11845049,0.941306811
+[Baseline]  1 Batch Only,0.960856417,33.12600824,0.923664081

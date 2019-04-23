@@ -28,6 +28,7 @@ gt_t = tf.placeholder(dtype=tf.uint8)
 gen_t = tf.placeholder(dtype=tf.uint8)
 ssim_val_t = tf.image.ssim(gt_t, gen_t, max_val=255)
 psnr_val_t = tf.image.psnr(gt_t, gen_t, max_val=255)
+ms_ssim_val_t = tf.image.ssim_multiscale(gt_t, gen_t, max_val=255)
 """   """
 
 for avi_dir in eval_dir.glob('*/'):
@@ -43,16 +44,16 @@ for avi_dir in eval_dir.glob('*/'):
 
 
                     with tf.Session() as sess:
-                        ssim_val, psnr_val = sess.run([ssim_val_t, psnr_val_t], feed_dict={gt_t: gt_np, gen_t: gen_np})
+                        ssim_val, psnr_val, ms_ssim_val = sess.run([ssim_val_t, psnr_val_t, ms_ssim_val_t], feed_dict={gt_t: gt_np, gen_t: gen_np})
                     model_id = gen_file.name[len('frame_01_'):len('frame_01_2019-04-22T082112')]
                     num_steps = gen_file.name[len('frame_01_2019-04-22T082112_model.ckpt-'):len('frame_01_2019-04-22T082112_model.ckpt-28069')]
                     num_steps = num_steps.split('.png')[0]
-                    out_dict[(avi_id, model_id, num_steps)] = [ssim_val, psnr_val]
+                    out_dict[(avi_id, model_id, num_steps)] = [ssim_val, psnr_val, ms_ssim_val]
         # break
 
 # print(out_dict)
 
-df = pd.DataFrame.from_dict(out_dict, orient='index', columns=['ssim_val', 'psnr_val'])
+df = pd.DataFrame.from_dict(out_dict, orient='index', columns=['ssim_val', 'psnr_val', 'ms_ssim_val'])
 df.index = pd.MultiIndex.from_tuples(df.index)
 df.index.names = ['triplet_id', 'model_id', 'num_steps']
 # print(df)

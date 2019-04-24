@@ -1,86 +1,31 @@
-# Deep Video Frame Interpolation using Cyclic Frame Generation
-Video frame interpolation algorithms predict intermediate frames to produce videos with higher frame rates and smooth view transitions given two consecutive frames as inputs. We propose that: synthesized frames are more reliable if they can be used to reconstruct the input frames with high quality. Based on this idea, we introduce a new loss term, the cycle consistency loss. The cycle consistency loss can better utilize the training data to not only enhance the interpolation results, but also maintain the performance better with less training data. It can be integrated into any frame interpolation network and trained in an end-to-end manner. In addition to the cycle consistency loss, we propose two extensions: motion linearity loss and edge-guided training. The motion linearity loss approximates the motion between two input frames to be linear and regularizes the training. By applying edge-guided training, we further improve results by integrating edge information into training. Both qualitative and quantitative experiments demonstrate that our model outperforms the state-of-the-art methods.
+# Refactored and improved version of [CyclicGen](https://github.com/alex04072000/CyclicGen)
 
-[[Project]](https://www.cmlab.csie.ntu.edu.tw/~yulunliu/CyclicGen) 
+## [0] Python code to prepare data (No need to run)
+### Code to extract image frames from AVI files in UCF101 dataset
+UCF101_extractor.py
+>> - Output ./UCF-101_frames256/ (The data in this folder is provided separately.)
 
-Paper
+### Generate frame path list for training used for the main code in ./data_list/.
+generate_frame_list.py
+>> - Output ./data_list/
 
-<a href="http://www.cmlab.csie.ntu.edu.tw/~yulunliu/CyclicGen_/liu.pdf" rel="Paper"><img src="thumb.png" alt="Paper" width="100%"></a>
+## [1] Main Python code (Train the model and then generate image frames)
 
-## Overview
-This is the author's reference implementation of the video frame interpolation using TensorFlow described in:
-"Deep Video Frame Interpolation using Cyclic Frame Generation"
-[Yu-Lun Liu](http://www.cmlab.csie.ntu.edu.tw/~yulunliu/), [Yi-Tung Liao](http://www.cmlab.csie.ntu.edu.tw/~queenieliaw/), [Yen-Yu Lin](https://www.citi.sinica.edu.tw/pages/yylin/), [Yung-Yu Chuang](https://www.csie.ntu.edu.tw/~cyy/) (Academia Sinica & National Taiwan University & MediaTek)
-in 33rd AAAI Conference on Artificial Intelligence (AAAI) 2019, Oral Presentation.
-Should you be making use of our work, please cite our paper [1]. Some codes are forked from [Deep Voxel Flow (DVF)](https://github.com/liuziwei7/voxel-flow) [2] and [Holistically-Nested Edge Detection (HED)](https://github.com/moabitcoin/holy-edge) [3].
+CyclicGen_main.py
+>> - Input ./UCF-101_frames256/ ./data_list/ ./hed_model/
+>> - Output ./train_dir/ ./ucf101_interp_ours/ ./Middlebury/
 
-<img src='./teaser.png' width=500>
+## [2] Python code to compute SSIM, PSNR, and MS-SSIM for output data 
 
-Further information please contact [Yu-Lun Liu](http://www.cmlab.csie.ntu.edu.tw/~yulunliu/).
+ucf101_interp_evaluation.py
+>> - Input  ./ucf101_interp_ours/ (source: https://github.com/liuziwei7/voxel-flow >> "Testing Data")
+>> - Output ./ucf101_interp_ours/
 
-## Requirements setup
-* [TensorFlow](https://www.tensorflow.org/)
+## [3] Python code to join model parameters (run in Windows)
+ucf101_interp_evaluation2_.py
+>> - Input ./ucf101_interp_ours/ ./train_dir/model_param_lookup.csv
+>> - Output ./ucf101_interp_ours/
 
-* To download the pre-trained CyclicGen models and HED model:
+## [4] Tableau workbook to generate final report (run in Windows)
+./ucf101_interp_ours/CNN-based_Frame_Interpolation_Evaluation.twb
 
-    * [ckpt_and_hed_model](https://drive.google.com/open?id=1X7PWDY2nAx8ZeSLso5qeypRUCDokNFms)
-
-## Data Preparation
-* [Deep Voxel Flow (DVF)](https://github.com/liuziwei7/voxel-flow)
-
-## Usage
-* Run the training script for stage 1:
-``` bash
-python3 CyclicGen_train_stage1.py --subset=train
-```
-* Run the training script for stage 2:
-``` bash
-python3 CyclicGen_train_stage2.py --subset=train --pretrained_model_checkpoint_path=./ckpt/CyclicGen/model
-```
-* Run the testing and evaluation script:
-``` bash
-python3 CyclicGen_train_stage1.py --pretrained_model_checkpoint_path=./ckpt/CyclicGen/model --subset=test --batch_size=1
-```
-* Run your own pair of frames:
-``` bash
-python3 run.py --pretrained_model_checkpoint_path=./ckpt/CyclicGen/model --first=./first.png --second=./second.png --out=./out.png
-```
-Note that we provide two baseline models: 1) original DVF ```CyclicGen_model.py```, and 2) DVF with more layers in order to increase the receptive field ```CyclicGen_model_large.py```. While test on UCF-101 dataset, we use the ```CyclicGen_model.py``` network. The motions in Middlebury dataset are much larger than UCF-101, some even exceed the receiptive field of DVF network. So we use ```CyclicGen_model_large.py``` for fine-tuning and testing. You can easily switch between these two models by changing the line 
-
-```from CyclicGen_model import Voxel_flow_model``` 
-
-to 
-
-```from CyclicGen_model_large import Voxel_flow_model```.
-
-## [Video](https://www.youtube.com/watch?v=R8vQjgAtPOE)
-
-## Citation
-```
-[1]  @inproceedings{liu2019cyclicgen,
-         author = {Yu-Lun Liu, Yi-Tung Liao, Yen-Yu Lin, and Yung-Yu Chuang},
-         title = {Deep Video Frame Interpolation using Cyclic Frame Generation},
-         booktitle = {AAAI},
-         year = {2019}
-     }
-```
-```
-[2]  @inproceedings{liu2017voxelflow,
-         author = {Ziwei Liu, Raymond Yeh, Xiaoou Tang, Yiming Liu, and Aseem Agarwala},
-         title = {Video Frame Synthesis using Deep Voxel Flow},
-         booktitle = {Proceedings of International Conference on Computer Vision (ICCV)},
-         month = {October},
-         year = {2017} 
-     }
-```
-```
-[3]  @InProceedings{xie15hed,
-         author = {"Xie, Saining and Tu, Zhuowen"},
-         Title = {Holistically-Nested Edge Detection},
-         Booktitle = "Proceedings of IEEE International Conference on Computer Vision",
-         Year  = {2015},
-     }
-```
-
-## Acknowledgment
-This work was supported in part by Ministry of Science and Technology (MOST) under grants MOST 107-2628-E-001-005-MY3, MOST107-2221-E-002-147-MY3, and MOST Joint Research Center for AI Technology and All Vista Healthcare under grant 107-2634-F-002-007.

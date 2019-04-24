@@ -9,13 +9,13 @@ UCF101_extractor.py
 generate_frame_list.py
 >> - Output ./data_list/
 
-## [1] Main Python code (Train the model and then generate image frames)
+## [1] Main Python code to train the model and generate image frames (run in Linux with GPU)
 
 CyclicGen_main.py
 >> - Input ./UCF-101_frames256/ ./data_list/ ./hed_model/
 >> - Output ./train_dir/ ./ucf101_interp_ours/ ./Middlebury/
 
-## [2] Python code to compute SSIM, PSNR, and MS-SSIM for output data 
+## [2] Python code to compute SSIM, PSNR, and MS-SSIM for output data (run in Linux)
 
 ucf101_interp_evaluation.py
 >> - Input  ./ucf101_interp_ours/ (source: https://github.com/liuziwei7/voxel-flow >> "Testing Data")

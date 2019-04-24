@@ -1,0 +1,842 @@
+2019-04-23T00:38:58.885 ,CyclicGen_main ,<module> ,INFO ,train_dir: ./train_dir
+2019-04-23T00:38:58.885 ,CyclicGen_main ,<module> ,INFO ,task: train_test_generate
+2019-04-23T00:38:58.885 ,CyclicGen_main ,<module> ,INFO ,pretrained_model_checkpoint_path: ./train_dir/2019-04-19T174028/model.ckpt-2806
+2019-04-23T00:38:58.885 ,CyclicGen_main ,<module> ,INFO ,batch_size: 8
+2019-04-23T00:38:58.886 ,CyclicGen_main ,<module> ,INFO ,training_data_step: 1
+2019-04-23T00:38:58.886 ,CyclicGen_main ,<module> ,INFO ,model_size: large
+2019-04-23T00:38:58.886 ,CyclicGen_main ,<module> ,INFO ,dataset_train: ucf101_256
+2019-04-23T00:38:58.886 ,CyclicGen_main ,<module> ,INFO ,dataset_test: ucf101
+2019-04-23T00:38:58.886 ,CyclicGen_main ,<module> ,INFO ,stage: s1s2
+2019-04-23T00:38:58.886 ,CyclicGen_main ,<module> ,INFO ,max_steps: None
+2019-04-23T00:38:58.886 ,CyclicGen_main ,<module> ,INFO ,max_epochs: 5
+2019-04-23T00:38:58.886 ,CyclicGen_main ,<module> ,INFO ,s1_steps: None
+2019-04-23T00:38:58.886 ,CyclicGen_main ,<module> ,INFO ,s1_epochs: 1
+2019-04-23T00:38:58.886 ,CyclicGen_main ,<module> ,INFO ,crop_size: 128
+2019-04-23T00:38:58.886 ,CyclicGen_main ,<module> ,INFO ,coef_loss_c: 1.0
+2019-04-23T00:38:58.887 ,CyclicGen_main ,<module> ,INFO ,coef_loss_m: 0.1
+2019-04-23T00:38:58.887 ,CyclicGen_main ,<module> ,INFO ,coef_loss_s: 0.0
+2019-04-23T00:38:58.887 ,CyclicGen_main ,<module> ,INFO ,coef_loss_t: 0.0
+2019-04-23T00:38:58.887 ,CyclicGen_main ,<module> ,INFO ,coef_loss_e: 1.0
+2019-04-23T00:38:58.887 ,CyclicGen_main ,<module> ,INFO ,strategy: original_cycle_gen
+2019-04-23T00:38:58.887 ,CyclicGen_main ,<module> ,INFO ,logging_interval: 10
+2019-04-23T00:38:58.887 ,CyclicGen_main ,<module> ,INFO ,checkpoint_interval: None
+2019-04-23T00:38:58.887 ,CyclicGen_main ,<module> ,INFO ,save_summary: False
+2019-04-23T00:38:58.887 ,CyclicGen_main ,<module> ,INFO ,graph_level_seed: 0
+2019-04-23T00:38:58.887 ,CyclicGen_main ,<module> ,INFO ,logging_level: info
+2019-04-23T00:38:58.888 ,CyclicGen_main ,<module> ,INFO ,Output_directory: ./train_dir/2019-04-23T083858
+2019-04-23T00:39:31.215 ,tf_logging ,info ,INFO ,Restoring parameters from ./train_dir/2019-04-19T174028/model.ckpt-2806
+2019-04-23T00:39:33.433 ,CyclicGen_main ,train ,INFO ,2019-04-23T083933: Pre-trained model restored from ./train_dir/2019-04-19T174028/model.ckpt-2806
+2019-04-23T00:39:34.276 ,tf_logging ,info ,INFO ,Restoring parameters from hed_model/new-model.ckpt
+2019-04-23T00:39:35.155 ,CyclicGen_main ,train ,INFO ,data_size: 22461
+2019-04-23T00:39:35.155 ,CyclicGen_main ,train ,INFO ,num_steps_per_epoch: 2807
+2019-04-23T00:39:35.156 ,CyclicGen_main ,train ,INFO ,max_steps: 14035
+2019-04-23T00:39:35.156 ,CyclicGen_main ,train ,INFO ,s1_steps: 2807
+2019-04-23T00:40:22.513 ,CyclicGen_main ,train ,INFO ,Epoch Number: 1
+2019-04-23T01:50:06.824 ,CyclicGen_main ,train ,INFO ,Model was saved at: ./train_dir/2019-04-23T083858/model.ckpt-5613
+2019-04-23T01:50:07.887 ,CyclicGen_main ,train ,INFO ,Epoch Number: 2
+2019-04-23T02:59:38.078 ,CyclicGen_main ,train ,INFO ,Model was saved at: ./train_dir/2019-04-23T083858/model.ckpt-8420
+2019-04-23T02:59:39.149 ,CyclicGen_main ,train ,INFO ,Epoch Number: 3
+2019-04-23T04:09:05.339 ,CyclicGen_main ,train ,INFO ,Model was saved at: ./train_dir/2019-04-23T083858/model.ckpt-11227
+2019-04-23T04:09:06.402 ,CyclicGen_main ,train ,INFO ,Epoch Number: 4
+2019-04-23T05:18:30.850 ,CyclicGen_main ,train ,INFO ,Model was saved at: ./train_dir/2019-04-23T083858/model.ckpt-14034
+2019-04-23T05:18:36.253 ,tf_logging ,info ,INFO ,Restoring parameters from ./train_dir/2019-04-23T083858/model.ckpt-14034
+2019-04-23T05:18:36.378 ,CyclicGen_main ,test ,INFO ,Pre-trained model restored from ./train_dir/2019-04-23T083858/model.ckpt-14034
+2019-04-23T05:18:36.379 ,CyclicGen_main ,test ,INFO ,data_size: 379
+2019-04-23T05:18:36.380 ,CyclicGen_main ,test ,INFO ,id: 0 | UCF_index: 1
+2019-04-23T05:18:39.208 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:39.208 ,CyclicGen_main ,test ,INFO ,id: 1 | UCF_index: 1001
+2019-04-23T05:18:39.274 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1001/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:39.274 ,CyclicGen_main ,test ,INFO ,id: 2 | UCF_index: 101
+2019-04-23T05:18:39.338 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/101/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:39.338 ,CyclicGen_main ,test ,INFO ,id: 3 | UCF_index: 1011
+2019-04-23T05:18:39.399 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1011/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:39.399 ,CyclicGen_main ,test ,INFO ,id: 4 | UCF_index: 1021
+2019-04-23T05:18:39.464 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1021/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:39.464 ,CyclicGen_main ,test ,INFO ,id: 5 | UCF_index: 1031
+2019-04-23T05:18:39.532 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1031/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:39.586 ,CyclicGen_main ,test ,INFO ,id: 6 | UCF_index: 1041
+2019-04-23T05:18:39.664 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1041/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:39.664 ,CyclicGen_main ,test ,INFO ,id: 7 | UCF_index: 1051
+2019-04-23T05:18:39.724 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1051/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:39.724 ,CyclicGen_main ,test ,INFO ,id: 8 | UCF_index: 1061
+2019-04-23T05:18:39.800 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1061/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:39.801 ,CyclicGen_main ,test ,INFO ,id: 9 | UCF_index: 1071
+2019-04-23T05:18:39.870 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1071/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:39.870 ,CyclicGen_main ,test ,INFO ,id: 10 | UCF_index: 1081
+2019-04-23T05:18:39.926 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1081/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:39.926 ,CyclicGen_main ,test ,INFO ,id: 11 | UCF_index: 1091
+2019-04-23T05:18:39.990 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1091/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:39.991 ,CyclicGen_main ,test ,INFO ,id: 12 | UCF_index: 11
+2019-04-23T05:18:40.054 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/11/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:40.054 ,CyclicGen_main ,test ,INFO ,id: 13 | UCF_index: 1101
+2019-04-23T05:18:40.116 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1101/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:40.116 ,CyclicGen_main ,test ,INFO ,id: 14 | UCF_index: 111
+2019-04-23T05:18:40.191 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/111/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:40.192 ,CyclicGen_main ,test ,INFO ,id: 15 | UCF_index: 1111
+2019-04-23T05:18:40.258 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1111/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:40.259 ,CyclicGen_main ,test ,INFO ,id: 16 | UCF_index: 1121
+2019-04-23T05:18:40.330 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1121/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:40.331 ,CyclicGen_main ,test ,INFO ,id: 17 | UCF_index: 1131
+2019-04-23T05:18:40.405 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1131/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:40.406 ,CyclicGen_main ,test ,INFO ,id: 18 | UCF_index: 1141
+2019-04-23T05:18:40.477 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1141/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:40.478 ,CyclicGen_main ,test ,INFO ,id: 19 | UCF_index: 1151
+2019-04-23T05:18:40.557 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1151/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:40.557 ,CyclicGen_main ,test ,INFO ,id: 20 | UCF_index: 1161
+2019-04-23T05:18:40.622 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1161/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:40.622 ,CyclicGen_main ,test ,INFO ,id: 21 | UCF_index: 1171
+2019-04-23T05:18:40.692 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1171/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:40.692 ,CyclicGen_main ,test ,INFO ,id: 22 | UCF_index: 1181
+2019-04-23T05:18:40.764 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1181/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:40.764 ,CyclicGen_main ,test ,INFO ,id: 23 | UCF_index: 1191
+2019-04-23T05:18:40.831 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1191/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:40.831 ,CyclicGen_main ,test ,INFO ,id: 24 | UCF_index: 1201
+2019-04-23T05:18:40.904 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1201/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:40.905 ,CyclicGen_main ,test ,INFO ,id: 25 | UCF_index: 121
+2019-04-23T05:18:40.968 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/121/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:40.969 ,CyclicGen_main ,test ,INFO ,id: 26 | UCF_index: 1211
+2019-04-23T05:18:41.049 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1211/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:41.049 ,CyclicGen_main ,test ,INFO ,id: 27 | UCF_index: 1221
+2019-04-23T05:18:41.130 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1221/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:41.130 ,CyclicGen_main ,test ,INFO ,id: 28 | UCF_index: 1231
+2019-04-23T05:18:41.202 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1231/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:41.202 ,CyclicGen_main ,test ,INFO ,id: 29 | UCF_index: 1241
+2019-04-23T05:18:41.268 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1241/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:41.269 ,CyclicGen_main ,test ,INFO ,id: 30 | UCF_index: 1251
+2019-04-23T05:18:41.343 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1251/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:41.343 ,CyclicGen_main ,test ,INFO ,id: 31 | UCF_index: 1261
+2019-04-23T05:18:41.416 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1261/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:41.417 ,CyclicGen_main ,test ,INFO ,id: 32 | UCF_index: 1271
+2019-04-23T05:18:41.492 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1271/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:41.492 ,CyclicGen_main ,test ,INFO ,id: 33 | UCF_index: 1281
+2019-04-23T05:18:41.559 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1281/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:41.559 ,CyclicGen_main ,test ,INFO ,id: 34 | UCF_index: 1291
+2019-04-23T05:18:41.622 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1291/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:41.622 ,CyclicGen_main ,test ,INFO ,id: 35 | UCF_index: 1301
+2019-04-23T05:18:41.686 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1301/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:41.686 ,CyclicGen_main ,test ,INFO ,id: 36 | UCF_index: 131
+2019-04-23T05:18:41.762 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/131/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:41.762 ,CyclicGen_main ,test ,INFO ,id: 37 | UCF_index: 1311
+2019-04-23T05:18:41.837 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1311/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:41.837 ,CyclicGen_main ,test ,INFO ,id: 38 | UCF_index: 1321
+2019-04-23T05:18:41.902 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1321/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:41.902 ,CyclicGen_main ,test ,INFO ,id: 39 | UCF_index: 1331
+2019-04-23T05:18:41.969 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1331/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:41.969 ,CyclicGen_main ,test ,INFO ,id: 40 | UCF_index: 1341
+2019-04-23T05:18:42.021 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1341/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:42.021 ,CyclicGen_main ,test ,INFO ,id: 41 | UCF_index: 1351
+2019-04-23T05:18:42.097 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1351/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:42.098 ,CyclicGen_main ,test ,INFO ,id: 42 | UCF_index: 1361
+2019-04-23T05:18:42.163 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1361/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:42.163 ,CyclicGen_main ,test ,INFO ,id: 43 | UCF_index: 1371
+2019-04-23T05:18:42.232 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1371/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:42.232 ,CyclicGen_main ,test ,INFO ,id: 44 | UCF_index: 1381
+2019-04-23T05:18:42.299 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1381/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:42.299 ,CyclicGen_main ,test ,INFO ,id: 45 | UCF_index: 1391
+2019-04-23T05:18:42.366 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1391/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:42.366 ,CyclicGen_main ,test ,INFO ,id: 46 | UCF_index: 1401
+2019-04-23T05:18:42.445 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1401/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:42.445 ,CyclicGen_main ,test ,INFO ,id: 47 | UCF_index: 141
+2019-04-23T05:18:42.515 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/141/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:42.515 ,CyclicGen_main ,test ,INFO ,id: 48 | UCF_index: 1411
+2019-04-23T05:18:42.585 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1411/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:42.585 ,CyclicGen_main ,test ,INFO ,id: 49 | UCF_index: 1421
+2019-04-23T05:18:42.653 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1421/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:42.653 ,CyclicGen_main ,test ,INFO ,id: 50 | UCF_index: 1431
+2019-04-23T05:18:42.725 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1431/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:42.726 ,CyclicGen_main ,test ,INFO ,id: 51 | UCF_index: 1441
+2019-04-23T05:18:42.807 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1441/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:42.807 ,CyclicGen_main ,test ,INFO ,id: 52 | UCF_index: 1451
+2019-04-23T05:18:42.878 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1451/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:42.878 ,CyclicGen_main ,test ,INFO ,id: 53 | UCF_index: 1461
+2019-04-23T05:18:42.966 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1461/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:42.966 ,CyclicGen_main ,test ,INFO ,id: 54 | UCF_index: 1471
+2019-04-23T05:18:43.036 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1471/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:43.036 ,CyclicGen_main ,test ,INFO ,id: 55 | UCF_index: 1481
+2019-04-23T05:18:43.103 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1481/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:43.103 ,CyclicGen_main ,test ,INFO ,id: 56 | UCF_index: 1491
+2019-04-23T05:18:43.191 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1491/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:43.191 ,CyclicGen_main ,test ,INFO ,id: 57 | UCF_index: 1501
+2019-04-23T05:18:43.250 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1501/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:43.250 ,CyclicGen_main ,test ,INFO ,id: 58 | UCF_index: 151
+2019-04-23T05:18:43.316 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/151/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:43.316 ,CyclicGen_main ,test ,INFO ,id: 59 | UCF_index: 1511
+2019-04-23T05:18:43.383 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1511/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:43.383 ,CyclicGen_main ,test ,INFO ,id: 60 | UCF_index: 1521
+2019-04-23T05:18:43.449 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1521/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:43.450 ,CyclicGen_main ,test ,INFO ,id: 61 | UCF_index: 1531
+2019-04-23T05:18:43.516 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1531/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:43.516 ,CyclicGen_main ,test ,INFO ,id: 62 | UCF_index: 1541
+2019-04-23T05:18:43.588 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1541/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:43.589 ,CyclicGen_main ,test ,INFO ,id: 63 | UCF_index: 1551
+2019-04-23T05:18:43.669 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1551/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:43.669 ,CyclicGen_main ,test ,INFO ,id: 64 | UCF_index: 1561
+2019-04-23T05:18:43.740 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1561/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:43.740 ,CyclicGen_main ,test ,INFO ,id: 65 | UCF_index: 1571
+2019-04-23T05:18:43.815 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1571/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:43.815 ,CyclicGen_main ,test ,INFO ,id: 66 | UCF_index: 1581
+2019-04-23T05:18:43.897 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1581/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:43.897 ,CyclicGen_main ,test ,INFO ,id: 67 | UCF_index: 1591
+2019-04-23T05:18:43.973 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1591/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:43.973 ,CyclicGen_main ,test ,INFO ,id: 68 | UCF_index: 1601
+2019-04-23T05:18:44.048 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1601/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:44.048 ,CyclicGen_main ,test ,INFO ,id: 69 | UCF_index: 161
+2019-04-23T05:18:44.112 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/161/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:44.112 ,CyclicGen_main ,test ,INFO ,id: 70 | UCF_index: 1611
+2019-04-23T05:18:44.182 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1611/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:44.182 ,CyclicGen_main ,test ,INFO ,id: 71 | UCF_index: 1621
+2019-04-23T05:18:44.238 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1621/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:44.238 ,CyclicGen_main ,test ,INFO ,id: 72 | UCF_index: 1631
+2019-04-23T05:18:44.290 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1631/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:44.290 ,CyclicGen_main ,test ,INFO ,id: 73 | UCF_index: 1641
+2019-04-23T05:18:44.362 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1641/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:44.362 ,CyclicGen_main ,test ,INFO ,id: 74 | UCF_index: 1651
+2019-04-23T05:18:44.432 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1651/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:44.433 ,CyclicGen_main ,test ,INFO ,id: 75 | UCF_index: 1661
+2019-04-23T05:18:44.503 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1661/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:44.503 ,CyclicGen_main ,test ,INFO ,id: 76 | UCF_index: 1671
+2019-04-23T05:18:44.644 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1671/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:44.645 ,CyclicGen_main ,test ,INFO ,id: 77 | UCF_index: 1681
+2019-04-23T05:18:44.725 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1681/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:44.726 ,CyclicGen_main ,test ,INFO ,id: 78 | UCF_index: 1691
+2019-04-23T05:18:44.803 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1691/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:44.804 ,CyclicGen_main ,test ,INFO ,id: 79 | UCF_index: 1701
+2019-04-23T05:18:44.869 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1701/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:44.869 ,CyclicGen_main ,test ,INFO ,id: 80 | UCF_index: 171
+2019-04-23T05:18:44.933 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/171/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:44.933 ,CyclicGen_main ,test ,INFO ,id: 81 | UCF_index: 1711
+2019-04-23T05:18:44.997 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1711/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:44.997 ,CyclicGen_main ,test ,INFO ,id: 82 | UCF_index: 1721
+2019-04-23T05:18:45.065 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1721/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:45.065 ,CyclicGen_main ,test ,INFO ,id: 83 | UCF_index: 1731
+2019-04-23T05:18:45.130 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1731/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:45.130 ,CyclicGen_main ,test ,INFO ,id: 84 | UCF_index: 1741
+2019-04-23T05:18:45.200 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1741/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:45.200 ,CyclicGen_main ,test ,INFO ,id: 85 | UCF_index: 1751
+2019-04-23T05:18:45.264 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1751/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:45.265 ,CyclicGen_main ,test ,INFO ,id: 86 | UCF_index: 1761
+2019-04-23T05:18:45.338 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1761/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:45.338 ,CyclicGen_main ,test ,INFO ,id: 87 | UCF_index: 1771
+2019-04-23T05:18:45.405 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1771/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:45.405 ,CyclicGen_main ,test ,INFO ,id: 88 | UCF_index: 1781
+2019-04-23T05:18:45.474 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1781/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:45.474 ,CyclicGen_main ,test ,INFO ,id: 89 | UCF_index: 1791
+2019-04-23T05:18:45.539 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1791/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:45.539 ,CyclicGen_main ,test ,INFO ,id: 90 | UCF_index: 1801
+2019-04-23T05:18:45.608 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1801/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:45.609 ,CyclicGen_main ,test ,INFO ,id: 91 | UCF_index: 181
+2019-04-23T05:18:45.667 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/181/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:45.667 ,CyclicGen_main ,test ,INFO ,id: 92 | UCF_index: 1811
+2019-04-23T05:18:45.726 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1811/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:45.726 ,CyclicGen_main ,test ,INFO ,id: 93 | UCF_index: 1821
+2019-04-23T05:18:45.794 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1821/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:45.794 ,CyclicGen_main ,test ,INFO ,id: 94 | UCF_index: 1831
+2019-04-23T05:18:45.855 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1831/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:45.856 ,CyclicGen_main ,test ,INFO ,id: 95 | UCF_index: 1841
+2019-04-23T05:18:45.932 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1841/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:45.932 ,CyclicGen_main ,test ,INFO ,id: 96 | UCF_index: 1851
+2019-04-23T05:18:46.001 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1851/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:46.001 ,CyclicGen_main ,test ,INFO ,id: 97 | UCF_index: 1861
+2019-04-23T05:18:46.078 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1861/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:46.078 ,CyclicGen_main ,test ,INFO ,id: 98 | UCF_index: 1871
+2019-04-23T05:18:46.147 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1871/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:46.148 ,CyclicGen_main ,test ,INFO ,id: 99 | UCF_index: 1881
+2019-04-23T05:18:46.217 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1881/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:46.218 ,CyclicGen_main ,test ,INFO ,id: 100 | UCF_index: 1891
+2019-04-23T05:18:46.291 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1891/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:46.291 ,CyclicGen_main ,test ,INFO ,id: 101 | UCF_index: 1901
+2019-04-23T05:18:46.356 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1901/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:46.356 ,CyclicGen_main ,test ,INFO ,id: 102 | UCF_index: 191
+2019-04-23T05:18:46.426 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/191/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:46.427 ,CyclicGen_main ,test ,INFO ,id: 103 | UCF_index: 1911
+2019-04-23T05:18:46.500 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1911/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:46.500 ,CyclicGen_main ,test ,INFO ,id: 104 | UCF_index: 1921
+2019-04-23T05:18:46.567 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1921/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:46.567 ,CyclicGen_main ,test ,INFO ,id: 105 | UCF_index: 1931
+2019-04-23T05:18:46.637 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1931/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:46.637 ,CyclicGen_main ,test ,INFO ,id: 106 | UCF_index: 1941
+2019-04-23T05:18:46.715 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1941/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:46.715 ,CyclicGen_main ,test ,INFO ,id: 107 | UCF_index: 1951
+2019-04-23T05:18:46.778 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1951/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:46.778 ,CyclicGen_main ,test ,INFO ,id: 108 | UCF_index: 1961
+2019-04-23T05:18:46.857 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1961/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:46.857 ,CyclicGen_main ,test ,INFO ,id: 109 | UCF_index: 1971
+2019-04-23T05:18:46.931 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1971/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:46.931 ,CyclicGen_main ,test ,INFO ,id: 110 | UCF_index: 1981
+2019-04-23T05:18:47.004 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1981/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:47.004 ,CyclicGen_main ,test ,INFO ,id: 111 | UCF_index: 1991
+2019-04-23T05:18:47.078 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/1991/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:47.078 ,CyclicGen_main ,test ,INFO ,id: 112 | UCF_index: 2001
+2019-04-23T05:18:47.151 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2001/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:47.151 ,CyclicGen_main ,test ,INFO ,id: 113 | UCF_index: 201
+2019-04-23T05:18:47.213 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/201/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:47.214 ,CyclicGen_main ,test ,INFO ,id: 114 | UCF_index: 2011
+2019-04-23T05:18:47.268 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2011/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:47.268 ,CyclicGen_main ,test ,INFO ,id: 115 | UCF_index: 2021
+2019-04-23T05:18:47.340 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2021/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:47.341 ,CyclicGen_main ,test ,INFO ,id: 116 | UCF_index: 2031
+2019-04-23T05:18:47.414 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2031/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:47.414 ,CyclicGen_main ,test ,INFO ,id: 117 | UCF_index: 2041
+2019-04-23T05:18:47.488 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2041/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:47.488 ,CyclicGen_main ,test ,INFO ,id: 118 | UCF_index: 2051
+2019-04-23T05:18:47.553 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2051/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:47.554 ,CyclicGen_main ,test ,INFO ,id: 119 | UCF_index: 2061
+2019-04-23T05:18:47.617 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2061/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:47.618 ,CyclicGen_main ,test ,INFO ,id: 120 | UCF_index: 2071
+2019-04-23T05:18:47.699 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2071/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:47.700 ,CyclicGen_main ,test ,INFO ,id: 121 | UCF_index: 2081
+2019-04-23T05:18:47.754 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2081/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:47.754 ,CyclicGen_main ,test ,INFO ,id: 122 | UCF_index: 2091
+2019-04-23T05:18:47.823 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2091/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:47.823 ,CyclicGen_main ,test ,INFO ,id: 123 | UCF_index: 21
+2019-04-23T05:18:47.891 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/21/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:47.891 ,CyclicGen_main ,test ,INFO ,id: 124 | UCF_index: 2101
+2019-04-23T05:18:47.955 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2101/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:47.955 ,CyclicGen_main ,test ,INFO ,id: 125 | UCF_index: 211
+2019-04-23T05:18:48.027 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/211/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:48.027 ,CyclicGen_main ,test ,INFO ,id: 126 | UCF_index: 2111
+2019-04-23T05:18:48.090 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2111/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:48.091 ,CyclicGen_main ,test ,INFO ,id: 127 | UCF_index: 2121
+2019-04-23T05:18:48.156 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2121/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:48.157 ,CyclicGen_main ,test ,INFO ,id: 128 | UCF_index: 2131
+2019-04-23T05:18:48.221 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2131/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:48.222 ,CyclicGen_main ,test ,INFO ,id: 129 | UCF_index: 2141
+2019-04-23T05:18:48.285 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2141/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:48.285 ,CyclicGen_main ,test ,INFO ,id: 130 | UCF_index: 2151
+2019-04-23T05:18:48.352 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2151/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:48.352 ,CyclicGen_main ,test ,INFO ,id: 131 | UCF_index: 2161
+2019-04-23T05:18:48.428 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2161/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:48.428 ,CyclicGen_main ,test ,INFO ,id: 132 | UCF_index: 2171
+2019-04-23T05:18:48.504 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2171/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:48.504 ,CyclicGen_main ,test ,INFO ,id: 133 | UCF_index: 2181
+2019-04-23T05:18:48.573 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2181/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:48.573 ,CyclicGen_main ,test ,INFO ,id: 134 | UCF_index: 2191
+2019-04-23T05:18:48.640 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2191/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:48.640 ,CyclicGen_main ,test ,INFO ,id: 135 | UCF_index: 2201
+2019-04-23T05:18:48.704 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2201/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:48.705 ,CyclicGen_main ,test ,INFO ,id: 136 | UCF_index: 221
+2019-04-23T05:18:48.775 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/221/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:48.776 ,CyclicGen_main ,test ,INFO ,id: 137 | UCF_index: 2211
+2019-04-23T05:18:48.829 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2211/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:48.829 ,CyclicGen_main ,test ,INFO ,id: 138 | UCF_index: 2221
+2019-04-23T05:18:48.886 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2221/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:48.886 ,CyclicGen_main ,test ,INFO ,id: 139 | UCF_index: 2231
+2019-04-23T05:18:48.948 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2231/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:48.949 ,CyclicGen_main ,test ,INFO ,id: 140 | UCF_index: 2241
+2019-04-23T05:18:49.013 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2241/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:49.013 ,CyclicGen_main ,test ,INFO ,id: 141 | UCF_index: 2251
+2019-04-23T05:18:49.084 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2251/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:49.084 ,CyclicGen_main ,test ,INFO ,id: 142 | UCF_index: 2261
+2019-04-23T05:18:49.151 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2261/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:49.151 ,CyclicGen_main ,test ,INFO ,id: 143 | UCF_index: 2271
+2019-04-23T05:18:49.230 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2271/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:49.230 ,CyclicGen_main ,test ,INFO ,id: 144 | UCF_index: 2281
+2019-04-23T05:18:49.300 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2281/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:49.300 ,CyclicGen_main ,test ,INFO ,id: 145 | UCF_index: 2291
+2019-04-23T05:18:49.362 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2291/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:49.362 ,CyclicGen_main ,test ,INFO ,id: 146 | UCF_index: 2301
+2019-04-23T05:18:49.426 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2301/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:49.426 ,CyclicGen_main ,test ,INFO ,id: 147 | UCF_index: 231
+2019-04-23T05:18:49.499 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/231/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:49.499 ,CyclicGen_main ,test ,INFO ,id: 148 | UCF_index: 2311
+2019-04-23T05:18:49.567 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2311/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:49.585 ,CyclicGen_main ,test ,INFO ,id: 149 | UCF_index: 2321
+2019-04-23T05:18:49.651 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2321/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:49.652 ,CyclicGen_main ,test ,INFO ,id: 150 | UCF_index: 2331
+2019-04-23T05:18:49.703 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2331/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:49.703 ,CyclicGen_main ,test ,INFO ,id: 151 | UCF_index: 2341
+2019-04-23T05:18:49.758 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2341/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:49.759 ,CyclicGen_main ,test ,INFO ,id: 152 | UCF_index: 2351
+2019-04-23T05:18:49.823 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2351/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:49.823 ,CyclicGen_main ,test ,INFO ,id: 153 | UCF_index: 2361
+2019-04-23T05:18:49.878 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2361/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:49.878 ,CyclicGen_main ,test ,INFO ,id: 154 | UCF_index: 2371
+2019-04-23T05:18:49.939 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2371/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:49.940 ,CyclicGen_main ,test ,INFO ,id: 155 | UCF_index: 2381
+2019-04-23T05:18:50.009 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2381/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:50.009 ,CyclicGen_main ,test ,INFO ,id: 156 | UCF_index: 2391
+2019-04-23T05:18:50.075 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2391/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:50.075 ,CyclicGen_main ,test ,INFO ,id: 157 | UCF_index: 2401
+2019-04-23T05:18:50.138 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2401/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:50.139 ,CyclicGen_main ,test ,INFO ,id: 158 | UCF_index: 241
+2019-04-23T05:18:50.205 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/241/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:50.206 ,CyclicGen_main ,test ,INFO ,id: 159 | UCF_index: 2411
+2019-04-23T05:18:50.259 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2411/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:50.259 ,CyclicGen_main ,test ,INFO ,id: 160 | UCF_index: 2421
+2019-04-23T05:18:50.310 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2421/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:50.310 ,CyclicGen_main ,test ,INFO ,id: 161 | UCF_index: 2431
+2019-04-23T05:18:50.355 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2431/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:50.356 ,CyclicGen_main ,test ,INFO ,id: 162 | UCF_index: 2441
+2019-04-23T05:18:50.409 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2441/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:50.409 ,CyclicGen_main ,test ,INFO ,id: 163 | UCF_index: 2451
+2019-04-23T05:18:50.467 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2451/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:50.467 ,CyclicGen_main ,test ,INFO ,id: 164 | UCF_index: 2461
+2019-04-23T05:18:50.534 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2461/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:50.535 ,CyclicGen_main ,test ,INFO ,id: 165 | UCF_index: 2471
+2019-04-23T05:18:50.601 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2471/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:50.601 ,CyclicGen_main ,test ,INFO ,id: 166 | UCF_index: 2481
+2019-04-23T05:18:50.662 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2481/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:50.662 ,CyclicGen_main ,test ,INFO ,id: 167 | UCF_index: 2491
+2019-04-23T05:18:50.724 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2491/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:50.724 ,CyclicGen_main ,test ,INFO ,id: 168 | UCF_index: 2501
+2019-04-23T05:18:50.784 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2501/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:50.785 ,CyclicGen_main ,test ,INFO ,id: 169 | UCF_index: 251
+2019-04-23T05:18:50.840 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/251/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:50.841 ,CyclicGen_main ,test ,INFO ,id: 170 | UCF_index: 2511
+2019-04-23T05:18:50.896 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2511/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:50.896 ,CyclicGen_main ,test ,INFO ,id: 171 | UCF_index: 2521
+2019-04-23T05:18:50.951 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2521/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:50.951 ,CyclicGen_main ,test ,INFO ,id: 172 | UCF_index: 2531
+2019-04-23T05:18:51.010 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2531/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:51.010 ,CyclicGen_main ,test ,INFO ,id: 173 | UCF_index: 2541
+2019-04-23T05:18:51.071 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2541/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:51.071 ,CyclicGen_main ,test ,INFO ,id: 174 | UCF_index: 2551
+2019-04-23T05:18:51.138 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2551/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:51.138 ,CyclicGen_main ,test ,INFO ,id: 175 | UCF_index: 2561
+2019-04-23T05:18:51.202 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2561/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:51.202 ,CyclicGen_main ,test ,INFO ,id: 176 | UCF_index: 2571
+2019-04-23T05:18:51.274 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2571/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:51.274 ,CyclicGen_main ,test ,INFO ,id: 177 | UCF_index: 2581
+2019-04-23T05:18:51.336 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2581/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:51.336 ,CyclicGen_main ,test ,INFO ,id: 178 | UCF_index: 2591
+2019-04-23T05:18:51.403 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2591/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:51.403 ,CyclicGen_main ,test ,INFO ,id: 179 | UCF_index: 2601
+2019-04-23T05:18:51.473 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2601/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:51.473 ,CyclicGen_main ,test ,INFO ,id: 180 | UCF_index: 261
+2019-04-23T05:18:51.540 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/261/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:51.540 ,CyclicGen_main ,test ,INFO ,id: 181 | UCF_index: 2611
+2019-04-23T05:18:51.609 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2611/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:51.610 ,CyclicGen_main ,test ,INFO ,id: 182 | UCF_index: 2621
+2019-04-23T05:18:51.674 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2621/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:51.675 ,CyclicGen_main ,test ,INFO ,id: 183 | UCF_index: 2631
+2019-04-23T05:18:51.751 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2631/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:51.751 ,CyclicGen_main ,test ,INFO ,id: 184 | UCF_index: 2641
+2019-04-23T05:18:51.826 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2641/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:51.826 ,CyclicGen_main ,test ,INFO ,id: 185 | UCF_index: 2651
+2019-04-23T05:18:51.895 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2651/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:51.895 ,CyclicGen_main ,test ,INFO ,id: 186 | UCF_index: 2661
+2019-04-23T05:18:51.964 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2661/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:51.964 ,CyclicGen_main ,test ,INFO ,id: 187 | UCF_index: 2671
+2019-04-23T05:18:52.041 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2671/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:52.041 ,CyclicGen_main ,test ,INFO ,id: 188 | UCF_index: 2681
+2019-04-23T05:18:52.124 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2681/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:52.125 ,CyclicGen_main ,test ,INFO ,id: 189 | UCF_index: 2691
+2019-04-23T05:18:52.202 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2691/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:52.202 ,CyclicGen_main ,test ,INFO ,id: 190 | UCF_index: 2701
+2019-04-23T05:18:52.271 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2701/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:52.271 ,CyclicGen_main ,test ,INFO ,id: 191 | UCF_index: 271
+2019-04-23T05:18:52.343 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/271/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:52.343 ,CyclicGen_main ,test ,INFO ,id: 192 | UCF_index: 2711
+2019-04-23T05:18:52.407 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2711/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:52.407 ,CyclicGen_main ,test ,INFO ,id: 193 | UCF_index: 2721
+2019-04-23T05:18:52.470 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2721/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:52.470 ,CyclicGen_main ,test ,INFO ,id: 194 | UCF_index: 2731
+2019-04-23T05:18:52.533 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2731/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:52.534 ,CyclicGen_main ,test ,INFO ,id: 195 | UCF_index: 2741
+2019-04-23T05:18:52.607 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2741/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:52.607 ,CyclicGen_main ,test ,INFO ,id: 196 | UCF_index: 2751
+2019-04-23T05:18:52.681 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2751/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:52.682 ,CyclicGen_main ,test ,INFO ,id: 197 | UCF_index: 2761
+2019-04-23T05:18:52.756 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2761/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:52.757 ,CyclicGen_main ,test ,INFO ,id: 198 | UCF_index: 2771
+2019-04-23T05:18:52.830 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2771/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:52.830 ,CyclicGen_main ,test ,INFO ,id: 199 | UCF_index: 2781
+2019-04-23T05:18:52.901 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2781/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:52.902 ,CyclicGen_main ,test ,INFO ,id: 200 | UCF_index: 2791
+2019-04-23T05:18:52.972 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2791/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:52.973 ,CyclicGen_main ,test ,INFO ,id: 201 | UCF_index: 2801
+2019-04-23T05:18:53.041 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2801/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:53.041 ,CyclicGen_main ,test ,INFO ,id: 202 | UCF_index: 281
+2019-04-23T05:18:53.115 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/281/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:53.115 ,CyclicGen_main ,test ,INFO ,id: 203 | UCF_index: 2811
+2019-04-23T05:18:53.165 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2811/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:53.165 ,CyclicGen_main ,test ,INFO ,id: 204 | UCF_index: 2821
+2019-04-23T05:18:53.226 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2821/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:53.226 ,CyclicGen_main ,test ,INFO ,id: 205 | UCF_index: 2831
+2019-04-23T05:18:53.288 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2831/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:53.288 ,CyclicGen_main ,test ,INFO ,id: 206 | UCF_index: 2841
+2019-04-23T05:18:53.360 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2841/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:53.360 ,CyclicGen_main ,test ,INFO ,id: 207 | UCF_index: 2851
+2019-04-23T05:18:53.436 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2851/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:53.437 ,CyclicGen_main ,test ,INFO ,id: 208 | UCF_index: 2861
+2019-04-23T05:18:53.511 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2861/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:53.511 ,CyclicGen_main ,test ,INFO ,id: 209 | UCF_index: 2871
+2019-04-23T05:18:53.581 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2871/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:53.581 ,CyclicGen_main ,test ,INFO ,id: 210 | UCF_index: 2881
+2019-04-23T05:18:53.654 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2881/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:53.654 ,CyclicGen_main ,test ,INFO ,id: 211 | UCF_index: 2891
+2019-04-23T05:18:53.725 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2891/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:53.725 ,CyclicGen_main ,test ,INFO ,id: 212 | UCF_index: 2901
+2019-04-23T05:18:53.793 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2901/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:53.793 ,CyclicGen_main ,test ,INFO ,id: 213 | UCF_index: 291
+2019-04-23T05:18:53.856 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/291/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:53.857 ,CyclicGen_main ,test ,INFO ,id: 214 | UCF_index: 2911
+2019-04-23T05:18:53.918 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2911/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:53.918 ,CyclicGen_main ,test ,INFO ,id: 215 | UCF_index: 2921
+2019-04-23T05:18:53.982 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2921/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:53.982 ,CyclicGen_main ,test ,INFO ,id: 216 | UCF_index: 2931
+2019-04-23T05:18:54.053 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2931/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:54.053 ,CyclicGen_main ,test ,INFO ,id: 217 | UCF_index: 2941
+2019-04-23T05:18:54.123 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2941/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:54.123 ,CyclicGen_main ,test ,INFO ,id: 218 | UCF_index: 2951
+2019-04-23T05:18:54.190 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2951/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:54.190 ,CyclicGen_main ,test ,INFO ,id: 219 | UCF_index: 2961
+2019-04-23T05:18:54.256 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2961/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:54.256 ,CyclicGen_main ,test ,INFO ,id: 220 | UCF_index: 2971
+2019-04-23T05:18:54.327 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2971/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:54.327 ,CyclicGen_main ,test ,INFO ,id: 221 | UCF_index: 2981
+2019-04-23T05:18:54.402 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2981/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:54.402 ,CyclicGen_main ,test ,INFO ,id: 222 | UCF_index: 2991
+2019-04-23T05:18:54.471 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/2991/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:54.471 ,CyclicGen_main ,test ,INFO ,id: 223 | UCF_index: 3001
+2019-04-23T05:18:54.534 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3001/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:54.534 ,CyclicGen_main ,test ,INFO ,id: 224 | UCF_index: 301
+2019-04-23T05:18:54.611 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/301/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:54.618 ,CyclicGen_main ,test ,INFO ,id: 225 | UCF_index: 3011
+2019-04-23T05:18:54.691 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3011/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:54.691 ,CyclicGen_main ,test ,INFO ,id: 226 | UCF_index: 3021
+2019-04-23T05:18:54.764 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3021/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:54.764 ,CyclicGen_main ,test ,INFO ,id: 227 | UCF_index: 3031
+2019-04-23T05:18:54.831 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3031/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:54.832 ,CyclicGen_main ,test ,INFO ,id: 228 | UCF_index: 3041
+2019-04-23T05:18:54.903 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3041/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:54.904 ,CyclicGen_main ,test ,INFO ,id: 229 | UCF_index: 3051
+2019-04-23T05:18:54.965 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3051/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:54.965 ,CyclicGen_main ,test ,INFO ,id: 230 | UCF_index: 3061
+2019-04-23T05:18:55.034 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3061/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:55.034 ,CyclicGen_main ,test ,INFO ,id: 231 | UCF_index: 3071
+2019-04-23T05:18:55.106 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3071/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:55.106 ,CyclicGen_main ,test ,INFO ,id: 232 | UCF_index: 3081
+2019-04-23T05:18:55.184 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3081/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:55.184 ,CyclicGen_main ,test ,INFO ,id: 233 | UCF_index: 3091
+2019-04-23T05:18:55.257 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3091/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:55.257 ,CyclicGen_main ,test ,INFO ,id: 234 | UCF_index: 31
+2019-04-23T05:18:55.331 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/31/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:55.332 ,CyclicGen_main ,test ,INFO ,id: 235 | UCF_index: 3101
+2019-04-23T05:18:55.402 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3101/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:55.402 ,CyclicGen_main ,test ,INFO ,id: 236 | UCF_index: 311
+2019-04-23T05:18:55.476 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/311/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:55.476 ,CyclicGen_main ,test ,INFO ,id: 237 | UCF_index: 3111
+2019-04-23T05:18:55.540 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3111/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:55.540 ,CyclicGen_main ,test ,INFO ,id: 238 | UCF_index: 3121
+2019-04-23T05:18:55.606 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3121/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:55.606 ,CyclicGen_main ,test ,INFO ,id: 239 | UCF_index: 3131
+2019-04-23T05:18:55.672 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3131/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:55.673 ,CyclicGen_main ,test ,INFO ,id: 240 | UCF_index: 3141
+2019-04-23T05:18:55.741 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3141/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:55.742 ,CyclicGen_main ,test ,INFO ,id: 241 | UCF_index: 3151
+2019-04-23T05:18:55.818 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3151/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:55.818 ,CyclicGen_main ,test ,INFO ,id: 242 | UCF_index: 3161
+2019-04-23T05:18:55.892 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3161/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:55.892 ,CyclicGen_main ,test ,INFO ,id: 243 | UCF_index: 3171
+2019-04-23T05:18:55.950 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3171/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:55.950 ,CyclicGen_main ,test ,INFO ,id: 244 | UCF_index: 3181
+2019-04-23T05:18:56.022 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3181/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:56.022 ,CyclicGen_main ,test ,INFO ,id: 245 | UCF_index: 3191
+2019-04-23T05:18:56.091 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3191/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:56.092 ,CyclicGen_main ,test ,INFO ,id: 246 | UCF_index: 3201
+2019-04-23T05:18:56.155 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3201/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:56.155 ,CyclicGen_main ,test ,INFO ,id: 247 | UCF_index: 321
+2019-04-23T05:18:56.232 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/321/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:56.232 ,CyclicGen_main ,test ,INFO ,id: 248 | UCF_index: 3211
+2019-04-23T05:18:56.299 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3211/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:56.299 ,CyclicGen_main ,test ,INFO ,id: 249 | UCF_index: 3221
+2019-04-23T05:18:56.373 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3221/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:56.373 ,CyclicGen_main ,test ,INFO ,id: 250 | UCF_index: 3231
+2019-04-23T05:18:56.443 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3231/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:56.444 ,CyclicGen_main ,test ,INFO ,id: 251 | UCF_index: 3241
+2019-04-23T05:18:56.516 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3241/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:56.516 ,CyclicGen_main ,test ,INFO ,id: 252 | UCF_index: 3251
+2019-04-23T05:18:56.585 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3251/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:56.585 ,CyclicGen_main ,test ,INFO ,id: 253 | UCF_index: 3261
+2019-04-23T05:18:56.647 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3261/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:56.647 ,CyclicGen_main ,test ,INFO ,id: 254 | UCF_index: 3271
+2019-04-23T05:18:56.711 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3271/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:56.711 ,CyclicGen_main ,test ,INFO ,id: 255 | UCF_index: 3281
+2019-04-23T05:18:56.773 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3281/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:56.773 ,CyclicGen_main ,test ,INFO ,id: 256 | UCF_index: 3291
+2019-04-23T05:18:56.843 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3291/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:56.843 ,CyclicGen_main ,test ,INFO ,id: 257 | UCF_index: 3301
+2019-04-23T05:18:56.923 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3301/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:56.923 ,CyclicGen_main ,test ,INFO ,id: 258 | UCF_index: 331
+2019-04-23T05:18:56.991 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/331/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:56.991 ,CyclicGen_main ,test ,INFO ,id: 259 | UCF_index: 3311
+2019-04-23T05:18:57.058 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3311/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:57.058 ,CyclicGen_main ,test ,INFO ,id: 260 | UCF_index: 3321
+2019-04-23T05:18:57.134 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3321/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:57.134 ,CyclicGen_main ,test ,INFO ,id: 261 | UCF_index: 3331
+2019-04-23T05:18:57.208 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3331/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:57.208 ,CyclicGen_main ,test ,INFO ,id: 262 | UCF_index: 3341
+2019-04-23T05:18:57.278 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3341/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:57.278 ,CyclicGen_main ,test ,INFO ,id: 263 | UCF_index: 3351
+2019-04-23T05:18:57.339 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3351/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:57.339 ,CyclicGen_main ,test ,INFO ,id: 264 | UCF_index: 3361
+2019-04-23T05:18:57.405 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3361/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:57.405 ,CyclicGen_main ,test ,INFO ,id: 265 | UCF_index: 3371
+2019-04-23T05:18:57.478 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3371/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:57.478 ,CyclicGen_main ,test ,INFO ,id: 266 | UCF_index: 3381
+2019-04-23T05:18:57.540 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3381/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:57.541 ,CyclicGen_main ,test ,INFO ,id: 267 | UCF_index: 3391
+2019-04-23T05:18:57.602 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3391/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:57.602 ,CyclicGen_main ,test ,INFO ,id: 268 | UCF_index: 3401
+2019-04-23T05:18:57.673 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3401/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:57.673 ,CyclicGen_main ,test ,INFO ,id: 269 | UCF_index: 341
+2019-04-23T05:18:57.735 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/341/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:57.735 ,CyclicGen_main ,test ,INFO ,id: 270 | UCF_index: 3411
+2019-04-23T05:18:57.796 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3411/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:57.796 ,CyclicGen_main ,test ,INFO ,id: 271 | UCF_index: 3421
+2019-04-23T05:18:57.858 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3421/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:57.859 ,CyclicGen_main ,test ,INFO ,id: 272 | UCF_index: 3431
+2019-04-23T05:18:57.921 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3431/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:57.921 ,CyclicGen_main ,test ,INFO ,id: 273 | UCF_index: 3441
+2019-04-23T05:18:57.989 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3441/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:57.989 ,CyclicGen_main ,test ,INFO ,id: 274 | UCF_index: 3451
+2019-04-23T05:18:58.068 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3451/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:58.068 ,CyclicGen_main ,test ,INFO ,id: 275 | UCF_index: 3461
+2019-04-23T05:18:58.141 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3461/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:58.142 ,CyclicGen_main ,test ,INFO ,id: 276 | UCF_index: 3471
+2019-04-23T05:18:58.209 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3471/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:58.209 ,CyclicGen_main ,test ,INFO ,id: 277 | UCF_index: 3481
+2019-04-23T05:18:58.278 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3481/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:58.279 ,CyclicGen_main ,test ,INFO ,id: 278 | UCF_index: 3491
+2019-04-23T05:18:58.347 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3491/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:58.347 ,CyclicGen_main ,test ,INFO ,id: 279 | UCF_index: 3501
+2019-04-23T05:18:58.417 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3501/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:58.417 ,CyclicGen_main ,test ,INFO ,id: 280 | UCF_index: 351
+2019-04-23T05:18:58.485 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/351/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:58.485 ,CyclicGen_main ,test ,INFO ,id: 281 | UCF_index: 3511
+2019-04-23T05:18:58.560 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3511/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:58.560 ,CyclicGen_main ,test ,INFO ,id: 282 | UCF_index: 3521
+2019-04-23T05:18:58.624 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3521/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:58.624 ,CyclicGen_main ,test ,INFO ,id: 283 | UCF_index: 3531
+2019-04-23T05:18:58.698 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3531/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:58.698 ,CyclicGen_main ,test ,INFO ,id: 284 | UCF_index: 3541
+2019-04-23T05:18:58.764 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3541/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:58.764 ,CyclicGen_main ,test ,INFO ,id: 285 | UCF_index: 3551
+2019-04-23T05:18:58.831 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3551/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:58.832 ,CyclicGen_main ,test ,INFO ,id: 286 | UCF_index: 3561
+2019-04-23T05:18:58.899 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3561/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:58.900 ,CyclicGen_main ,test ,INFO ,id: 287 | UCF_index: 3571
+2019-04-23T05:18:58.963 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3571/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:58.963 ,CyclicGen_main ,test ,INFO ,id: 288 | UCF_index: 3581
+2019-04-23T05:18:59.021 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3581/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:59.021 ,CyclicGen_main ,test ,INFO ,id: 289 | UCF_index: 3591
+2019-04-23T05:18:59.093 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3591/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:59.093 ,CyclicGen_main ,test ,INFO ,id: 290 | UCF_index: 3601
+2019-04-23T05:18:59.165 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3601/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:59.165 ,CyclicGen_main ,test ,INFO ,id: 291 | UCF_index: 361
+2019-04-23T05:18:59.237 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/361/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:59.237 ,CyclicGen_main ,test ,INFO ,id: 292 | UCF_index: 3611
+2019-04-23T05:18:59.301 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3611/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:59.301 ,CyclicGen_main ,test ,INFO ,id: 293 | UCF_index: 3621
+2019-04-23T05:18:59.377 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3621/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:59.377 ,CyclicGen_main ,test ,INFO ,id: 294 | UCF_index: 3631
+2019-04-23T05:18:59.440 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3631/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:59.440 ,CyclicGen_main ,test ,INFO ,id: 295 | UCF_index: 3641
+2019-04-23T05:18:59.512 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3641/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:59.512 ,CyclicGen_main ,test ,INFO ,id: 296 | UCF_index: 3651
+2019-04-23T05:18:59.588 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3651/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:59.589 ,CyclicGen_main ,test ,INFO ,id: 297 | UCF_index: 3661
+2019-04-23T05:18:59.781 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3661/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:59.781 ,CyclicGen_main ,test ,INFO ,id: 298 | UCF_index: 3671
+2019-04-23T05:18:59.834 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3671/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:59.835 ,CyclicGen_main ,test ,INFO ,id: 299 | UCF_index: 3681
+2019-04-23T05:18:59.914 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3681/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:59.915 ,CyclicGen_main ,test ,INFO ,id: 300 | UCF_index: 3691
+2019-04-23T05:18:59.979 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3691/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:18:59.979 ,CyclicGen_main ,test ,INFO ,id: 301 | UCF_index: 3701
+2019-04-23T05:19:00.029 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3701/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:00.030 ,CyclicGen_main ,test ,INFO ,id: 302 | UCF_index: 371
+2019-04-23T05:19:00.104 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/371/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:00.104 ,CyclicGen_main ,test ,INFO ,id: 303 | UCF_index: 3711
+2019-04-23T05:19:00.174 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3711/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:00.174 ,CyclicGen_main ,test ,INFO ,id: 304 | UCF_index: 3721
+2019-04-23T05:19:00.237 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3721/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:00.237 ,CyclicGen_main ,test ,INFO ,id: 305 | UCF_index: 3731
+2019-04-23T05:19:00.299 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3731/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:00.299 ,CyclicGen_main ,test ,INFO ,id: 306 | UCF_index: 3741
+2019-04-23T05:19:00.361 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3741/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:00.361 ,CyclicGen_main ,test ,INFO ,id: 307 | UCF_index: 3751
+2019-04-23T05:19:00.429 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3751/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:00.429 ,CyclicGen_main ,test ,INFO ,id: 308 | UCF_index: 3761
+2019-04-23T05:19:00.492 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3761/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:00.492 ,CyclicGen_main ,test ,INFO ,id: 309 | UCF_index: 3771
+2019-04-23T05:19:00.561 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3771/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:00.561 ,CyclicGen_main ,test ,INFO ,id: 310 | UCF_index: 3781
+2019-04-23T05:19:00.615 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/3781/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:00.615 ,CyclicGen_main ,test ,INFO ,id: 311 | UCF_index: 381
+2019-04-23T05:19:00.671 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/381/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:00.671 ,CyclicGen_main ,test ,INFO ,id: 312 | UCF_index: 391
+2019-04-23T05:19:00.734 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/391/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:00.734 ,CyclicGen_main ,test ,INFO ,id: 313 | UCF_index: 401
+2019-04-23T05:19:00.801 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/401/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:00.801 ,CyclicGen_main ,test ,INFO ,id: 314 | UCF_index: 41
+2019-04-23T05:19:00.870 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/41/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:00.871 ,CyclicGen_main ,test ,INFO ,id: 315 | UCF_index: 411
+2019-04-23T05:19:00.943 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/411/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:00.944 ,CyclicGen_main ,test ,INFO ,id: 316 | UCF_index: 421
+2019-04-23T05:19:01.012 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/421/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:01.013 ,CyclicGen_main ,test ,INFO ,id: 317 | UCF_index: 431
+2019-04-23T05:19:01.071 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/431/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:01.072 ,CyclicGen_main ,test ,INFO ,id: 318 | UCF_index: 441
+2019-04-23T05:19:01.130 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/441/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:01.130 ,CyclicGen_main ,test ,INFO ,id: 319 | UCF_index: 451
+2019-04-23T05:19:01.203 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/451/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:01.204 ,CyclicGen_main ,test ,INFO ,id: 320 | UCF_index: 461
+2019-04-23T05:19:01.267 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/461/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:01.268 ,CyclicGen_main ,test ,INFO ,id: 321 | UCF_index: 471
+2019-04-23T05:19:01.337 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/471/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:01.337 ,CyclicGen_main ,test ,INFO ,id: 322 | UCF_index: 481
+2019-04-23T05:19:01.411 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/481/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:01.411 ,CyclicGen_main ,test ,INFO ,id: 323 | UCF_index: 491
+2019-04-23T05:19:01.483 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/491/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:01.483 ,CyclicGen_main ,test ,INFO ,id: 324 | UCF_index: 501
+2019-04-23T05:19:01.547 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/501/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:01.547 ,CyclicGen_main ,test ,INFO ,id: 325 | UCF_index: 51
+2019-04-23T05:19:01.610 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/51/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:01.610 ,CyclicGen_main ,test ,INFO ,id: 326 | UCF_index: 511
+2019-04-23T05:19:01.675 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/511/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:01.675 ,CyclicGen_main ,test ,INFO ,id: 327 | UCF_index: 521
+2019-04-23T05:19:01.747 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/521/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:01.747 ,CyclicGen_main ,test ,INFO ,id: 328 | UCF_index: 531
+2019-04-23T05:19:01.822 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/531/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:01.822 ,CyclicGen_main ,test ,INFO ,id: 329 | UCF_index: 541
+2019-04-23T05:19:01.880 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/541/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:01.880 ,CyclicGen_main ,test ,INFO ,id: 330 | UCF_index: 551
+2019-04-23T05:19:01.950 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/551/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:01.951 ,CyclicGen_main ,test ,INFO ,id: 331 | UCF_index: 561
+2019-04-23T05:19:02.019 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/561/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:02.020 ,CyclicGen_main ,test ,INFO ,id: 332 | UCF_index: 571
+2019-04-23T05:19:02.087 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/571/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:02.087 ,CyclicGen_main ,test ,INFO ,id: 333 | UCF_index: 581
+2019-04-23T05:19:02.159 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/581/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:02.159 ,CyclicGen_main ,test ,INFO ,id: 334 | UCF_index: 591
+2019-04-23T05:19:02.225 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/591/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:02.225 ,CyclicGen_main ,test ,INFO ,id: 335 | UCF_index: 601
+2019-04-23T05:19:02.300 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/601/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:02.301 ,CyclicGen_main ,test ,INFO ,id: 336 | UCF_index: 61
+2019-04-23T05:19:02.368 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/61/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:02.368 ,CyclicGen_main ,test ,INFO ,id: 337 | UCF_index: 611
+2019-04-23T05:19:02.436 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/611/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:02.436 ,CyclicGen_main ,test ,INFO ,id: 338 | UCF_index: 621
+2019-04-23T05:19:02.498 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/621/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:02.498 ,CyclicGen_main ,test ,INFO ,id: 339 | UCF_index: 631
+2019-04-23T05:19:02.567 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/631/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:02.567 ,CyclicGen_main ,test ,INFO ,id: 340 | UCF_index: 641
+2019-04-23T05:19:02.627 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/641/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:02.627 ,CyclicGen_main ,test ,INFO ,id: 341 | UCF_index: 651
+2019-04-23T05:19:02.694 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/651/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:02.695 ,CyclicGen_main ,test ,INFO ,id: 342 | UCF_index: 661
+2019-04-23T05:19:02.762 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/661/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:02.762 ,CyclicGen_main ,test ,INFO ,id: 343 | UCF_index: 671
+2019-04-23T05:19:02.844 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/671/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:02.844 ,CyclicGen_main ,test ,INFO ,id: 344 | UCF_index: 681
+2019-04-23T05:19:02.912 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/681/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:02.912 ,CyclicGen_main ,test ,INFO ,id: 345 | UCF_index: 691
+2019-04-23T05:19:02.984 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/691/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:02.984 ,CyclicGen_main ,test ,INFO ,id: 346 | UCF_index: 701
+2019-04-23T05:19:03.052 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/701/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:03.052 ,CyclicGen_main ,test ,INFO ,id: 347 | UCF_index: 71
+2019-04-23T05:19:03.116 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/71/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:03.116 ,CyclicGen_main ,test ,INFO ,id: 348 | UCF_index: 711
+2019-04-23T05:19:03.179 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/711/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:03.179 ,CyclicGen_main ,test ,INFO ,id: 349 | UCF_index: 721
+2019-04-23T05:19:03.241 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/721/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:03.241 ,CyclicGen_main ,test ,INFO ,id: 350 | UCF_index: 731
+2019-04-23T05:19:03.297 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/731/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:03.297 ,CyclicGen_main ,test ,INFO ,id: 351 | UCF_index: 741
+2019-04-23T05:19:03.360 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/741/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:03.360 ,CyclicGen_main ,test ,INFO ,id: 352 | UCF_index: 751
+2019-04-23T05:19:03.421 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/751/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:03.421 ,CyclicGen_main ,test ,INFO ,id: 353 | UCF_index: 761
+2019-04-23T05:19:03.484 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/761/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:03.484 ,CyclicGen_main ,test ,INFO ,id: 354 | UCF_index: 771
+2019-04-23T05:19:03.546 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/771/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:03.546 ,CyclicGen_main ,test ,INFO ,id: 355 | UCF_index: 781
+2019-04-23T05:19:03.606 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/781/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:03.606 ,CyclicGen_main ,test ,INFO ,id: 356 | UCF_index: 791
+2019-04-23T05:19:03.668 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/791/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:03.668 ,CyclicGen_main ,test ,INFO ,id: 357 | UCF_index: 801
+2019-04-23T05:19:03.714 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/801/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:03.714 ,CyclicGen_main ,test ,INFO ,id: 358 | UCF_index: 81
+2019-04-23T05:19:03.785 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/81/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:03.785 ,CyclicGen_main ,test ,INFO ,id: 359 | UCF_index: 811
+2019-04-23T05:19:03.857 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/811/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:03.857 ,CyclicGen_main ,test ,INFO ,id: 360 | UCF_index: 821
+2019-04-23T05:19:03.912 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/821/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:03.913 ,CyclicGen_main ,test ,INFO ,id: 361 | UCF_index: 831
+2019-04-23T05:19:03.990 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/831/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:03.990 ,CyclicGen_main ,test ,INFO ,id: 362 | UCF_index: 841
+2019-04-23T05:19:04.054 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/841/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:04.054 ,CyclicGen_main ,test ,INFO ,id: 363 | UCF_index: 851
+2019-04-23T05:19:04.116 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/851/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:04.116 ,CyclicGen_main ,test ,INFO ,id: 364 | UCF_index: 861
+2019-04-23T05:19:04.182 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/861/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:04.182 ,CyclicGen_main ,test ,INFO ,id: 365 | UCF_index: 871
+2019-04-23T05:19:04.243 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/871/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:04.243 ,CyclicGen_main ,test ,INFO ,id: 366 | UCF_index: 881
+2019-04-23T05:19:04.305 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/881/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:04.305 ,CyclicGen_main ,test ,INFO ,id: 367 | UCF_index: 891
+2019-04-23T05:19:04.367 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/891/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:04.367 ,CyclicGen_main ,test ,INFO ,id: 368 | UCF_index: 901
+2019-04-23T05:19:04.428 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/901/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:04.428 ,CyclicGen_main ,test ,INFO ,id: 369 | UCF_index: 91
+2019-04-23T05:19:04.499 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/91/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:04.499 ,CyclicGen_main ,test ,INFO ,id: 370 | UCF_index: 911
+2019-04-23T05:19:04.576 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/911/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:04.576 ,CyclicGen_main ,test ,INFO ,id: 371 | UCF_index: 921
+2019-04-23T05:19:04.707 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/921/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:04.708 ,CyclicGen_main ,test ,INFO ,id: 372 | UCF_index: 931
+2019-04-23T05:19:04.776 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/931/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:04.777 ,CyclicGen_main ,test ,INFO ,id: 373 | UCF_index: 941
+2019-04-23T05:19:04.851 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/941/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:04.851 ,CyclicGen_main ,test ,INFO ,id: 374 | UCF_index: 951
+2019-04-23T05:19:04.921 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/951/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:04.922 ,CyclicGen_main ,test ,INFO ,id: 375 | UCF_index: 961
+2019-04-23T05:19:04.988 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/961/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:04.989 ,CyclicGen_main ,test ,INFO ,id: 376 | UCF_index: 971
+2019-04-23T05:19:05.054 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/971/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:05.054 ,CyclicGen_main ,test ,INFO ,id: 377 | UCF_index: 981
+2019-04-23T05:19:05.127 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/981/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:05.127 ,CyclicGen_main ,test ,INFO ,id: 378 | UCF_index: 991
+2019-04-23T05:19:05.200 ,CyclicGen_main ,test ,INFO ,Generated image was saved at: ucf101_interp_ours/991/frame_01_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:05.271 ,CyclicGen_main ,generate ,INFO ,input image shape: (480, 640) -> (480, 640)
+2019-04-23T05:19:09.026 ,tf_logging ,info ,INFO ,Restoring parameters from ./train_dir/2019-04-23T083858/model.ckpt-14034
+2019-04-23T05:19:09.147 ,CyclicGen_main ,generate ,INFO ,Pre-trained model restored from: ./train_dir/2019-04-23T083858/model.ckpt-14034
+2019-04-23T05:19:12.871 ,CyclicGen_main ,generate ,INFO ,Generated image was saved at: ./Middlebury/eval-color-allframes/eval-data/Backyard/frame07_.10_from07_08_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:12.921 ,CyclicGen_main ,generate ,INFO ,input image shape: (480, 640) -> (480, 640)
+2019-04-23T05:19:16.617 ,tf_logging ,info ,INFO ,Restoring parameters from ./train_dir/2019-04-23T083858/model.ckpt-14034
+2019-04-23T05:19:16.741 ,CyclicGen_main ,generate ,INFO ,Pre-trained model restored from: ./train_dir/2019-04-23T083858/model.ckpt-14034
+2019-04-23T05:19:19.449 ,CyclicGen_main ,generate ,INFO ,Generated image was saved at: ./Middlebury/eval-color-allframes/eval-data/Backyard/frame07_.20_from07_08_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:19.496 ,CyclicGen_main ,generate ,INFO ,input image shape: (480, 640) -> (480, 640)
+2019-04-23T05:19:23.231 ,tf_logging ,info ,INFO ,Restoring parameters from ./train_dir/2019-04-23T083858/model.ckpt-14034
+2019-04-23T05:19:23.352 ,CyclicGen_main ,generate ,INFO ,Pre-trained model restored from: ./train_dir/2019-04-23T083858/model.ckpt-14034
+2019-04-23T05:19:25.992 ,CyclicGen_main ,generate ,INFO ,Generated image was saved at: ./Middlebury/eval-color-allframes/eval-data/Backyard/frame07_.30_from07_08_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:26.052 ,CyclicGen_main ,generate ,INFO ,input image shape: (480, 640) -> (480, 640)
+2019-04-23T05:19:29.645 ,tf_logging ,info ,INFO ,Restoring parameters from ./train_dir/2019-04-23T083858/model.ckpt-14034
+2019-04-23T05:19:29.763 ,CyclicGen_main ,generate ,INFO ,Pre-trained model restored from: ./train_dir/2019-04-23T083858/model.ckpt-14034
+2019-04-23T05:19:32.466 ,CyclicGen_main ,generate ,INFO ,Generated image was saved at: ./Middlebury/eval-color-allframes/eval-data/Backyard/frame07_.40_from07_08_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:32.515 ,CyclicGen_main ,generate ,INFO ,input image shape: (480, 640) -> (480, 640)
+2019-04-23T05:19:36.237 ,tf_logging ,info ,INFO ,Restoring parameters from ./train_dir/2019-04-23T083858/model.ckpt-14034
+2019-04-23T05:19:36.358 ,CyclicGen_main ,generate ,INFO ,Pre-trained model restored from: ./train_dir/2019-04-23T083858/model.ckpt-14034
+2019-04-23T05:19:38.976 ,CyclicGen_main ,generate ,INFO ,Generated image was saved at: ./Middlebury/eval-color-allframes/eval-data/Backyard/frame07_.50_from07_08_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:39.023 ,CyclicGen_main ,generate ,INFO ,input image shape: (480, 640) -> (480, 640)
+2019-04-23T05:19:42.699 ,tf_logging ,info ,INFO ,Restoring parameters from ./train_dir/2019-04-23T083858/model.ckpt-14034
+2019-04-23T05:19:42.832 ,CyclicGen_main ,generate ,INFO ,Pre-trained model restored from: ./train_dir/2019-04-23T083858/model.ckpt-14034
+2019-04-23T05:19:45.419 ,CyclicGen_main ,generate ,INFO ,Generated image was saved at: ./Middlebury/eval-color-allframes/eval-data/Backyard/frame07_.60_from07_08_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:45.466 ,CyclicGen_main ,generate ,INFO ,input image shape: (480, 640) -> (480, 640)
+2019-04-23T05:19:49.109 ,tf_logging ,info ,INFO ,Restoring parameters from ./train_dir/2019-04-23T083858/model.ckpt-14034
+2019-04-23T05:19:49.230 ,CyclicGen_main ,generate ,INFO ,Pre-trained model restored from: ./train_dir/2019-04-23T083858/model.ckpt-14034
+2019-04-23T05:19:51.838 ,CyclicGen_main ,generate ,INFO ,Generated image was saved at: ./Middlebury/eval-color-allframes/eval-data/Backyard/frame07_.70_from07_08_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:51.888 ,CyclicGen_main ,generate ,INFO ,input image shape: (480, 640) -> (480, 640)
+2019-04-23T05:19:55.551 ,tf_logging ,info ,INFO ,Restoring parameters from ./train_dir/2019-04-23T083858/model.ckpt-14034
+2019-04-23T05:19:55.691 ,CyclicGen_main ,generate ,INFO ,Pre-trained model restored from: ./train_dir/2019-04-23T083858/model.ckpt-14034
+2019-04-23T05:19:58.375 ,CyclicGen_main ,generate ,INFO ,Generated image was saved at: ./Middlebury/eval-color-allframes/eval-data/Backyard/frame07_.80_from07_08_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:19:58.426 ,CyclicGen_main ,generate ,INFO ,input image shape: (480, 640) -> (480, 640)
+2019-04-23T05:20:02.032 ,tf_logging ,info ,INFO ,Restoring parameters from ./train_dir/2019-04-23T083858/model.ckpt-14034
+2019-04-23T05:20:02.151 ,CyclicGen_main ,generate ,INFO ,Pre-trained model restored from: ./train_dir/2019-04-23T083858/model.ckpt-14034
+2019-04-23T05:20:04.809 ,CyclicGen_main ,generate ,INFO ,Generated image was saved at: ./Middlebury/eval-color-allframes/eval-data/Backyard/frame07_.90_from07_08_2019-04-23T083858_model.ckpt-14034.png
+2019-04-23T05:20:04.855 ,CyclicGen_main ,generate ,INFO ,input image shape: (480, 640) -> (480, 640)
+2019-04-23T05:20:08.585 ,tf_logging ,info ,INFO ,Restoring parameters from ./train_dir/2019-04-23T083858/model.ckpt-14034
+2019-04-23T05:20:08.706 ,CyclicGen_main ,generate ,INFO ,Pre-trained model restored from: ./train_dir/2019-04-23T083858/model.ckpt-14034
+2019-04-23T05:20:11.370 ,CyclicGen_main ,generate ,INFO ,Generated image was saved at: ./Middlebury/eval-color-allframes/eval-data/Backyard/frame08_.50_from07_08_2019-04-23T083858_model.ckpt-14034.png

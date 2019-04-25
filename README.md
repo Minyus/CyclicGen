@@ -1,7 +1,5 @@
 # Refactored and enhanced version of [CyclicGen](https://github.com/alex04072000/CyclicGen)
 
-## ToDo: Clean up file 
-
 ## Required files (too big to upload to GitHub)
 Download vgg16.npy (pretrained vgg16 weights file) and hed_model from
  https://github.com/alex04072000/CyclicGen/blob/master/README.md >> "ckpt_and_hed_model" >> https://drive.google.com/file/d/1X7PWDY2nAx8ZeSLso5qeypRUCDokNFms/view

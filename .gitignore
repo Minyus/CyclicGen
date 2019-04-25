@@ -133,3 +133,5 @@ scratch_codes.py
 train_dir/old/
 trial_out/
 ucf101_interp_ours_*/
+scratch_codes.py
+ucf101_interp_ours/*/*.png

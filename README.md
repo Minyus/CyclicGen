@@ -1,4 +1,6 @@
-# Refactored and improved version of [CyclicGen](https://github.com/alex04072000/CyclicGen)
+# Refactored and enhanced version of [CyclicGen](https://github.com/alex04072000/CyclicGen)
+
+## ToDo: Clean up file 
 
 ## Required files (too big to upload to GitHub)
 Download vgg16.npy (pretrained vgg16 weights file) and hed_model from
@@ -10,7 +12,7 @@ UCF101_extractor.py
 >> - Output ./UCF-101_frames256/ (The data in this folder is provided separately.)
 
 ### Generate frame path list for training used for the main code in ./data_list/.
-generate_frame_list.py
+generate_frame_list.ipynb
 >> - Output ./data_list/
 
 ## [1] Main Python code to train the model and generate image frames (run in Linux with GPU)

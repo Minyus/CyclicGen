@@ -1,4 +1,4 @@
-# Refactored and enhanced version of [CyclicGen](https://github.com/alex04072000/CyclicGen)
+# Refactored and enhanced version of [CyclicGen](https://github.com/alex04072000/CyclicGen) and [voxle-flow](https://github.com/liuziwei7/voxel-flow)
 
 ## Required files (too big to upload to GitHub)
 Download vgg16.npy (pretrained vgg16 weights file) and hed_model from

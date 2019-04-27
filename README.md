@@ -10,6 +10,15 @@ Input Image  --->
 	frame rate x10 demo (9 interpolated frames between 2 input images) 
 </p>
 
+
+<p align="center">
+<img src="readme_images/Flexible_Deep_Voxel_Flow.PNG" width="600">
+</p>
+
+<p align="center">
+<img src="readme_images/Extra_CC_Loss.PNG" width="600">
+</p>
+
 ## Required files (too big to upload to GitHub)
 Download vgg16.npy (pretrained vgg16 weights file) and hed_model from
  https://github.com/alex04072000/CyclicGen/blob/master/README.md >> "ckpt_and_hed_model" >> https://drive.google.com/file/d/1X7PWDY2nAx8ZeSLso5qeypRUCDokNFms/view

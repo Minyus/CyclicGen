@@ -1,5 +1,15 @@
 # Refactored and enhanced version of [CyclicGen](https://github.com/alex04072000/CyclicGen) and [voxle-flow](https://github.com/liuziwei7/voxel-flow)
 
+
+Input Image  --->
+ <img src="Middlebury/eval-color-allframes/eval-data/Backyard_from07_08_2019-04-20T151155_model.ckpt-28069/frame07.png" width="120"><img src="Middlebury/eval-color-allframes/eval-data/Backyard_from07_08_2019-04-20T151155_model.ckpt-28069/frame07_.10_from07_08_2019-04-20T151155_model.ckpt-28069.png" width="120"><img src="Middlebury/eval-color-allframes/eval-data/Backyard_from07_08_2019-04-20T151155_model.ckpt-28069/frame07_.20_from07_08_2019-04-20T151155_model.ckpt-28069.png" width="120"><img src="Middlebury/eval-color-allframes/eval-data/Backyard_from07_08_2019-04-20T151155_model.ckpt-28069/frame07_.30_from07_08_2019-04-20T151155_model.ckpt-28069.png" width="120"><img src="Middlebury/eval-color-allframes/eval-data/Backyard_from07_08_2019-04-20T151155_model.ckpt-28069/frame07_.40_from07_08_2019-04-20T151155_model.ckpt-28069.png" width="120">
+ 
+|<img src="Middlebury/eval-color-allframes/eval-data/Backyard_from07_08_2019-04-20T151155_model.ckpt-28069/frame07_.50_from07_08_2019-04-20T151155_model.ckpt-28069.png" width="120"><img src="Middlebury/eval-color-allframes/eval-data/Backyard_from07_08_2019-04-20T151155_model.ckpt-28069/frame07_.60_from07_08_2019-04-20T151155_model.ckpt-28069.png" width="120"><img src="Middlebury/eval-color-allframes/eval-data/Backyard_from07_08_2019-04-20T151155_model.ckpt-28069/frame07_.70_from07_08_2019-04-20T151155_model.ckpt-28069.png" width="120"><img src="Middlebury/eval-color-allframes/eval-data/Backyard_from07_08_2019-04-20T151155_model.ckpt-28069/frame07_.80_from07_08_2019-04-20T151155_model.ckpt-28069.png" width="120"><img src="Middlebury/eval-color-allframes/eval-data/Backyard_from07_08_2019-04-20T151155_model.ckpt-28069/frame07_.90_from07_08_2019-04-20T151155_model.ckpt-28069.png" width="120"><img src="Middlebury/eval-color-allframes/eval-data/Backyard_from07_08_2019-04-20T151155_model.ckpt-28069/frame08.png" width="120">
+ <--- Input Image
+<p align="center">
+	frame rate x10 demo (9 interpolated frames between 2 input images) 
+</p>
+
 ## Required files (too big to upload to GitHub)
 Download vgg16.npy (pretrained vgg16 weights file) and hed_model from
  https://github.com/alex04072000/CyclicGen/blob/master/README.md >> "ckpt_and_hed_model" >> https://drive.google.com/file/d/1X7PWDY2nAx8ZeSLso5qeypRUCDokNFms/view

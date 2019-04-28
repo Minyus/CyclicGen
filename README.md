@@ -49,8 +49,8 @@ CyclicGen_main.py
 >> - Input ./UCF-101_frames256/ ./data_list/ ./hed_model/
 >> - Output ./train_dir/ ./ucf101_interp_ours/ ./Middlebury/
 >> - Training (Stage 1 and/or Stage 2) and Testing (Generating interpolated images)
-- Example: 
-		python3 CyclicGen_main.py --coef_loss_e=0.0 --max_epochs=5 --s1_epochs=1
+>> - Example command: 
+>> 		``` python3 CyclicGen_main.py --strategy=accel_adjust --coef_loss_e=0.5 --max_epochs=10 --s1_epochs=5 ```
 
 ## [2] Python code to compute SSIM, PSNR, and MS-SSIM for output data (run in Linux)
 

@@ -41,7 +41,7 @@ Download vgg16.npy (pretrained vgg16 weights file) and hed_model from
 > - Extract every 5 frames (0.2 seconds interval) from all AVI videos and resize to 256 x 256
 
 
-### Generate frame path list for training used for the main code.
+### Generate frame path list for training used for the main code
 [[generate_frame_list.ipynb]](https://github.com/Minyus/CyclicGen/blob/master/generate_frame_list.ipynb)
 > - Input ./ucf101_train_test_split/ (source: [[vodel_flow]](https://github.com/liuziwei7/voxel-flow/blob/master/README.md) >> "Train/Test Split" >> [[Google drive]](https://drive.google.com/file/d/1rwnTfzCEIMFv6xiBGCpSnCUvMufJXdkU/view)) 
 > - Output ./data_list/

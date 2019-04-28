@@ -19,6 +19,10 @@ Input Image  --->
 <img src="readme_images/Extra_CC_Loss.PNG" width="600">
 </p>
 
+<p align="center">
+<img src="readme_images/Evaluation.png" width="600">
+</p>
+
 ## Required files (too big to upload to GitHub)
 Download vgg16.npy (pretrained vgg16 weights file) and hed_model from
  [[CyclicGen]](https://github.com/alex04072000/CyclicGen/blob/master/README.md) >> "ckpt_and_hed_model" >> [Google drive](https://drive.google.com/file/d/1X7PWDY2nAx8ZeSLso5qeypRUCDokNFms/view)
@@ -52,7 +56,7 @@ Download vgg16.npy (pretrained vgg16 weights file) and hed_model from
 > - Example command: 
 > 		``` python3 CyclicGen_main.py --strategy=accel_adjust --coef_loss_e=0.5 --max_epochs=10 --s1_epochs=5 ```
 
-## [2] Python code to compute SSIM, PSNR, and MS-SSIM for output data (run in Linux)
+## [2] Python code to compute SSIM, PSNR, and MS-SSIM (average of 3 values for RGB channels) for output data (run in Linux)
 
 [[ucf101_interp_evaluation.py]](https://github.com/Minyus/CyclicGen/blob/master/ucf101_interp_evaluation.py)
 > - Input  ./ucf101_interp_ours/ (source: [[vodel_flow]](https://github.com/liuziwei7/voxel-flow/blob/master/README.md) >> "Testing Data" >> [[Google Drive]](https://drive.google.com/file/d/0B7EVK8r0v71pdHBNdXB6TE1wSTQ/view))

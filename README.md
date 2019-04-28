@@ -21,27 +21,41 @@ Input Image  --->
 
 ## Required files (too big to upload to GitHub)
 Download vgg16.npy (pretrained vgg16 weights file) and hed_model from
- https://github.com/alex04072000/CyclicGen/blob/master/README.md >> "ckpt_and_hed_model" >> https://drive.google.com/file/d/1X7PWDY2nAx8ZeSLso5qeypRUCDokNFms/view
+ [[CyclicGen]](https://github.com/alex04072000/CyclicGen/blob/master/README.md) >> "ckpt_and_hed_model" >> [Google drive](https://drive.google.com/file/d/1X7PWDY2nAx8ZeSLso5qeypRUCDokNFms/view)
+ 
+## Environemnt
+- Linux with CUDA/GPU
+- Python 3 (require 3.5 or later)
+- TensorFlow 1.13
 
-## [0] Python code to prepare data (No need to run)
-### Code to extract image frames from AVI files in UCF101 dataset
+
+## [0] Python code to prepare data
+### Code to extract image frames from AVI files in [[UCF101]](https://www.crcv.ucf.edu/data/UCF101.php) dataset
 UCF101_extractor.py
+>> - Input ./UCF-101/ (source: unzipped [[UCF101.rar]](https://www.crcv.ucf.edu/data/UCF101/UCF101.rar))
 >> - Output ./UCF-101_frames256/ (The data in this folder is provided separately.)
+>> - Extract every 5 frames (0.2 seconds interval) from all AVI videos and resize to 256 x 256
 
-### Generate frame path list for training used for the main code in ./data_list/.
+
+### Generate frame path list for training used for the main code.
 generate_frame_list.ipynb
+>> - Input ./ucf101_train_test_split/ (source: [[vodel_flow]](https://github.com/liuziwei7/voxel-flow/blob/master/README.md) >> "Train/Test Split" >> [[Google drive]](https://drive.google.com/file/d/1rwnTfzCEIMFv6xiBGCpSnCUvMufJXdkU/view)) 
 >> - Output ./data_list/
+>> - Generate 3 text files that include the PNG image file paths (triplet: 2 input images and the ground truth between them)
 
 ## [1] Main Python code to train the model and generate image frames (run in Linux with GPU)
 
 CyclicGen_main.py
 >> - Input ./UCF-101_frames256/ ./data_list/ ./hed_model/
 >> - Output ./train_dir/ ./ucf101_interp_ours/ ./Middlebury/
+>> - Training (Stage 1 and/or Stage 2) and Testing (Generating interpolated images)
+- Example: 
+		python3 CyclicGen_main.py --coef_loss_e=0.0 --max_epochs=5 --s1_epochs=1
 
 ## [2] Python code to compute SSIM, PSNR, and MS-SSIM for output data (run in Linux)
 
 ucf101_interp_evaluation.py
->> - Input  ./ucf101_interp_ours/ (source: https://github.com/liuziwei7/voxel-flow >> "Testing Data")
+>> - Input  ./ucf101_interp_ours/ (source: [[vodel_flow]](https://github.com/liuziwei7/voxel-flow/blob/master/README.md) >> "Testing Data" >> [[Google Drive]](https://drive.google.com/file/d/0B7EVK8r0v71pdHBNdXB6TE1wSTQ/view))
 >> - Output ./ucf101_interp_ours/
 
 ## [3] Python code to join model parameters (run in Windows)
